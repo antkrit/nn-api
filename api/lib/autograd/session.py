@@ -11,12 +11,12 @@ class Session:
     expression, it is necessary to create a Session and call the
     `run` method.
 
-    >>> a = Variable(10)
-    >>> b = Variable(20)
-    >>> c = a + b  # Node.__add__(a, b)
-    >>> session = Session()
-    >>> session.run(c)
-    30.0
+        >>> a = Variable(10)
+        >>> b = Variable(20)
+        >>> c = a + b  # Node.__add__(a, b)
+        >>> session = Session()
+        >>> session.run(c)
+        30.0
     """
     def run(self, target, feed_dict=None):
         """Forward propagation aver a graph. Computes the output of
@@ -25,15 +25,15 @@ class Session:
         If there are placeholders in the graph you need to fill them
         with data. Pass that data to feed_dict in node_name:data format.
 
-        >>> a = 2
-        >>> b = Placeholder('x')
-        >>> c = a * b  # Node.__mul__(a, b)
-        >>> session = Session()
-        >>> session.run(c, feed_dict={'x':15})
-        30.0
+            >>> a = 2
+            >>> b = Placeholder('x')
+            >>> c = a * b  # Node.__mul__(a, b)
+            >>> session = Session()
+            >>> session.run(c, feed_dict={'x':15})
+            30.0
 
         :param target: last node of the graph
-        :type target: class:`instances.nodes.Node`
+        :type target: :class:`Node`
         :param feed_dict: data for placeholders
         :param feed_dict: dict, optional
         :return: value of the last node, i.e. result of graph
@@ -54,22 +54,23 @@ class Session:
 def gradients(target):
     """Get gradient of the loss w.r.t. the node's value.
 
-    >>> w = Variable(1, name='w')
-    >>> x = Variable(2, name='x')
-    >>> op = w * x
-    >>> gradients(op)  # d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1
-    {w: 2.0, x: 1.0, graph-0/operator-multiply-5: 1.0}
+        >>> w = Variable(1, name='w')
+        >>> x = Variable(2, name='x')
+        >>> op = w * x
+        >>> gradients(op)  # d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1
+        {w: 2.0, x: 1.0, graph-0/operator-multiply-5: 1.0}
 
-    Note: If there are placeholders, it is necessary run forward propagation
-    first or manually fill them with data. Otherwise, an error will be raised.
+    .. note::
+        If there are placeholders, it is necessary run forward propagation
+        first or manually fill them with data. Otherwise, an error will be raised.
 
-    >>> w = Variable(1, name='w')
-    >>> x = Placeholder(name='x')
-    >>> op = w * x
-    >>> session = Session()
-    >>> _ = session.run(op, feed_dict={'x': 2.0})
-    >>> gradients(op)
-    {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
+        >>> w = Variable(1, name='w')
+        >>> x = Placeholder(name='x')
+        >>> op = w * x
+        >>> session = Session()
+        >>> _ = session.run(op, feed_dict={'x': 2.0})
+        >>> gradients(op)
+        {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
 
     :param target: target node
     :type target: class:`Node`
@@ -100,10 +101,10 @@ def gradients(target):
 
 
 def topological_sort(head_node):
-    """Perform topological sort for a given graph.
+    """Perform topological sort for a given graph using DFS algorithm.
 
     :param head_node: node to start sorting from
-    :param head_node: class:`Node`
+    :param head_node: :class:`Node`
     :return: list  of sorted nodes
     :rtype: deque
     """

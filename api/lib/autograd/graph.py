@@ -1,4 +1,23 @@
-"""Contains definition of graph and it's nodes."""
+"""Contains definition of graph and it's nodes.
+
+Computational graph is a form of directed acyclic graph that represents a
+mathematical expression. In other words - tracker of simple operations. Thanks
+to this graph, it becomes possible to apply Automatic Differentiation(AD).
+
+AD - a technique to calculate the derivative of a function given by an algorithm.
+AD takes advantage of the fact that an arbitrary function in a computer program
+will still be calculated using arithmetic operations (+, -, *, /) and elementary
+functions of standard libraries (exp, log, sin, etc.). By applying the
+chain rule, the derivative of any order can be calculated for a number of
+operations that is proportional to the number of operations to calculate the
+function itself.
+
+Each graph consists of nodes. Nodes are divided into:
+    - Variable - a basic node with some changeable value
+    - Constant - a node with a fixed value
+    - Placeholder - a node with no value, so the value can be set later
+    - Operation - a node that performs computations
+"""
 # pylint: disable= R1707, W0603
 import itertools
 import numpy as np
@@ -92,14 +111,20 @@ class Constant(Node):
 class Placeholder(Node):
     """Represents a node with no value, so the value can be set later.
 
-    Note: the node name is crucial here, it can be used later by
-    :class:`Session` to fill this node with a value. In particular,
-    you can fill it manually, but before computing the graph output.
+    .. note::
+        The node name is crucial here, it can be used later by
+        :class:`Session` to fill this node with a value.
 
-        x = Placeholder('a')
-        Session().run(x, feed_dict={'x': 1}) <- will throw KeyError
-        x.value = 1
-        Session().run(x, feed_dict={'x': 1}) <- is OK
+        >>> x = Placeholder('a')
+        >>> Session().run(x, feed_dict={'x': 1}) # will raise KeyError
+        >>> Session().run(x, feed_dict={'a': 1}) # is OK
+
+        In particular, you can fill it manually, but before computing
+        the graph output.
+
+        >>> x = Placeholder('a')
+        >>> x.value = 1
+        >>> Session().run(x, feed_dict={'x': 1}) # is OK
 
     :param name: node name, if name is None than it will be
         created automatically

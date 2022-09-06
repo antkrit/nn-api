@@ -1,20 +1,28 @@
+"""Contains Model definition."""
 from api.lib.layers import Layer
 from api.lib.autograd import Graph, Session, Placeholder
 
 
 class Model:
+    """Create a model that contains all the layers and has
+     an interface to work with them.
+     """
 
     def __init__(self, layers=None, loss=None, optimizer=None):
+        """Constructor method
+        """
         self.layers = layers or []
         self.loss = loss
         self.optimizer = optimizer
 
     def add(self, layer):
+        """Add layer to the model."""
         if not isinstance(layer, Layer):
             raise ValueError("Object must be of `Layer` type.")
         self.layers.append(layer)
 
     def predict(self, data):
+        """Predict output with given input."""
         samples = len(data)
         result = []
 
@@ -35,6 +43,7 @@ class Model:
         return result
 
     def fit(self, x_train, y_train, epochs, *args, **kwargs):
+        """Train model."""
         samples = len(x_train)
 
         Graph().as_default()
