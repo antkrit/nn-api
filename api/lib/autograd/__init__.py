@@ -26,10 +26,7 @@ Contains following modules:
     - `math`: contain a `math` object with all traceable mathematical operations
     - `session`: contains classes and functions to work with graph
 """
-from api.lib.autograd.math import math
+# disabled W0622 (redefined-builtin)
+# pylint: disable=W0622
+from api.lib.autograd.graph import *
 from api.lib.autograd.session import Session, gradients, topological_sort
-from api.lib.autograd.graph import (
-    Graph, Node, Operation, Constant, Variable,
-    Placeholder, BinaryOperator, UnaryOperator,
-    get_current_graph
-)

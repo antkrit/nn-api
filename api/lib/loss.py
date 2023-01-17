@@ -1,5 +1,5 @@
 """Contains simple loss functions."""
-from api.lib.autograd import math
+import api.lib.autograd as ag
 
 
 __all__ = ('mse', 'crossentropy')
@@ -8,11 +8,11 @@ __all__ = ('mse', 'crossentropy')
 def mse(predictions, targets):
     """Mean squared error"""
     pow_ = (predictions - targets) ** 2
-    return math.mean(pow_)
+    return ag.mean(pow_)
 
 
 def crossentropy(predictions, targets):
     """Categorical crossentropy"""
-    mul_ = targets * math.log(predictions)
-    sum_ = math.sum(mul_, axis=1)
-    return -math.sum(sum_)
+    mul_ = targets * ag.log(predictions)
+    sum_ = ag.sum(mul_, axis=1)
+    return -ag.sum(sum_)

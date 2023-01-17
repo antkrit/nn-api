@@ -1,6 +1,10 @@
 """Contains classes and functions to work with graph."""
-from collections import deque
-from api.lib.autograd.graph import Variable, Placeholder, Operation
+# Attention: W0611 disabled(unused-import)
+# because pylint doesn't recognize objects in code samples for doctest
+# pylint: disable=W0611
+from api.lib.autograd.graph import (
+    Variable, Placeholder, Operation, topological_sort
+)
 
 
 class Session:
@@ -23,7 +27,8 @@ class Session:
          a target operation.
 
         If there are placeholders in the graph you need to fill them
-        with data. Pass that data to feed_dict in node_name:data format.
+        with data. Otherwise, KeyError will be raised. Pass that data
+        to feed_dict in node_name:data format.
 
             >>> a = 2
             >>> b = Placeholder('x')
@@ -36,6 +41,8 @@ class Session:
         :type target: :class:`Node`
         :param feed_dict: data for placeholders
         :param feed_dict: dict, optional
+        :raises KeyError: in case where there are no values in feed_dict for \
+        the empty Placeholder
         :return: value of the last node, i.e. result of graph
         :rtype: np.array
         """
@@ -61,8 +68,9 @@ def gradients(target):
         {w: 2.0, x: 1.0, graph-0/operator-multiply-5: 1.0}
 
     .. note::
-        If there are placeholders, it is necessary run forward propagation
-        first or manually fill them with data. Otherwise, an error will be raised.
+        If there are placeholders, it is necessary run forward
+        propagation first or manually fill them with data.
+        Otherwise, TypeError error will be raised.
 
         >>> w = Variable(1, name='w')
         >>> x = Placeholder(name='x')
@@ -98,30 +106,3 @@ def gradients(target):
                 visited.add(inp)
 
     return {node: node.gradient for node in order}
-
-
-def topological_sort(head_node):
-    """Perform topological sort for a given graph using DFS algorithm.
-
-    :param head_node: node to start sorting from
-    :param head_node: :class:`Node`
-    :return: list  of sorted nodes
-    :rtype: deque
-    """
-    visited = set()
-    order = deque()
-
-    def _dfs(node):
-        """Depth-first search recursion helper."""
-        nonlocal visited
-
-        if node not in visited:
-            visited.add(node)
-            if isinstance(node, Operation):
-                for input_node in node.inputs:
-                    _dfs(input_node)
-
-            order.append(node)
-
-    _dfs(head_node)
-    return order

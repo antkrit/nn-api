@@ -1,4 +1,5 @@
 """Contains Model definition."""
+# TODO: detailed docstrings
 from api.lib.layers import Layer
 from api.lib.autograd import Graph, Session, Placeholder
 
