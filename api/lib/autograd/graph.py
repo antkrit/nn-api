@@ -23,26 +23,27 @@ import itertools
 import numpy as np
 
 from collections import deque
+from collections.abc import Iterable
 
 
 __all__ = (
-    'Node', 'Constant', 'Variable', 'Placeholder', 'Operation',
-    'get_current_graph', 'reset_current_graph', 'Graph',
-    'add', 'sub', 'mul', 'div', 'pow', 'dot', 'max', 'min',
-    'sum', 'mean', 'sqrt', 'exp', 'log', 'sin', 'cos'
+    'Node', 'Constant', 'Variable', 'Placeholder', 'Operation', 'Graph',
+    'get_current_graph', 'reset_current_graph', 'topological_sort',
+    'add', 'mul', 'div', 'pow', 'dot', 'max', 'min', 'sum', 'mean',
+    'sqrt', 'abs', 'exp', 'log', 'log2', 'log10', 'sin', 'cos', 'node_wrapper'
 )
 
 
 # disabled W0603(global-statement) until stack will be implemented
 # pylint: disable=W0603
-# TODO: graph thread-safe stack to save multiple graphs
+# TODO: graph thread-safe stack to keep multiple graphs
 _GRAPH = None  # var to store current graph
 
 
 def get_current_graph():
     """Return current graph. If it is `None` than create a new one."""
     global _GRAPH
-    if not _GRAPH:
+    if _GRAPH is None:
         _GRAPH = Graph()
 
     return _GRAPH
@@ -74,28 +75,21 @@ class Graph:
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        self.count = itertools.count().__next__
         reset_current_graph()
 
 
-class NodeMeta(type):
-    """Node metaclass.
-
-     Add the `_graph` attribute to node classes and
-     update it for each instance.
-     """
-    def __call__(cls, *args, **kwargs):
-        _g = get_current_graph()
-        cls._graph = _g
-
-        return super(NodeMeta, cls).__call__(*args, **kwargs)
-
-
-# E1101(no-member) is disabled because member is set by the metaclass
-# pylint: disable=E1101
-class Node(metaclass=NodeMeta):
-    """Base node class."""
-    # count the number of nodes to use in instance names
+class NodeMixin:
+    """Contains different useful members for nodes."""
+    graph = lambda self: get_current_graph()
     count = itertools.count().__next__
+
+
+# E1101(no-member) is disabled because this class should only
+# be used to detect Node objects
+# pylint: disable=E1101
+class Node(NodeMixin):
+    """Base node class."""
 
 
 class Constant(Node):
@@ -104,15 +98,15 @@ class Constant(Node):
     :param value: value to set
     :param name: name of the node, if none than name will be
         created automatically, defaults to None
-    :param dtype: value type
+    :param dtype: value type, defaults to None
     :raises ValueError: when trying to change the value
     """
 
-    def __init__(self, value, name=None, dtype=np.float64):
+    def __init__(self, value, name=None, dtype=None):
         """Constructor method.
         """
-        self._value = np.array(value, dtype=dtype)
-        self.name = name or f"{self._graph.name}/constant-{self.count()}"
+        self._value = np.asarray(value, dtype=dtype)
+        self.name = name or f"{self.graph().name}/constant-{self.count()}"
         self.gradient = None
 
     @property
@@ -153,7 +147,7 @@ class Placeholder(Node):
 
     :param name: node name, if name is None than it will be
         created automatically
-    :type name: str
+    :raises ValueError: if Placeholder is initialized with name None
     """
 
     def __init__(self, name):
@@ -161,8 +155,9 @@ class Placeholder(Node):
         """
         self._value = None
         self.gradient = None
+
         if name is None:
-            raise ValueError('Placeholder name cannot be None')
+            raise ValueError('Placeholder name cannot be None.')
         self.name = name
 
     @property
@@ -173,7 +168,7 @@ class Placeholder(Node):
     @value.setter
     def value(self, value):
         """Set value of a node."""
-        self._value = np.array(value)
+        self._value = np.asarray(value)
 
     def __str__(self):
         return self.name
@@ -188,10 +183,10 @@ class Variable(Node):
     :param dtype: value type
     """
 
-    def __init__(self, value, name=None, dtype=np.float64):
-        self.value = np.array(value, dtype=dtype)
+    def __init__(self, value, name=None, dtype=None):
+        self.value = np.asarray(value, dtype=dtype)
         self.gradient = None
-        self.name = name or f"{self._graph.name}/variable-{self.count()}"
+        self.name = name or f"{self.graph().name}/variable-{self.count()}"
 
     def __str__(self):
         return self.name
@@ -217,7 +212,7 @@ class Operation(Node):
         """Constructor method.
         """
         self.inputs = ()
-        self.name = f'{self._graph.name}/operator-{op_name}-{self.count()}'
+        self.name = f'{self.graph().name}/operator-{op_name}-{self.count()}'
         self.gradient = None
         self.value = None
 
@@ -465,6 +460,8 @@ class Divide(BinaryOperator):
 class Power(BinaryOperator):
     """Power operator.
 
+
+
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'power'
@@ -480,6 +477,8 @@ class Power(BinaryOperator):
 
         :param left: base
         :param right: power
+        :raises ValueError: integers to negative integer powers are not
+         allowed (specific behavior of numpy)
         :return: left to the power of right
         """
         return np.power(left, right)
@@ -493,8 +492,8 @@ class Power(BinaryOperator):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
-        return dout * right * np.power(left, right - 1),\
-            dout * np.log(left) * np.power(left, right)
+        return np.multiply(dout, right * np.power(left, right - 1)),\
+            np.multiply(dout, np.log(left) * np.power(left, right))
 
 
 class Matmul(BinaryOperator):
@@ -629,6 +628,38 @@ class Sqrt(UnaryOperator):
         return dout / (2 * np.sqrt(value)),
 
 
+class Abs(UnaryOperator):
+    """Take the number absolute (element-wise for arrays).
+
+    :param value: value to get square root of
+    :param name: node name, defaults to 'sqrt'
+    """
+    def __init__(self, value, name='abs'):
+        """Constructor method
+        """
+        super().__init__(name)
+        self.inputs = value,
+
+    def forward(self, value):
+        """Return output of the operation by given input.
+
+        :param value: input
+        :return: square root of the value
+        """
+        return np.abs(value)
+
+    def backward(self, value, dout):
+        """Return gradient of the operation by given input.
+
+        :param value: input
+        :param dout: gradient of the path to this node
+        :return: gradient of the operation
+        """
+        # implementation details: |x| can be written as sqrt(x**2),
+        # so derivative of this function will be x/|x|
+        return np.multiply(dout, (value / np.abs(value))),
+
+
 class Exp(UnaryOperator):
     """Element-wise exponentiation.
 
@@ -656,7 +687,7 @@ class Exp(UnaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return dout * np.exp(value),
+        return np.multiply(dout, np.exp(value)),
 
 
 class Log(UnaryOperator):
@@ -689,6 +720,66 @@ class Log(UnaryOperator):
         return np.divide(dout, value),
 
 
+class Log2(UnaryOperator):
+    """Element-wise natural logarithm.
+
+    :param value: value to get natural logarithm of
+    :param name: node name, defaults to 'log'
+    """
+    def __init__(self, value, name='log2'):
+        """Constructor method
+        """
+        super().__init__(name)
+        self.inputs = value,
+
+    def forward(self, value):
+        """Return output of the operation by given input.
+
+        :param value: input
+        :return: natural logarithm of the value
+        """
+        return np.log2(value)
+
+    def backward(self, value, dout):
+        """Return gradient of the operation by given input.
+
+        :param value: input
+        :param dout: gradient of the path to this node
+        :return: gradient of the operation
+        """
+        return np.divide(dout, np.multiply(value, np.log(2))),
+
+
+class Log10(UnaryOperator):
+    """Element-wise natural logarithm.
+
+    :param value: value to get natural logarithm of
+    :param name: node name, defaults to 'log'
+    """
+    def __init__(self, value, name='log10'):
+        """Constructor method
+        """
+        super().__init__(name)
+        self.inputs = value,
+
+    def forward(self, value):
+        """Return output of the operation by given input.
+
+        :param value: input
+        :return: natural logarithm of the value
+        """
+        return np.log10(value)
+
+    def backward(self, value, dout):
+        """Return gradient of the operation by given input.
+
+        :param value: input
+        :param dout: gradient of the path to this node
+        :return: gradient of the operation
+        """
+        return np.divide(dout, np.multiply(value, np.log(10))),
+
+
 class Sin(UnaryOperator):
     """Element-wise trigonometric sine
 
@@ -714,7 +805,7 @@ class Sin(UnaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return dout * np.cos(value),
+        return np.multiply(dout, np.cos(value)),
 
 
 class Cos(UnaryOperator):
@@ -742,7 +833,7 @@ class Cos(UnaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return dout * (-np.sin(value)),
+        return np.multiply(dout, (-np.sin(value))),
 
 
 def topological_sort(head_node):
@@ -782,33 +873,28 @@ def node_wrapper(func, *args, **kwargs):
         # in this implementation of the wrapper,
         # only numeric types are automatically converted
         # to a Constant node, which is important for tests
-        fnargs.append(
-            Constant(arg)
-            if isinstance(arg, numbers.Number)
-            else arg
-        )
-        if not isinstance(fnargs[-1], Node):
-            raise TypeError("Incompatible types.")
+        if isinstance(arg, Node):
+            fnargs.append(arg)
+        else:
+            try:
+                fnargs.append(Constant(arg))
+            except TypeError as e:
+                raise TypeError(
+                    f"Incompatible argument type: {type(arg)}."
+                ) from e
 
     return func(*fnargs, **kwargs)
 
 
 # disabled W0622 (redefined-builtin)
-# max, min, pow, sum redefining built-ins for aesthetic purposes
-# those functions are described in the graph.py file
+# max, min, pow, sum, etc. redefining built-ins for aesthetic purposes
 # pylint: disable=W0622
 
-# functions such as add, sub and others should be imported
-# into __init__.py, so that constructs like autograd.max(a, b)
-# can be used
+# these functions should be imported
+# into __init__.py, so they can replace similar ones from numpy
 def add(this, other):
     """Add two operands."""
     return node_wrapper(Add, this, other)
-
-
-def sub(this, other):
-    """Subtract two operands."""
-    return node_wrapper(Add, this, -other)
 
 
 def mul(this, other):
@@ -822,7 +908,7 @@ def div(this, other):
 
 
 def pow(this, other):
-    """Raise 'this' to the power of 'other'."""
+    """Raise the first operand to the power of the second."""
     return node_wrapper(Power, this, other)
 
 
@@ -841,12 +927,12 @@ def min(this, other):
     return node_wrapper(Min, this, other)
 
 
-def sum(this, axis=0):
+def sum(this, axis=None):
     """Sum of array elements over a given axis."""
     return node_wrapper(Sum, this, axis=axis)
 
 
-def mean(this, axis=0):
+def mean(this, axis=None):
     """Compute the arithmetic mean along the specified axis."""
     return node_wrapper(Mean, this, axis=axis)
 
@@ -854,6 +940,11 @@ def mean(this, axis=0):
 def sqrt(this):
     """Return the square-root of an array(element-wise) or a number."""
     return node_wrapper(Sqrt, this)
+
+
+def abs(this):
+    """Return absolute value of an array(element-wise) or a number."""
+    return node_wrapper(Abs, this)
 
 
 def exp(this):
@@ -866,6 +957,16 @@ def log(this):
     return node_wrapper(Log, this)
 
 
+def log2(this):
+    """Logarithm with base 2 (element-wise for arrays)."""
+    return node_wrapper(Log2, this)
+
+
+def log10(this):
+    """Logarithm with base 10 (element-wise for arrays)."""
+    return node_wrapper(Log10, this)
+
+
 def sin(this):
     """Trigonometric sine (element-wise for arrays)."""
     return node_wrapper(Sin, this)
@@ -876,26 +977,26 @@ def cos(this):
     return node_wrapper(Cos, this)
 
 
-# binary
 Node.__add__ = add
-Node.__radd__ = Node.__add__
-Node.__sub__ = sub
-Node.__rsub__ = lambda this, other: node_wrapper(Add, -this, other)
 Node.__mul__ = mul
-Node.__rmul__ = Node.__mul__
 Node.__truediv__ = div
-Node.__rtruediv__ = lambda this, other: node_wrapper(Divide, other, this)
-Node.__neg__ = lambda this: node_wrapper(Multiply, this, Constant(-1))
 Node.__pow__ = pow
-Node.__rpow__ = lambda this, other: node_wrapper(Power, other, this)
 Node.__matmul__ = dot
-Node.max = max
-Node.min = min
-# unary
-Node.sum = sum
-Node.mean = mean
-Node.sqrt = sqrt
-Node.exp = exp
-Node.log = log
-Node.sin = sin
-Node.cos = cos
+
+# Make sure that all lambda functions have the relevant docstring
+Node.__radd__ = Node.__add__
+Node.__rmul__ = Node.__mul__
+Node.__sub__ = lambda this, other: node_wrapper(Add, this, -other)
+Node.__rsub__ = lambda this, other: node_wrapper(Add, -this, other)
+Node.__rtruediv__ = lambda this, other: node_wrapper(Divide, other, this)
+Node.__neg__ = lambda this: node_wrapper(Multiply, this, -1)
+Node.__rpow__ = lambda this, other: node_wrapper(Power, other, this)
+Node.__invert__ = lambda this: node_wrapper(Add, Node.__neg__(this), -1)
+
+Node.__sub__.__doc__ = "Subtract the first operand from the second."
+Node.__rsub__.__doc__ = Node.__sub__.__doc__
+Node.__rtruediv__.__doc__ = Node.__truediv__.__doc__
+Node.__neg__.__doc__ = "Multiply operand by -1."
+Node.__rpow__.__doc__ = Node.__pow__.__doc__
+Node.__invert__.__doc__ = "Compute bit-wise inversion, or bit-wise NOT " \
+                          "(works only for integers)."

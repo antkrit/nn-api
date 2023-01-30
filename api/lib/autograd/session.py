@@ -2,9 +2,8 @@
 # Attention: W0611 disabled(unused-import)
 # because pylint doesn't recognize objects in code samples for doctest
 # pylint: disable=W0611
-from api.lib.autograd.graph import (
+from api.lib.autograd.graph import \
     Variable, Placeholder, Operation, topological_sort
-)
 
 
 class Session:
@@ -15,20 +14,28 @@ class Session:
     expression, it is necessary to create a Session and call the
     `run` method.
 
-        >>> a = Variable(10)
-        >>> b = Variable(20)
-        >>> c = a + b  # Node.__add__(a, b)
-        >>> session = Session()
-        >>> session.run(c)
-        30.0
+    .. note::
+        Until the step forward is taken, head node or some expression should be
+        treated as an execution strategy to get the value of that node. It
+        follows that class:`Operation` nodes have no own value, only operands.
+
+    :Example:
+
+    >>> a = Variable(10)
+    >>> b = Variable(20)
+    >>> c = a + b  # Node.__add__(a, b)
+    >>> session = Session()
+    >>> session.run(c)
+    30.0
     """
     def run(self, target, feed_dict=None):
         """Forward propagation aver a graph. Computes the output of
          a target operation.
 
-        If there are placeholders in the graph you need to fill them
-        with data. Otherwise, KeyError will be raised. Pass that data
-        to feed_dict in node_name:data format.
+        .. note::
+            If there are placeholders in the graph you need to fill them
+            with data. Otherwise, KeyError will be raised. Pass that data
+            to feed_dict in node_name:data format.
 
             >>> a = 2
             >>> b = Placeholder('x')
@@ -66,6 +73,10 @@ def gradients(target):
         >>> op = w * x
         >>> gradients(op)  # d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1
         {w: 2.0, x: 1.0, graph-0/operator-multiply-5: 1.0}
+
+    .. warning::
+        To calculate the gradient, it is important to run forward step first
+        so that all class:`Operation` nodes have their own value.
 
     .. note::
         If there are placeholders, it is necessary run forward

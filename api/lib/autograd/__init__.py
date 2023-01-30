@@ -20,11 +20,11 @@ simple operations (add, multiply and so on) of complex functions
     1.0
 
 Contains following modules:
-    - `_util`: contains various useful classes and functions
-    - `graph`: contains definition of graph and it's nodes, \
-        math operators and operations
-    - `math`: contain a `math` object with all traceable mathematical operations
-    - `session`: contains classes and functions to work with graph
+- `_util`: contains various useful classes and functions
+- `graph`: contains definition of graph and it's nodes, \
+    math operators and operations
+- `math`: contain a `math` object with all traceable mathematical operations
+- `session`: contains classes and functions to work with graph
 """
 # disabled W0622 (redefined-builtin)
 # pylint: disable=W0622
