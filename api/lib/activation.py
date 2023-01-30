@@ -136,11 +136,15 @@ class Softmax(BaseActivation):
 
 
 class Swish(BaseActivation):
-    """Self-Gated activation function."""
+    """Self-Gated activation function.
 
-    def __init__(self, session=None, threshold=1e-32):
+    :param beta: either constant or trainable parameter, defaults to 1
+    """
+
+    def __init__(self, beta=1, session=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(session, threshold)
+        self.beta = beta
 
     def forward(self, x):
         """Calculate self-gated function.
@@ -150,7 +154,7 @@ class Swish(BaseActivation):
 
         :param x: input value
         """
-        return x / (1 + ag.exp(-x)+self.threshold)
+        return x / (1 + ag.exp(-self.beta*x)+self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
