@@ -2,8 +2,9 @@
 # Attention: W0611 disabled(unused-import)
 # because pylint doesn't recognize objects in code samples for doctest
 # pylint: disable=W0611
-from api.lib.autograd.graph import \
+from api.lib.autograd.node import (
     Variable, Placeholder, Operation, topological_sort
+)
 
 
 class Session:
