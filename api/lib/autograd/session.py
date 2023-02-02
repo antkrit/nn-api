@@ -117,4 +117,4 @@ def gradients(target):
                     inp.gradient = grad
                 visited.add(inp)
 
-    return {node: node.gradient for node in order}
+    return {node.name: node.gradient for node in order}
