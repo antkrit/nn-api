@@ -15,29 +15,10 @@ Multinomial Classification:
 """
 import numpy as np
 import api.lib.autograd as ag
+from api.lib.bases import BaseLoss
 
 
 __all__ = ('MSE', 'MAE', 'MBE', 'Huber', 'LHL', 'BCE', 'Hinge', 'CCE', 'KLD')
-
-
-class BaseLoss:
-    """Base loss class.
-
-    :param session: current session, if None - creates new, defaults to None
-    :param threshold: some minute value to avoid problems like
-        div by 0 or log(0), defaults to 0
-    """
-
-    def __init__(self, session=None, threshold=0):
-        self.session = session or ag.Session()
-        self.threshold = threshold
-
-    def forward(self, y_true, y_pred):
-        """Calculate loss."""
-        raise NotImplementedError("Must be implemented in child classes.")
-
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError("Must be implemented in child classes.")
 
 
 class MSE(BaseLoss):

@@ -1,19 +1,8 @@
 """Contains layers implementations."""
 import api.lib.autograd as ag
-
+from api.lib.bases import BaseLayer
 
 __all__ = ('Dense',)
-
-
-class BaseLayer:
-    """Base layer class."""
-
-    def forward(self, x, *args, **kwargs):
-        """Calculate output of the layer."""
-        raise NotImplementedError("Must be implemented in child classes.")
-
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError("Must be implemented in child classes.")
 
 
 class Dense(BaseLayer):

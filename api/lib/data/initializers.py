@@ -1,5 +1,6 @@
 """Contains simple functions for generating arrays with numbers."""
 import numpy as np
+from api.lib.bases import BaseInitializer
 from api.lib.autograd import Constant
 
 
@@ -19,23 +20,7 @@ __all__ = (
 )
 
 
-class Initializer:
-    """Base Initializer class.
-
-    :param size: tuple, shape of the output sample
-    :param seed: number in the range [0, 2**32], define the internal state of
-        the generator so that random results can be reproduced, defaults to None
-    """
-
-    def __init__(self, size, seed):
-        self.shape = size
-        self.seed = seed
-
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError("Must be implemented in a subclass.")
-
-
-class NormalInitializer(Initializer):
+class NormalInitializer(BaseInitializer):
     """Normal distribution initializer class N(m,σ).
 
     Generates random samples from the normal distribution with mean `mu`
@@ -61,7 +46,7 @@ class NormalInitializer(Initializer):
         return Constant(self.sigma*ndist + self.mu, *args, **kwargs)
 
 
-class UniformInitializer(Initializer):
+class UniformInitializer(BaseInitializer):
     """Uniform distribution initializer class U(low, high).
 
     Generates random samples from the uniform distribution in the range

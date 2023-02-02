@@ -1,24 +1,10 @@
 """Contains implementation of commonly used activation functions."""
 import numpy as np
 import api.lib.autograd as ag
+from api.lib.bases import BaseActivation
 
 
 __all__ = ('Sigmoid', 'Tanh', 'Swish', 'Softmax', 'Softplus', 'ReLU', 'ELU')
-
-
-class BaseActivation:
-    """Base activation class."""
-
-    def __init__(self, session=None, threshold=0):
-        self.session = session or ag.Session()
-        self.threshold = threshold
-
-    def forward(self, x):
-        """Calculate function."""
-        raise NotImplementedError("Must be implemented in child classes.")
-
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError("Must be implemented in child classes.")
 
 
 class Sigmoid(BaseActivation):
