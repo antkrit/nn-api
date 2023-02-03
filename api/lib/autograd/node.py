@@ -153,16 +153,17 @@ class Operation(Node):
     the only thing that can be specified explicitly is `Operator Name`
 
     :param op_name: operator name, defaults to 'Operator'
-    :type op_name: str
+    :param threshold: some minute float value to avoid problems like div by 0
     """
 
-    def __init__(self, op_name='Operator'):
+    def __init__(self, op_name='Operator', threshold=0):
         """Constructor method.
         """
         self.inputs = ()
         self.name = f'{self.graph().name}/operator-{op_name}-{self.count()}'
         self.gradient = None
         self.value = None
+        self.threshold = threshold
 
     def forward(self, *args, **kwargs):
         """Return output of the operation by given inputs."""
@@ -207,11 +208,13 @@ class Sum(Operation):
     :param axis: axis along which to sum, if None - sum all elements of array,
         defaults to None
     :param name: node name, defaults to 'sum'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, value, axis=None, name='sum'):
+    def __init__(self, value, axis=None, name='sum', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
         self.axis = axis
 
@@ -252,11 +255,13 @@ class Mean(Operation):
     :param axis: axis along which to get mean, if None - get mean
         of the whole array, defaults to None
     :param name: node name, defaults to 'mean'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, value, axis=None, name='mean'):
+    def __init__(self, value, axis=None, name='mean', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
         self.axis = axis
 
@@ -295,11 +300,13 @@ class Add(BinaryOperator):
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'add'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, left, right, name='add'):
+    def __init__(self, left, right, name='add', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -346,11 +353,13 @@ class Multiply(BinaryOperator):
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'multiply'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, left, right, name='multiply'):
+    def __init__(self, left, right, name='multiply', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -379,9 +388,11 @@ class Divide(BinaryOperator):
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'divide'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 10^-32
     """
-    def __init__(self, left, right, name='divide'):
-        super().__init__(name)
+    def __init__(self, left, right, name='divide', threshold=1e-32):
+        super().__init__(name, threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -402,7 +413,8 @@ class Divide(BinaryOperator):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
-        return dout / right, np.negative(dout) * left / np.power(right, 2)
+        d_wrt_right = left / (np.power(right, 2) + self.threshold)
+        return dout / right, np.negative(dout) * d_wrt_right
 
 
 class Power(BinaryOperator):
@@ -411,11 +423,13 @@ class Power(BinaryOperator):
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'power'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 10^-32
     """
-    def __init__(self, left, right, name='power'):
+    def __init__(self, left, right, name='power', threshold=1e-32):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -438,8 +452,12 @@ class Power(BinaryOperator):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
-        return np.multiply(dout, right * np.power(left, right - 1)),\
-            np.multiply(dout, np.log(left) * np.power(left, right))
+        d_wrt_left = np.multiply(dout, right * np.power(left, right - 1))
+        d_wrt_right = np.multiply(
+            dout,
+            np.log(left+self.threshold) * np.power(left, right)
+        )
+        return d_wrt_left, d_wrt_right
 
 
 class Matmul(BinaryOperator):
@@ -448,11 +466,13 @@ class Matmul(BinaryOperator):
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'matmul'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, left, right, name='matmul'):
+    def __init__(self, left, right, name='matmul', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -482,11 +502,13 @@ class Max(BinaryOperator):
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'max'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, left, right, name='max'):
+    def __init__(self, left, right, name='max', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -506,8 +528,9 @@ class Max(BinaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation w.r.t both operands
         """
-        return dout * np.where(left > right, 1, 0), \
-            dout * np.where(left > right, 0, 1)
+        d_wrt_left = dout * np.where(left > right, 1, 0)
+        d_wrt_right = dout * np.where(left > right, 0, 1)
+        return d_wrt_left, d_wrt_right
 
 
 class Min(BinaryOperator):
@@ -516,11 +539,13 @@ class Min(BinaryOperator):
     :param left: left operand of the operation
     :param right: right operand of the operation
     :param name: node name, defaults to 'max'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, left, right, name='min'):
+    def __init__(self, left, right, name='min', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -540,8 +565,9 @@ class Min(BinaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation w.r.t both operands
         """
-        return dout * np.where(left < right, 1, 0), \
-            dout * np.where(left < right, 0, 1)
+        d_wrt_left = dout * np.where(left < right, 1, 0)
+        d_wrt_right = dout * np.where(left < right, 0, 1)
+        return d_wrt_left, d_wrt_right
 
 
 class Sqrt(UnaryOperator):
@@ -549,11 +575,13 @@ class Sqrt(UnaryOperator):
 
     :param value: value to get square root of
     :param name: node name, defaults to 'sqrt'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 10^-32
     """
-    def __init__(self, value, name='sqrt'):
+    def __init__(self, value, name='sqrt', threshold=1e-32):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -571,7 +599,7 @@ class Sqrt(UnaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return dout / (2 * np.sqrt(value)),
+        return dout / (2 * np.sqrt(value)+self.threshold),
 
 
 class Abs(UnaryOperator):
@@ -579,11 +607,13 @@ class Abs(UnaryOperator):
 
     :param value: value to get square root of
     :param name: node name, defaults to 'sqrt'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 10^-32
     """
-    def __init__(self, value, name='abs'):
+    def __init__(self, value, name='abs', threshold=1e-32):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -603,7 +633,7 @@ class Abs(UnaryOperator):
         """
         # implementation details: |x| can be written as sqrt(x**2),
         # so derivative of this function will be x/|x|
-        return np.multiply(dout, (value / np.abs(value))),
+        return np.multiply(dout, (value / (np.abs(value)+self.threshold))),
 
 
 class Exp(UnaryOperator):
@@ -611,11 +641,13 @@ class Exp(UnaryOperator):
 
     :param value: value to get exponent of
     :param name: node name, defaults to 'exp'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, value, name='exp'):
+    def __init__(self, value, name='exp', threshold=0):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -641,11 +673,13 @@ class Log(UnaryOperator):
 
     :param value: value to get natural logarithm of
     :param name: node name, defaults to 'log'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 10^-32
     """
-    def __init__(self, value, name='log'):
+    def __init__(self, value, name='log', threshold=1e-32):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -663,7 +697,7 @@ class Log(UnaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.divide(dout, value),
+        return np.divide(dout, np.asarray(value)+self.threshold),
 
 
 class Log2(UnaryOperator):
@@ -671,11 +705,13 @@ class Log2(UnaryOperator):
 
     :param value: value to get natural logarithm of
     :param name: node name, defaults to 'log'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 10^-32
     """
-    def __init__(self, value, name='log2'):
+    def __init__(self, value, name='log2', threshold=1e-32):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -693,7 +729,7 @@ class Log2(UnaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.divide(dout, np.multiply(value, np.log(2))),
+        return np.divide(dout, np.multiply(value, np.log(2))+self.threshold),
 
 
 class Log10(UnaryOperator):
@@ -701,11 +737,13 @@ class Log10(UnaryOperator):
 
     :param value: value to get natural logarithm of
     :param name: node name, defaults to 'log'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 10^-32
     """
-    def __init__(self, value, name='log10'):
+    def __init__(self, value, name='log10', threshold=1e-32):
         """Constructor method
         """
-        super().__init__(name)
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -723,7 +761,7 @@ class Log10(UnaryOperator):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.divide(dout, np.multiply(value, np.log(10))),
+        return np.divide(dout, np.multiply(value, np.log(10))+self.threshold),
 
 
 class Sin(UnaryOperator):
@@ -731,9 +769,11 @@ class Sin(UnaryOperator):
 
     :param value: value to get sin of
     :param name: node name, defaults to 'sin'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, value, name='sin'):
-        super().__init__(name)
+    def __init__(self, value, name='sin', threshold=0):
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -759,9 +799,11 @@ class Cos(UnaryOperator):
 
     :param value: value to get cos of
     :param name: node name, defaults to 'cos'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
     """
-    def __init__(self, value, name='cos'):
-        super().__init__(name)
+    def __init__(self, value, name='cos', threshold=0):
+        super().__init__(name, threshold)
         self.inputs = value,
 
     def forward(self, value):
