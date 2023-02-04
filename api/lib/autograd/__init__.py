@@ -11,8 +11,9 @@ simple operations (add, multiply and so on) of complex functions
 ...     x = Variable(0.5, name='x')
 ...     y = Variable(1, name='y')
 ...     out = 4*x + y
-...     Session().run(out)  # forward pass 4 * 0.5 + 1 = 3.0
-...     grads = gradients(out)  # backward pass
+...     sess = Session()
+...     sess.run(out)  # forward pass 4 * 0.5 + 1 = 3.0
+...     grads = sess.gradients(out)  # backward pass
 ...     grads[x]  # d(out)/dx = 4.0
 ...     grads[y]  # d(out)/dy = 1.0
 3.0
@@ -20,14 +21,12 @@ simple operations (add, multiply and so on) of complex functions
 1.0
 
 Contains following modules:
-- `_util`: contains various useful classes and functions
-- `graph`: contains definition of graph and it's nodes, \
-    math operators and operations
-- `math`: contain a `math` object with all traceable mathematical operations
+- `graph`: contains definition of graph
+- `node`: contain definition of graph nodes, math operators and operations
 - `session`: contains classes and functions to work with graph
 """
 # disabled W0622 (redefined-builtin)
 # pylint: disable=W0622
 from api.lib.autograd.node import *
-from api.lib.autograd.session import Session, gradients
+from api.lib.autograd.session import Session
 from api.lib.autograd.graph import Graph, get_current_graph, reset_current_graph

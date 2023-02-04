@@ -58,63 +58,65 @@ class Session:
         sorted_ = topological_sort(target)
 
         for node in sorted_:
-            if isinstance(node, Placeholder) and node.value is None:
+            if isinstance(node, Placeholder):
                 node.value = feed_dict[node.name]
             if isinstance(node, Operation):
                 node.value = node.forward(*[x.value for x in node.inputs])
 
         return sorted_[-1].value
 
+    def gradients(self, target):
+        """Compute gradient of the graph.
 
-def gradients(target):
-    """Get gradient of the loss w.r.t. the node's value.
+        Function performs topological sort for the target node, then sets
+        its gradient to zero and recursively computes all other gradients.
 
         >>> w = Variable(1, name='w')
         >>> x = Variable(2, name='x')
         >>> op = w * x
-        >>> gradients(op)  # d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1
+        >>> session = Session()
+        >>> # d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1
+        >>> session.gradients(op)
         {w: 2.0, x: 1.0, graph-0/operator-multiply-5: 1.0}
 
-    .. warning::
-        To calculate the gradient, it is important to run forward step first
-        so that all class:`Operation` nodes have their own value.
+        .. warning::
+            To calculate the gradient, it is important to run forward step first
+            so that all class:`Operation` nodes have their own value.
 
-    .. note::
-        If there are placeholders, it is necessary run forward
-        propagation first or manually fill them with data.
-        Otherwise, TypeError error will be raised.
+        .. note::
+            If there are placeholders, it is necessary run forward
+            propagation first or manually fill them with data.
+            Otherwise, TypeError error will be raised.
 
-        >>> w = Variable(1, name='w')
-        >>> x = Placeholder(name='x')
-        >>> op = w * x
-        >>> session = Session()
-        >>> _ = session.run(op, feed_dict={'x': 2.0})
-        >>> gradients(op)
-        {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
+            >>> w = Variable(1, name='w')
+            >>> x = Placeholder(name='x')
+            >>> op = w * x
+            >>> session = Session()
+            >>> _ = session.run(op, feed_dict={'x': 2.0})
+            >>> session.gradients(op)
+            {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
 
-    :param target: target node
-    :type target: class:`Node`
-    :return: a dict with node and its gradient pairs
-    :rtype: dict
-    """
-    visited = set()
+        :param target: target node
+        :return: a dict with node and its gradient pairs
+        """
+        visited = set()
 
-    order = topological_sort(target)
-    order[-1].gradient = 1.0  # df/df
+        order = topological_sort(target)
+        order[-1].gradient = 1.0  # df/df
 
-    for node in reversed(order):
-        if isinstance(node, Operation):
-            inputs = node.inputs
-            grads = node.backward(
-                *[x.value for x in inputs],
-                dout=node.gradient
-            )
+        for node in reversed(order):
+            if isinstance(node, Operation):
+                inputs = node.inputs
+                grads = node.backward(
+                    *[x.value for x in inputs],
+                    dout=node.gradient
+                )
 
-            for inp, grad in zip(inputs, grads):
-                if inp in visited:
-                    inp.gradient += grad
-                else:
-                    inp.gradient = grad
-                visited.add(inp)
+                for inp, grad in zip(inputs, grads):
+                    if inp in visited:
+                        inp.gradient += grad
+                    else:
+                        inp.gradient = grad
+                    visited.add(inp)
 
-    return {node.name: node.gradient for node in order}
+        return {node: node.gradient for node in order}

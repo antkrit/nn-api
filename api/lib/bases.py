@@ -15,7 +15,12 @@ class BaseLayer:
 
 
 class BaseActivation:
-    """Base activation class."""
+    """Base activation class.
+
+    :param threshold: some minute value to avoid problems like
+        div by 0 or log(0), defaults to 0
+    :param session: current session, if None - creates new, defaults to None
+    """
 
     def __init__(self, session=None, threshold=0):
         self.session = session or ag.Session()
@@ -32,9 +37,9 @@ class BaseActivation:
 class BaseLoss:
     """Base loss class.
 
-    :param session: current session, if None - creates new, defaults to None
     :param threshold: some minute value to avoid problems like
         div by 0 or log(0), defaults to 0
+    :param session: current session, if None - creates new, defaults to None
     """
 
     def __init__(self, session=None, threshold=0):
@@ -52,13 +57,11 @@ class BaseLoss:
 class BaseInitializer:
     """Base Initializer class.
 
-    :param size: tuple, shape of the output sample
     :param seed: number in the range [0, 2**32], define the internal state of
         the generator so that random results can be reproduced, defaults to None
     """
 
-    def __init__(self, size, seed):
-        self.shape = size
+    def __init__(self, seed):
         self.seed = seed
 
     def __call__(self, *args, **kwargs):
@@ -68,17 +71,15 @@ class BaseInitializer:
 class BaseOptimizer:
     """Base optimizer class.
 
+    :param session: current session, if None - creates new, defaults to None
     :param trainable_variables: variables to optimize, defaults to
         weight and bias
     """
 
-    def __init__(self, trainable_variables):
+    def __init__(self, trainable_variables, session=None):
+        self.session = session or ag.Session()
         self.trainable = trainable_variables
         self._itemgetter = itemgetter(*self.trainable)
-
-    def compute_gradient(self, *args, **kwargs):
-        """Compute gradients for trainable variables."""
-        raise NotImplementedError("Must be implemented in subclasses.")
 
     def apply_gradient(self, *args, **kwargs):
         """Apply computed gradients to trainable variables."""
