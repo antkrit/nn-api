@@ -88,3 +88,18 @@ class BaseOptimizer:
     def minimize(self, *args, **kwargs):
         """Combine gradient computing and applying."""
         raise NotImplementedError("Must be implemented in subclasses.")
+
+
+class BaseScaler:
+
+    def fit(self, *args, **kwargs):
+        """Get scaler parameters from data sample."""
+        raise NotImplementedError("Must be implemented in subclasses.")
+
+    def transform(self, *args, **kwargs):
+        """Transform data using scaler parameters."""
+        raise NotImplementedError("Must be implemented in subclasses.")
+
+    def fit_transform(self, *args, **kwargs):
+        """Combine fit and transform methods."""
+        raise NotImplementedError("Must be implemented in subclasses.")

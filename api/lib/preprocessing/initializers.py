@@ -38,11 +38,12 @@ class NormalInitializer(BaseInitializer):
         self.mu = mu
         self.sigma = sigma
 
-        self.__base_initializer = np.random.randn
+        self.__worker = np.random.randn
 
     def __call__(self, size, *args, **kwargs):
-        np.random.seed(self.seed)
-        ndist = self.__base_initializer(*size)
+        if self.seed is not None:
+            np.random.seed(self.seed)
+        ndist = self.__worker(*size)
         return Variable(self.sigma*ndist + self.mu, *args, **kwargs)
 
 
@@ -64,11 +65,12 @@ class UniformInitializer(BaseInitializer):
         self.high = high
         self.bounds = (low, high)
 
-        self.__base_initializer = np.random.uniform
+        self.__worker = np.random.uniform
 
     def __call__(self, size, *args, **kwargs):
-        np.random.seed(self.seed)
-        ndist = self.__base_initializer(*self.bounds, size=size)
+        if self.seed is not None:
+            np.random.seed(self.seed)
+        ndist = self.__worker(*self.bounds, size=size)
         return Variable(ndist, *args, **kwargs)
 
 
