@@ -1,6 +1,6 @@
 """Contains various base classes."""
-import api.lib.autograd as ag
 from operator import itemgetter
+from api.lib.autograd import Session
 
 
 class BaseLayer:
@@ -23,7 +23,7 @@ class BaseActivation:
     """
 
     def __init__(self, session=None, threshold=0):
-        self.session = session or ag.Session()
+        self.session = session or Session()
         self.threshold = threshold
 
     def forward(self, x):
@@ -43,7 +43,7 @@ class BaseLoss:
     """
 
     def __init__(self, session=None, threshold=0):
-        self.session = session or ag.Session()
+        self.session = session or Session()
         self.threshold = threshold
 
     def forward(self, y_true, y_pred):
@@ -77,7 +77,7 @@ class BaseOptimizer:
     """
 
     def __init__(self, trainable_variables, session=None):
-        self.session = session or ag.Session()
+        self.session = session or Session()
         self.trainable = trainable_variables
         self._itemgetter = itemgetter(*self.trainable)
 
@@ -91,6 +91,7 @@ class BaseOptimizer:
 
 
 class BaseScaler:
+    """Base scaler class."""
 
     def fit(self, *args, **kwargs):
         """Get scaler parameters from data sample."""
@@ -103,3 +104,15 @@ class BaseScaler:
     def fit_transform(self, *args, **kwargs):
         """Combine fit and transform methods."""
         raise NotImplementedError("Must be implemented in subclasses.")
+
+
+class BaseContainer:
+    """Base container class."""
+
+    def __call__(self, name, *args, **kwargs):
+        """Return attribute by its name.
+
+        It is necessary to provide this function with other arguments required to create an instance.
+        """
+        obj = getattr(self, name)
+        return obj(*args, **kwargs)
