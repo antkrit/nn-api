@@ -25,16 +25,23 @@ class Dense(BaseLayer):
 
         self.size = size
 
-        self.activation = namespace.activations(
-            activation,
-            compiled=True,
-            session=session,
-            *args, **kwargs
-        )
-        self.weight_initializer = namespace.initializers(
-            weight_initializer,
-            compiled=False
-        )
+        if callable(activation):
+            self.activation = activation
+        else:
+            self.activation = namespace.activations(
+                activation,
+                compiled=True,
+                session=session,
+                *args, **kwargs
+            )
+
+        if callable(weight_initializer):
+            self.weight_initializer = weight_initializer
+        else:
+            self.weight_initializer = namespace.initializers(
+                weight_initializer,
+                compiled=False
+            )
 
         self.weights = self.weight_initializer(*size, *args, **kwargs)
         self.bias = self.weight_initializer(1, size[1], *args, **kwargs)

@@ -8,16 +8,19 @@ from api.lib.exception import *
 from api.lib.bases import *
 
 
-__all__ = ('activations', 'initializers', 'losses', 'optimizers')
-
-
 class Container(MutableMapping):
     """Base dict-like container class.
 
-    container = BaseContainer(name=..., **kwargs)
-    to get an object - use dict syntax, e.g. container['obj_name']
-    to get the compiled instance - use __call__ method,
-    e.g. container('obj_name', *args, **kwargs)
+    To get an object use any of the three options
+    >>> container = Container(name=..., obj=3)
+    >>> container['obj']
+    >>> container.obj
+    >>> container('obj')
+
+    To get the compiled instance - use __call__ method
+    >>> container = Container(name=..., obj=lambda x: x)
+    >>> container('obj_name', compiled=True, x=3)
+    3
     """
 
     def __init__(self, name, *args, **kwargs):

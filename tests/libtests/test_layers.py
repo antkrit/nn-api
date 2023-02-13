@@ -1,6 +1,5 @@
 import pytest
 import numpy as np
-import api.lib.autograd as ag
 import api.lib.activation as actv
 import api.lib.preprocessing.initializers as init
 from api.lib.layers import *
@@ -13,13 +12,13 @@ from api.lib.layers import *
 )
 @pytest.mark.parametrize(
     'p_activation',
-    ['swish', 'sigmoid', 'tanh'],
-    ids=['_activation=swish', '_activation=sigmoid', '_activation=tanh']
+    ['swish', actv.ReLU(alpha=0.01), 'tanh'],
+    ids=['_activation=swish', '_activation=relu/callable', '_activation=tanh']
 )
 @pytest.mark.parametrize(
     'p_weight_init',
-    ['random_normal', 'random_uniform'],
-    ids=['_w_init=random_n', '_w_init=random_u']
+    ['random_normal', init.random_uniform],
+    ids=['_w_init=random_n', '_w_init=random_u/callable']
 )
 def test_dense_layer(session, x, p_activation, p_weight_init):
     test_case = np.atleast_2d(x)
