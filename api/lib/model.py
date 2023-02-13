@@ -1,7 +1,8 @@
 """Contains Model definition."""
 # TODO: detailed docstrings
-from api.lib.layers import Layer
-from api.lib.autograd import Graph, Session, Placeholder
+from functools import wraps
+from api.lib import namespace
+from api.lib.autograd import Session, Placeholder
 
 
 class Model:
@@ -9,63 +10,92 @@ class Model:
      an interface to work with them.
      """
 
-    def __init__(self, layers=None, loss=None, optimizer=None):
-        """Constructor method
+    def __init__(self):
+        """Constructor method."""
+        self.loss = None
+        self.optimizer = None
+        self.session = Session()
+        self.trainable = []
+
+        self.__output_op = None
+        self.__x = Placeholder(name='x')
+        self.__y = Placeholder(name='y')
+
+    def is_compiled(self):
+        """Check if model is compiled."""
+        return self.loss is not None and \
+               self.optimizer is not None
+
+    def _control_compile(func):
+        """Check if model is compiled for decorated methods.
+
+        Use this decorator for methods that require the model to be compiled.
         """
-        self.layers = layers or []
-        self.loss = loss
-        self.optimizer = optimizer
+        @wraps(func)
+        def wrapper(self, *args, **kwargs):
+            if not self.is_compiled():
+                raise namespace.exceptions.ModelIsNotCompiled(
+                    "Model must be compiled first."
+                )
+            return func(self, *args, **kwargs)
+
+        return wrapper
 
     def add(self, layer):
         """Add layer to the model."""
-        if not isinstance(layer, Layer):
-            raise ValueError("Object must be of `Layer` type.")
-        self.layers.append(layer)
+        if not isinstance(layer, namespace.bases.Layer):
+            raise ValueError("Object must be of `BaseLayer` type.")
 
+        self.trainable.extend(layer.trainable)
+
+        if self.__output_op is None:
+            self.__output_op = layer(self.__x)
+            return
+        self.__output_op = layer(self.__output_op)
+
+    @_control_compile
     def predict(self, data):
         """Predict output with given input."""
         samples = len(data)
         result = []
 
-        Graph().as_default()
-        X = Placeholder('x')
-
-        output = X
-        for layer in self.layers:
-            output = layer(output)
-
-        sess = Session()
         for i in range(samples):
-            output = sess.run(output, {'x': data[i]})
-            for layer in self.layers:
-                output = layer.forward(output)
+            output = self.session.run(self.__output_op, {'x': data[i]})
             result.append(output)
 
         return result
 
-    def fit(self, x_train, y_train, epochs, *args, **kwargs):
+    @_control_compile
+    def fit(self, x_train, y_train, epochs=100, max_step=1):
         """Train model."""
+        J = self.loss(self.__output_op, self.__y)
+
         samples = len(x_train)
-
-        Graph().as_default()
-        X = Placeholder('x')
-        y = Placeholder('y')
-
-        output = X
-        for layer in self.layers:
-            output = layer.forward(output)
-        loss_op = self.loss(output, y)
-
-        sess = Session()
-        optimizer_op = self.optimizer(*args, **kwargs).minimize(loss_op)
-
         for i in range(epochs):
             err = 0
             for j in range(samples):
                 feed_dict = dict(x=x_train[j], y=y_train[j])
 
-                err += sess.run(loss_op, feed_dict)
-                sess.run(optimizer_op, feed_dict)
+                err += self.session.run(J, feed_dict)
+                self.optimizer.minimize(J)
 
             err /= samples
-            print(f"epoch: {i+1}/{epochs}, loss: {err}")
+            if i % max_step == 0:
+                print(f"epoch: {i}/{epochs}, loss: {err}")
+
+    def compile(self, optimizer, loss, *args, **kwargs):
+        """Compile model using given parameters."""
+        if isinstance(optimizer, namespace.bases.Optimizer):
+            self.optimizer = optimizer
+            self.optimizer.trainable = self.trainable
+        else:
+            self.optimizer = namespace.optimizers(
+                optimizer,
+                compiled=True,
+                trainable_variables=self.trainable,
+                *args, **kwargs
+            )
+
+        self.loss = namespace.losses(loss, compiled=True, session=self.session)
+
+    _control_compile = staticmethod(_control_compile)

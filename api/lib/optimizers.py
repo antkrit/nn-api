@@ -1,4 +1,5 @@
 """Contains implementation of Gradient Descent optimizers (GD, SGD)"""
+from operator import itemgetter
 from api.lib.bases import BaseOptimizer
 
 
@@ -18,7 +19,7 @@ class GradientDescent(BaseOptimizer):
     :param session: current session, defaults to None
     """
 
-    def __init__(self, lr, trainable_variables, session=None):
+    def __init__(self, lr, trainable_variables=None, session=None):
         """Constructor method."""
         # Attention: C0103 disabled(invalid-name)
         # because lr is much better than learning_rate, prove me wrong
@@ -33,7 +34,7 @@ class GradientDescent(BaseOptimizer):
         :return: gradient of the loss w.r.t trainable vars, all gradients
         """
         grd = self.session.gradients(out)
-        trainable_grd = self._itemgetter(grd)
+        trainable_grd = itemgetter(*self.trainable)(grd)
         return trainable_grd, grd
 
     def apply_gradient(self, x, grad):
