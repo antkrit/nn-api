@@ -45,28 +45,28 @@ class Session:
             >>> session.run(c, feed_dict={'x':15})
             30.0
 
-        :param target: last node of the graph
-        :type target: :class:`Node`
+        :param target: node or list of nodes to perform the forward step for
         :param feed_dict: data for placeholders
-        :param feed_dict: dict, optional
         :raises KeyError: in case where there are no values in feed_dict for \
         the empty Placeholder
         :return: value of the last node, i.e. result of graph
-        :rtype: np.array
         """
         feed_dict = feed_dict or {}
-        sorted_ = topological_sort(target)
+        outputs = []
 
-        for node in sorted_:
-            if isinstance(node, Placeholder):
-                node.value = feed_dict[node.name]
-            if isinstance(node, Operation):
-                node.value = node.forward(*[x.value for x in node.inputs])
+        for sorted_ in topological_sort(target):
+            for node in sorted_:
+                if isinstance(node, Placeholder):
+                    node.value = feed_dict[node.name]
+                if isinstance(node, Operation):
+                    node.value = node.forward(*[x.value for x in node.inputs])
 
-        return sorted_[-1].value
+            outputs.append(sorted_[-1].value)
+
+        return outputs[0] if len(outputs) == 1 else outputs
 
     def gradients(self, target):
-        """Compute gradient of the graph.
+        """Compute gradients for the given graph.
 
         Function performs topological sort for the target node, then sets
         its gradient to zero and recursively computes all other gradients.
@@ -96,12 +96,12 @@ class Session:
             >>> session.gradients(op)
             {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
 
-        :param target: target node
+        :param target: head nodes of the graph
         :return: a dict with node and its gradient pairs
         """
-        visited = set()
+        order = next(topological_sort(target))
 
-        order = topological_sort(target)
+        visited = set()
         order[-1].gradient = 1.0  # df/df
 
         for node in reversed(order):

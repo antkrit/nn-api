@@ -31,6 +31,29 @@ def test_run_forward_with_placeholder(session, test_case_binary):
     assert np.array_equal(z, y_val*x_val)
 
 
+def test_run_forward_multiple_head_nodes(session, test_case_binary):
+    x_val, y_val = test_case_binary
+
+    x = Variable(x_val)
+    y = Variable(y_val)
+
+    x_val = np.asarray(x_val)
+    y_val = np.asarray(y_val)
+
+    add_op = x + y
+    mul_op = x * y
+    add_1_op = add_op + mul_op
+    useless = x * add_op
+
+    add_1_out, useless_out = session.run([add_1_op, useless])
+
+    assert np.array_equal(add_1_out, (x_val + y_val) + (y_val * x_val))
+    assert np.array_equal(
+        useless_out,
+        x_val * (x_val + y_val)
+    )
+
+
 def test_run_backward_no_placeholder(graph, session, test_case_binary):
 
     x_val, y_val = test_case_binary

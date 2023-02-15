@@ -22,6 +22,8 @@ class Graph:
         """Constructor method
         """
         self.name = f'graph-{Graph.count()}'
+        self.nodes = []
+        self.head_node = None
 
     def as_default(self):
         """Set global graph to self."""

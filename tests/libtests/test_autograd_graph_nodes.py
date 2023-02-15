@@ -12,14 +12,14 @@ from api.lib.autograd.node import (
 def test_base_node():
     n = Node()
     assert hasattr(n, 'count')
-    assert hasattr(n, 'graph')
+    assert hasattr(n, 'current_graph')
 
-    ograph = n.graph()
+    ograph = n.current_graph()
     assert isinstance(ograph, Graph)
 
     g = Graph()
     g.as_default()
-    cgraph = n.graph()
+    cgraph = n.current_graph()
     assert cgraph is g
     assert cgraph is not ograph
 
@@ -46,6 +46,7 @@ def test_constant_node():
 
     c.name = c_name
     assert str(c) == c_name
+
     with pytest.raises(ValueError):
         c.value = 1
 
@@ -64,10 +65,13 @@ def test_placeholder_node():
 
 def test_operation_nodes():
     op_name = 'op1'
-    op = Operation(op_name)
+    op = Operation()
 
-    oprtr_rgx = re.compile(rf'^.*/operator-{op_name}-\d+$')
+    oprtr_rgx = re.compile(r'^.*/operator-\d+$')
     assert re.search(oprtr_rgx, op.name) is not None
+
+    op.name = op_name
+    assert str(op) == op_name
 
     with pytest.raises(NotImplementedError):
         op.forward()

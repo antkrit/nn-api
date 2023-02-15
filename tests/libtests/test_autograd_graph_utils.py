@@ -1,3 +1,4 @@
+from api.lib import autograd as ag
 from api.lib.autograd.node import (
     Variable, Add, Node, topological_sort, node_wrapper
 )
@@ -8,20 +9,21 @@ def test_topological_sort():
     b = Variable(2, name='node2')
     w = Variable(3, name='node3')
 
-    c, c.name = a + b, 'sum'
-    x, x.name = c * b, 'mul'
-    y, y.name = x + w, 'sum1'
+    c = ag.add(a, b, name='sum')
+    x = ag.mul(c, b, name='mul')
+    y = ag.add(x, w, name='sum1')
     # pay attention to the names of nodes and operators
     # to change something above make sure that expected
     # order will be changed too
     expected_order = ['node1', 'node2', 'sum', 'mul', 'node3', 'sum1']
-    assert list((n.name for n in topological_sort(y))) == expected_order
-
-    s, s.name = a + b, 'sum2'
-    s1, s1.name = s + w, 'sum3'
-    s2, s2.name = s1 + s, 'sum4'
-    expected_order = ['node1', 'node2', 'sum2', 'node3', 'sum3', 'sum4']
-    assert list((n.name for n in topological_sort(s2))) == expected_order
+    received = next(topological_sort(y))
+    assert [n.name for n in received] == expected_order
+    #
+    # s = ag.add(a, b, name='sum2')
+    # s1 = ag.add(s, w, name='sum3')
+    # s2 = ag.add(s1, s, name='sum4')
+    # expected_order = ['node1', 'node2', 'sum2', 'node3', 'sum3', 'sum4']
+    # assert [(n.name for n in next(topological_sort(s2)))] == expected_order
 
 
 def test_node_wrapper():

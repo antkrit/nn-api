@@ -29,8 +29,16 @@ __all__ = (
 
 class NodeMixin:
     """Contains different useful members for nodes."""
-    graph = lambda self: get_current_graph()
     count = itertools.count().__next__
+
+    @staticmethod
+    def current_graph():
+        """Return current graph."""
+        return get_current_graph()
+
+    def prepare_graph(self, graph):
+        graph.nodes.append(self)
+        graph.head_node = self
 
 
 # E1101(no-member) is disabled because this class should only
@@ -54,8 +62,11 @@ class Constant(Node):
         """Constructor method.
         """
         self._value = np.asarray(value, dtype=dtype)
-        self.name = name or f"{self.graph().name}/constant-{self.count()}"
         self.gradient = None
+
+        graph = self.current_graph()
+        self.name = name or f"{graph.name}/constant-{self.count()}"
+        self.prepare_graph(graph)
 
     @property
     def value(self):
@@ -107,6 +118,7 @@ class Placeholder(Node):
         if name is None:
             raise ValueError('Placeholder name cannot be None.')
         self.name = name
+        self.prepare_graph(self.current_graph())
 
     @property
     def value(self):
@@ -134,7 +146,10 @@ class Variable(Node):
     def __init__(self, value, name=None, dtype=None):
         self.value = np.asarray(value, dtype=dtype)
         self.gradient = None
-        self.name = name or f"{self.graph().name}/variable-{self.count()}"
+
+        graph = self.current_graph()
+        self.name = name or f"{graph.name}/variable-{self.count()}"
+        self.prepare_graph(graph)
 
     def __str__(self):
         return self.name
@@ -152,18 +167,21 @@ class Operation(Node):
     graph-#/operator-`Operator Name`-#
     the only thing that can be specified explicitly is `Operator Name`
 
-    :param op_name: operator name, defaults to 'Operator'
+    :param name: operator name, defaults to 'Operator'
     :param threshold: some minute float value to avoid problems like div by 0
     """
 
-    def __init__(self, op_name='Operator', threshold=0):
+    def __init__(self, name=None, threshold=0):
         """Constructor method.
         """
         self.inputs = ()
-        self.name = f'{self.graph().name}/operator-{op_name}-{self.count()}'
         self.gradient = None
         self.value = None
         self.threshold = threshold
+
+        graph = self.current_graph()
+        self.name = name or f'{graph.name}/operator-{self.count()}'
+        self.prepare_graph(graph)
 
     def forward(self, *args, **kwargs):
         """Return output of the operation by given inputs."""
@@ -824,16 +842,14 @@ class Cos(UnaryOperator):
         return np.multiply(dout, (-np.sin(value))),
 
 
-def topological_sort(head_node):
-    """Perform topological sort for a given graph using DFS algorithm.
+def topological_sort(nodes):
+    """Generates topological sort for a given graph using DFS algorithm.
 
-    :param head_node: node to start sorting from
-    :param head_node: :class:`Node`
+    :param nodes: node to start sorting from
     :return: list  of sorted nodes
-    :rtype: deque
     """
     visited = set()
-    order = deque()
+    order = []
 
     def _dfs(node):
         """Depth-first search recursion helper."""
@@ -847,12 +863,18 @@ def topological_sort(head_node):
 
             order.append(node)
 
-    _dfs(head_node)
-    return order
+    try:
+        iterator = iter(nodes)
+        for node in iterator:
+            _dfs(node)
+            yield order
+    except TypeError:
+        _dfs(nodes)
+        yield order
 
 
-def node_wrapper(func, *args, **kwargs):
-    """Automatically convert numeric types to `Constant`.
+def node_wrapper(node, *args, **kwargs):
+    """Automatically convert non-Node types to `Constant`.
 
     :raises TypeError: in case some operands are not Node
     """
@@ -860,7 +882,7 @@ def node_wrapper(func, *args, **kwargs):
     for arg in args:
         # in this implementation of the wrapper,
         # only numeric types are automatically converted
-        # to a Constant node, which is important for tests
+        # to a Constant node
         if isinstance(arg, Node):
             fnargs.append(arg)
         else:
@@ -871,98 +893,96 @@ def node_wrapper(func, *args, **kwargs):
                     f"Incompatible argument type: {type(arg)}."
                 ) from e
 
-    return func(*fnargs, **kwargs)
+    return node(*fnargs, **kwargs)
 
 
 # disabled W0622 (redefined-builtin)
 # max, min, pow, sum, etc. redefining built-ins for aesthetic purposes
 # pylint: disable=W0622
 
-# these functions should be imported
-# into __init__.py, so they can replace similar ones from numpy
-def add(this, other):
+def add(this, other, **kwargs):
     """Add two operands."""
-    return node_wrapper(Add, this, other)
+    return node_wrapper(Add, this, other, **kwargs)
 
 
-def mul(this, other):
+def mul(this, other, **kwargs):
     """Multiply two operands."""
-    return node_wrapper(Multiply, this, other)
+    return node_wrapper(Multiply, this, other, **kwargs)
 
 
-def div(this, other):
+def div(this, other, **kwargs):
     """Divide two operands."""
-    return node_wrapper(Divide, this, other)
+    return node_wrapper(Divide, this, other, **kwargs)
 
 
-def pow(this, other):
+def pow(this, other, **kwargs):
     """Raise the first operand to the power of the second."""
-    return node_wrapper(Power, this, other)
+    return node_wrapper(Power, this, other, **kwargs)
 
 
-def dot(this, other):
+def dot(this, other, **kwargs):
     """Multiply two matrices."""
-    return node_wrapper(Matmul, this, other)
+    return node_wrapper(Matmul, this, other, **kwargs)
 
 
-def max(this, other):
+def max(this, other, **kwargs):
     """Check if 'this' is greater than 'other'."""
-    return node_wrapper(Max, this, other)
+    return node_wrapper(Max, this, other, **kwargs)
 
 
-def min(this, other):
+def min(this, other, **kwargs):
     """Check if 'this' is less than 'other'."""
-    return node_wrapper(Min, this, other)
+    return node_wrapper(Min, this, other, **kwargs)
 
 
-def sum(this, axis=None):
+def sum(this, **kwargs):
     """Sum of array elements over a given axis."""
-    return node_wrapper(Sum, this, axis=axis)
+    return node_wrapper(Sum, this, **kwargs)
 
 
-def mean(this, axis=None):
+def mean(this, **kwargs):
     """Compute the arithmetic mean along the specified axis."""
-    return node_wrapper(Mean, this, axis=axis)
+    return node_wrapper(Mean, this, **kwargs)
 
 
-def sqrt(this):
+def sqrt(this, **kwargs):
     """Return the square-root of an array(element-wise) or a number."""
-    return node_wrapper(Sqrt, this)
+    return node_wrapper(Sqrt, this, **kwargs)
 
 
-def abs(this):
+def abs(this, **kwargs):
     """Return absolute value of an array(element-wise) or a number."""
-    return node_wrapper(Abs, this)
+    return node_wrapper(Abs, this, **kwargs)
 
 
-def exp(this):
+def exp(this, **kwargs):
     """Calculate the exponential of an array(element-wise) or a number."""
-    return node_wrapper(Exp, this)
+    return node_wrapper(Exp, this, **kwargs)
 
 
-def log(this):
+def log(this, **kwargs):
     """Natural logarithm (element-wise for arrays)."""
-    return node_wrapper(Log, this)
+    return node_wrapper(Log, this, **kwargs)
 
 
-def log2(this):
+def log2(this, **kwargs):
     """Logarithm with base 2 (element-wise for arrays)."""
-    return node_wrapper(Log2, this)
+    return node_wrapper(Log2, this, **kwargs)
 
 
-def log10(this):
+def log10(this, **kwargs):
     """Logarithm with base 10 (element-wise for arrays)."""
-    return node_wrapper(Log10, this)
+    return node_wrapper(Log10, this, **kwargs)
 
 
-def sin(this):
+def sin(this, **kwargs):
     """Trigonometric sine (element-wise for arrays)."""
-    return node_wrapper(Sin, this)
+    return node_wrapper(Sin, this, **kwargs)
 
 
-def cos(this):
+def cos(this, **kwargs):
     """Trigonometric cosine (element-wise for arrays)."""
-    return node_wrapper(Cos, this)
+    return node_wrapper(Cos, this, **kwargs)
 
 
 Node.__add__ = add
