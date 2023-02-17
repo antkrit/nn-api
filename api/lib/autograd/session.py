@@ -2,6 +2,7 @@
 # Attention: W0611 disabled(unused-import)
 # because pylint doesn't recognize objects in code samples for doctest
 # pylint: disable=W0611
+import numpy as np
 from api.lib.autograd.node import (
     Variable, Placeholder, Operation, topological_sort
 )
@@ -30,8 +31,9 @@ class Session:
     30.0
     """
     def run(self, target, feed_dict=None):
-        """Forward propagation aver a graph. Computes the output of
-         a target operation.
+        """Forward propagation aver a graph.
+
+        Computes the output of a target operation using one sample.
 
         .. note::
             If there are placeholders in the graph you need to fill them
@@ -49,21 +51,26 @@ class Session:
         :param feed_dict: data for placeholders
         :raises KeyError: in case where there are no values in feed_dict for \
         the empty Placeholder
-        :return: value of the last node, i.e. result of graph
-        """
+        :return: value of the last node, i.e. result of graph"""
         feed_dict = feed_dict or {}
         outputs = []
 
-        for sorted_ in topological_sort(target):
-            for node in sorted_:
-                if isinstance(node, Placeholder):
-                    node.value = feed_dict[node.name]
-                if isinstance(node, Operation):
-                    node.value = node.forward(*[x.value for x in node.inputs])
+        try:
+            while True:
+                for sorted_ in topological_sort(target):
+                    for node in sorted_:
+                        if isinstance(node, Placeholder):
+                            node.value = next(feed_dict[node.name])
+                        if isinstance(node, Operation):
+                            node.value = node.forward(*[x.value for x in node.inputs])
 
-            outputs.append(sorted_[-1].value)
+                    outputs.append(sorted_[-1].value)
 
-        return outputs[0] if len(outputs) == 1 else outputs
+                if not feed_dict:
+                    return outputs[0] if len(outputs) == 1 else outputs
+
+        except StopIteration:
+            return outputs[0] if len(outputs) == 1 else outputs
 
     def gradients(self, target):
         """Compute gradients for the given graph.

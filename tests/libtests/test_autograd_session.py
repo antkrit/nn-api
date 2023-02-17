@@ -24,11 +24,11 @@ def test_run_forward_with_placeholder(session, test_case_binary):
         session.run(x * y)
 
     with pytest.raises(KeyError):
-        session.run(x * y, feed_dict={'y': y_val})
+        session.run(x * y, feed_dict={'y': (y for y in [y_val])})
 
-    z = session.run(x * y, feed_dict={'w': y_val})
+    z = session.run(x * y, feed_dict={'w': (y for y in [y_val, y_val])})
     x_val, y_val = np.asarray(x_val), np.asarray(y_val)
-    assert np.array_equal(z, y_val*x_val)
+    assert np.array_equal(z, [y_val*x_val, y_val*x_val])
 
 
 def test_run_forward_multiple_head_nodes(session, test_case_binary):

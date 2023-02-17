@@ -24,7 +24,7 @@ def test_autograd_using_complex_functions(session, test_fn, test_case_unary):
     x = Placeholder('x')
     out = autograd_fn(x)
 
-    frwrd = session.run(out, feed_dict={'x': test_case_unary})
+    frwrd = session.run(out, feed_dict=ag.utils.form_feed_dict([test_case_unary], x))
     grads = session.gradients(out)
 
     test_case = np.asarray(test_case_unary)

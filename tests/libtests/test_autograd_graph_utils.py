@@ -18,12 +18,17 @@ def test_topological_sort():
     expected_order = ['node1', 'node2', 'sum', 'mul', 'node3', 'sum1']
     received = next(topological_sort(y))
     assert [n.name for n in received] == expected_order
-    #
-    # s = ag.add(a, b, name='sum2')
-    # s1 = ag.add(s, w, name='sum3')
-    # s2 = ag.add(s1, s, name='sum4')
-    # expected_order = ['node1', 'node2', 'sum2', 'node3', 'sum3', 'sum4']
-    # assert [(n.name for n in next(topological_sort(s2)))] == expected_order
+
+    s = ag.add(a, b, name='sum2')
+    s1 = ag.add(s, w, name='sum3')
+
+    sorted_ = topological_sort([s, s1])
+
+    received = next(sorted_)
+    assert [n.name for n in received] == ['node1', 'node2', 'sum2']
+
+    received = next(sorted_)
+    assert [n.name for n in received] == ['node1', 'node2', 'sum2', 'node3', 'sum3']
 
 
 def test_node_wrapper():
@@ -32,7 +37,7 @@ def test_node_wrapper():
     node = Add(x, c)
     node_wrapped = node_wrapper(Add, x, c)
     node_wrapped_auto = x + c
-
+    print(node_wrapped_auto)
     assert not all([isinstance(n, Node) for n in node.inputs])
     assert all([isinstance(n, Node) for n in node_wrapped.inputs])
     assert all([isinstance(n, Node) for n in node_wrapped_auto.inputs])

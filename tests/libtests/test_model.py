@@ -75,12 +75,12 @@ def test_model_fit_predict(session, x):
 
     model.compile(optimizer='gradient_descent', loss='mean_absolute_error', lr=1)
 
-    # the following tests assume:
+    # following tests assume:
     # learning rate = 1,
     # weight initialization set to 'ones',
     # relu activation is applied to positive values
 
-    # 1 epoch: activate(X @ W + b)
+    # 1 epoch: ReLU(X @ W + b)
     # b derivative = 1
     # W derivative = X.T
     model.fit(x_train, y, epochs=1)

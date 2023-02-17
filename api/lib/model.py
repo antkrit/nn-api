@@ -2,7 +2,7 @@
 # TODO: detailed docstrings
 from functools import wraps
 from api.lib import namespace
-from api.lib.autograd import Session, Placeholder
+from api.lib.autograd import Session, Placeholder, utils
 
 
 class Model:
@@ -27,7 +27,7 @@ class Model:
                self.optimizer is not None
 
     def _control_compile(func):
-        """Check if model is compiled for decorated methods.
+        """Check for decorated methods if the model is compiled.
 
         Use this decorator for methods that require the model to be compiled.
         """
@@ -60,7 +60,8 @@ class Model:
         result = []
 
         for i in range(samples):
-            output = self.session.run(self.__output_op, {'x': data[i]})
+            feed_dict = utils.form_feed_dict([data[i]], self.__x)
+            output = self.session.run(self.__output_op, feed_dict)
             result.append(output)
 
         return result
@@ -74,7 +75,10 @@ class Model:
         for i in range(epochs):
             err = 0
             for j in range(samples):
-                feed_dict = dict(x=x_train[j], y=y_train[j])
+                feed_dict = utils.form_feed_dict(
+                    [[x_train[j]], [y_train[j]]],
+                    self.__x, self.__y
+                )
 
                 err += self.session.run(J, feed_dict)
                 self.optimizer.minimize(J)
