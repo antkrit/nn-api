@@ -1,6 +1,6 @@
 """Contains implementation of commonly used activation functions."""
 import numpy as np
-import api.lib.autograd as ag
+from api.lib import autograd as ag
 from api.lib.bases import BaseActivation
 
 
@@ -73,6 +73,7 @@ class ELU(BaseActivation):
     """Exponential Linear Unit activation function.
 
     :param alpha: leaky coefficient, defaults to 1
+    :param session: current session
     """
 
     def __init__(self, alpha=1, session=None, threshold=0):
@@ -86,13 +87,17 @@ class ELU(BaseActivation):
         Fixes some class:`ReLU` issues, allows learn faster.
 
         :param x: input value
-        :param alpha: leaky coefficient, defaults to 1
-        :param session: current session
         """
         cond = self.session.run(x) > 0
 
-        cond_true = ag.Constant(np.asarray(cond, dtype=int))
-        cond_false = ag.Constant(np.asarray(np.invert(cond), dtype=int))
+        cond_true = ag.utils.convert_to_tensor(
+            'constant',
+            value=np.asarray(cond, dtype=int)
+        )
+        cond_false = ag.utils.convert_to_tensor(
+            'constant',
+            value=np.asarray(np.invert(cond), dtype=int)
+        )
         return cond_true*x + cond_false*self.alpha*(ag.exp(x)-1)
 
     def __call__(self, x, *args, **kwargs):

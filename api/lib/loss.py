@@ -14,7 +14,7 @@ Multinomial Classification:
 - Kullback-Leibler Divergence
 """
 import numpy as np
-import api.lib.autograd as ag
+from api.lib import autograd as ag
 from api.lib.bases import BaseLoss
 
 
@@ -127,8 +127,14 @@ class Huber(BaseLoss):
         # 2 equations, so it's possible to calculate all 'if' conditions in
         # advance, multiply it and its inverted version by the system
         # inequalities and then just add them
-        cond_true = ag.Constant(np.asarray(is_err_small, dtype=int))
-        cond_false = ag.Constant(np.asarray(np.invert(is_err_small), dtype=int))
+        cond_true = ag.utils.convert_to_tensor(
+            ag.node.Constant,
+            value=np.asarray(is_err_small, dtype=int)
+        )
+        cond_false = ag.utils.convert_to_tensor(
+            ag.node.Constant,
+            value=np.asarray(np.invert(is_err_small), dtype=int)
+        )
 
         lss_cond_true = cond_true * 0.5 * err ** 2
         lss_cond_false = cond_false * self.delta * (err - 0.5 * self.delta)

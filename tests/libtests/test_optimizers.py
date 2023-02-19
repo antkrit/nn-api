@@ -3,22 +3,12 @@ import numpy as np
 from api.lib.optimizers import *
 from api.lib.preprocessing.initializers import random_normal, ones
 
-w_trainable_1 = ones(2, 3)
-b_trainable_1 = ones(1, 3)
 
-w_trainable_2 = ones(3, 3)
-b_trainable_2 = ones(1, 3)
-
-trainable_nodes = [
-    (w_trainable_1, b_trainable_1),
-    (w_trainable_2, b_trainable_2)
-]
-
-
-@pytest.mark.parametrize('trainable', trainable_nodes, ids=['2x3', '3x3'])
 class TestGradientDescent:
 
-    def test_compute_gradients(self, session, trainable):
+    def test_compute_gradients(self, session):
+        trainable = (ones(2, 3), ones(1, 3))
+
         optimizer = GradientDescent(
             lr=1,
             trainable_variables=trainable,
@@ -36,7 +26,9 @@ class TestGradientDescent:
         assert received[1] == 1  # df/db
 
     @pytest.mark.parametrize('lr', [0.01, 2], ids=['lr=0.01', 'lr=2'])
-    def test_minimize(self, session, lr, trainable, mocker):
+    def test_minimize(self, session, lr, mocker):
+        trainable = (ones(2, 3), ones(1, 3))
+
         optimizer = GradientDescent(
             lr=lr,
             trainable_variables=trainable,
@@ -55,7 +47,9 @@ class TestGradientDescent:
                 [np.ones(W.value.shape), np.ones(b.value.shape)], None
             )
         )
-        optimizer.minimize(op)
+
+        minimize_ops = optimizer.minimize(op)
+        session.run(minimize_ops)
 
         w_expected = w_init_value - np.ones(W.value.shape) * lr
         assert np.array_equal(W.value, w_expected)

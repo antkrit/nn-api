@@ -3,7 +3,7 @@
 # because pylint doesn't recognize objects in code samples for doctest
 # pylint: disable=W0611
 from api.lib.autograd.node import (
-    Variable, Placeholder, Operation, topological_sort, AssignOperation
+    Variable, Placeholder, Operation, topological_sort
 )
 
 
@@ -58,12 +58,10 @@ class Session:
         try:
             while True:
                 for sorted_ in topological_sort(target):
-                    print(sorted_)
                     for node in sorted_:
                         if isinstance(node, Placeholder):
                             node.value = next(feed_dict[node.name])
                         if isinstance(node, Operation):
-
                             inputs = [x.value for x in node.inputs]
                             node.value = node.forward(*inputs)
 

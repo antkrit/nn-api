@@ -1,6 +1,8 @@
 """Contains implementation of Gradient Descent optimizers (GD, SGD)"""
 from operator import itemgetter
 from api.lib.bases import BaseOptimizer
+from api.lib.autograd import ops
+from api.lib.autograd.utils import convert_to_tensor
 
 
 __all__ = ('GradientDescent', )
@@ -21,11 +23,12 @@ class GradientDescent(BaseOptimizer):
 
     def __init__(self, lr, trainable_variables=None, session=None):
         """Constructor method."""
-        # Attention: C0103 disabled(invalid-name)
-        # because lr is much better than learning_rate, prove me wrong
-        # pylint: disable=C0103
         super().__init__(trainable_variables, session)
-        self.lr = lr
+        self._lr = convert_to_tensor(
+            'variable',
+            value=lr,
+            name='learning_rate'
+        )
 
     def compute_gradients(self, out):
         """Compute gradients for trainable variables.
@@ -35,6 +38,7 @@ class GradientDescent(BaseOptimizer):
         """
         grd = self.session.gradients(out)
         trainable_grd = itemgetter(*self.trainable)(grd)
+
         return trainable_grd, grd
 
     def apply_gradient(self, x, grad):
@@ -44,17 +48,16 @@ class GradientDescent(BaseOptimizer):
         :param grad: gradient of the loss w.r.t x
         :return: updated node
         """
-        x.value -= self.lr * grad
-        return x
+        return ops.assign_add(x, -self._lr * grad)
 
     def minimize(self, floss, *args, **kwargs):
         """Compute gradients and apply an update rule to trainable variables.
 
         :parma floss: output of the network, head node
-        :return: all computed gradients for the graph
+        :return: list of operations
         """
-        train_grads, grd = self.compute_gradients(floss)
-        for x, grd in zip(self.trainable, train_grads):
+        trainable_gradients, _ = self.compute_gradients(floss)
+        return [
             self.apply_gradient(x, grd)
-
-        return grd
+            for x, grd in zip(self.trainable, trainable_gradients)
+        ]

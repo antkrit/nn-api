@@ -1,7 +1,7 @@
 """Contains simple functions for generating arrays with numbers."""
 import numpy as np
 from api.lib.bases import BaseInitializer
-from api.lib.autograd import Variable
+from api.lib.autograd.utils import convert_to_tensor
 
 
 __all__ = (
@@ -44,7 +44,11 @@ class NormalInitializer(BaseInitializer):
         if self.seed is not None:
             np.random.seed(self.seed)
         ndist = self.__worker(*size)
-        return Variable(self.sigma*ndist + self.mu, *args, **kwargs)
+        return convert_to_tensor(
+            'variable',
+            value=self.sigma*ndist + self.mu,
+            *args, **kwargs
+        )
 
 
 class UniformInitializer(BaseInitializer):
@@ -71,7 +75,12 @@ class UniformInitializer(BaseInitializer):
         if self.seed is not None:
             np.random.seed(self.seed)
         ndist = self.__worker(*self.bounds, size=size)
-        return Variable(ndist, *args, **kwargs)
+
+        return convert_to_tensor(
+            'variable',
+            value=ndist,
+            *args, **kwargs
+        )
 
 
 def zeros(n_in, n_out, *args, **kwargs):
