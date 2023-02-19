@@ -2,11 +2,7 @@ import re
 import pytest
 import numpy as np
 from api.lib.autograd.graph import Graph
-from api.lib.autograd.node import (
-    Node, Constant, Variable, Placeholder, Operation,
-    Add, Multiply, Divide, Power, Matmul, Max, Min, Sum, Mean,
-    Sqrt, Abs, Exp, Log, Log2, Log10, Cos, Sin
-)
+from api.lib.autograd.node import *
 
 
 def test_base_node():
@@ -24,10 +20,10 @@ def test_base_node():
     assert cgraph is not ograph
 
 
-def test_variable_node():
+def test_variable_node(session):
     v_val, v_name = 3, 'v1'
     v = Variable(v_val)
-    assert v.value == v_val and isinstance(v.name, str)
+    assert session.run(v) == v_val and isinstance(v.name, str)
 
     vrbl_rgx = re.compile(r'^.*/variable-\d+$')
     assert re.search(vrbl_rgx, v.name) is not None
@@ -129,7 +125,7 @@ class TestOtherOperations:
         [[[2, 2, 2], [1, 2, 3]], 0, [[2, 2, 2]]],
         [[[2, 2, 2], [1, 2, 3]], 1, [[3], [3]]],
     ])
-    def test_sum(self, test_case, axis, dout):
+    def test_mean(self, test_case, axis, dout):
         a, acopy = test_case, np.asarray(test_case)
         m = Mean(a, axis=axis)
         assert np.array_equal(m.forward(a), np.mean(a, axis))
@@ -216,7 +212,7 @@ class TestUnaryOperators:
         )
 
 
-@pytest.mark.parametrize('dout', [2], ids=['scalar'])
+@pytest.mark.parametrize('dout', [2], ids=['dout_scalar'])
 @pytest.mark.parametrize('test_case', [
     (-4, 5),
     (np.array([1, -2, 3]), [2, 3, 4]),
@@ -236,27 +232,81 @@ class TestBinaryOperators:
             [dout*1, dout*1]
         )
 
+    def test_assign_add(self, test_case, dout):
+        a, b = test_case
+        a_var = Variable(a)
+
+        with pytest.raises(ValueError):
+            AssignAdd(a, b)
+
+        a_add = AssignAdd(a_var, b)
+        assert np.array_equal(
+            a_add.forward(a, b),
+            np.asarray(a) + np.asarray(b)
+        )
+        assert np.array_equal(
+            a_add.backward(a, b, dout),
+            [dout*1, dout*1]
+        )
+
     def test_multiply(self, test_case, dout):
         a, b = test_case
-        m = Multiply(a, b)
+        mul = Multiply(a, b)
         assert np.array_equal(
-            m.forward(a, b),
+            mul.forward(a, b),
             np.array(a) * np.array(b)
         )
         assert np.array_equal(
-            m.backward(a, b, dout),
+            mul.backward(a, b, dout),
+            [dout * np.array(b), dout * np.array(a)]
+        )
+
+    def test_assign_multiply(self, test_case, dout):
+        a, b = test_case
+        a_var = Variable(a)
+
+        with pytest.raises(ValueError):
+            AssignMultiply(a, b)
+
+        a_mul = AssignMultiply(a_var, b)
+        assert np.array_equal(
+            a_mul.forward(a, b),
+            np.array(a) * np.array(b)
+        )
+        assert np.array_equal(
+            a_mul.backward(a, b, dout),
             [dout * np.array(b), dout * np.array(a)]
         )
 
     def test_divide(self, test_case, dout):
         a, b = test_case
-        d = Divide(a, b)
+        div = Divide(a, b)
         assert np.array_equal(
-            d.forward(a, b),
+            div.forward(a, b),
             np.array(a) / np.array(b)
         )
         assert np.array_equal(
-            d.backward(a, b, dout),
+            div.backward(a, b, dout),
+            [
+                np.asarray(dout) / np.array(b),
+                np.negative(dout) * np.array(a) / np.power(np.array(b), 2)
+            ]
+        )
+
+    def test_assign_divide(self, test_case, dout):
+        a, b = test_case
+        a_var = Variable(a)
+
+        with pytest.raises(ValueError):
+            AssignDivide(a, b)
+
+        a_div = AssignDivide(a_var, b)
+        assert np.array_equal(
+            a_div.forward(a, b),
+            np.array(a) / np.array(b)
+        )
+        assert np.array_equal(
+            a_div.backward(a, b, dout),
             [
                 np.asarray(dout) / np.array(b),
                 np.negative(dout) * np.array(a) / np.power(np.array(b), 2)

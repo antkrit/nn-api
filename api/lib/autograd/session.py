@@ -2,9 +2,8 @@
 # Attention: W0611 disabled(unused-import)
 # because pylint doesn't recognize objects in code samples for doctest
 # pylint: disable=W0611
-import numpy as np
 from api.lib.autograd.node import (
-    Variable, Placeholder, Operation, topological_sort
+    Variable, Placeholder, Operation, topological_sort, AssignOperation
 )
 
 
@@ -49,20 +48,24 @@ class Session:
 
         :param target: node or list of nodes to perform the forward step for
         :param feed_dict: data for placeholders
-        :raises KeyError: in case where there are no values in feed_dict for \
-        the empty Placeholder
-        :return: value of the last node, i.e. result of graph"""
+        :raises KeyError: in case where there are no values in feed_dict for
+            the empty Placeholder
+        :return: value of the last node, i.e. result of graph
+        """
         feed_dict = feed_dict or {}
         outputs = []
 
         try:
             while True:
                 for sorted_ in topological_sort(target):
+                    print(sorted_)
                     for node in sorted_:
                         if isinstance(node, Placeholder):
                             node.value = next(feed_dict[node.name])
                         if isinstance(node, Operation):
-                            node.value = node.forward(*[x.value for x in node.inputs])
+
+                            inputs = [x.value for x in node.inputs]
+                            node.value = node.forward(*inputs)
 
                     outputs.append(sorted_[-1].value)
 

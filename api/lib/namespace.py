@@ -1,60 +1,14 @@
-"""Defines containers with available names that are used to identify and refer to objects of various kinds."""
-from collections.abc import MutableMapping
+"""Defines containers with available names that are used to identify and refer
+to objects of various kinds.
+"""
+from api.lib import autograd
+from api.lib.utils import Container
 from api.lib.activation import *
-from api.lib.preprocessing.initializers import *
 from api.lib.loss import *
 from api.lib.optimizers import *
 from api.lib.exception import *
 from api.lib.bases import *
-
-
-class Container(MutableMapping):
-    """Base dict-like container class.
-
-    To get an object use any of the three options
-    >>> container = Container(name=..., obj=3)
-    >>> container['obj']
-    >>> container.obj
-    >>> container('obj')
-
-    To get the compiled instance - use __call__ method
-    >>> container = Container(name=..., obj=lambda x: x)
-    >>> container('obj_name', compiled=True, x=3)
-    3
-    """
-
-    def __init__(self, name, *args, **kwargs):
-        """Constructor method."""
-        self.name = name
-        self.store = dict()
-        self.update(dict(*args, **kwargs))
-
-    def __getitem__(self, key):
-        return self.store[key]
-
-    def __getattr__(self, item):
-        return self.__getitem__(item)
-
-    def __setitem__(self, key, value):
-        self.store[key] = value
-
-    def __delitem__(self, key):
-        del self.store[key]
-
-    def __call__(self, obj_name, compiled=False, *args, **kwargs):
-        obj = self.__getitem__(key=obj_name)
-        if callable(obj) and compiled:
-            return obj(*args, **kwargs)
-        return obj
-
-    def __iter__(self):
-        return iter(self.store)
-
-    def __len__(self):
-        return len(self.store)
-
-    def __repr__(self):
-        return f'Container-{self.name}({self.store.items()})'
+from api.lib.preprocessing.initializers import *
 
 
 activations = Container(
@@ -67,20 +21,6 @@ activations = Container(
     softplus=Softplus,
     relu=ReLU,
     elu=ELU,
-)
-initializers = Container(
-    name='initializers',
-
-    zeros=zeros,
-    ones=ones,
-    random_normal=random_normal,
-    random_uniform=random_uniform,
-    he_normal=he_normal,
-    he_uniform=he_uniform,
-    xavier_normal=xavier_normal,
-    xavier_uniform=xavier_uniform,
-    lecun_normal=lecun_normal,
-    lecun_uniform=lecun_uniform,
 )
 losses = Container(
     name='losses',
@@ -95,6 +35,20 @@ losses = Container(
     categorical_cross_entropy=CCE,
     kullback_leibler_divergence=KLD,
 )
+initializers_container = Container(
+    name='initializers',
+
+    zeros=zeros,
+    ones=ones,
+    random_normal=random_normal,
+    random_uniform=random_uniform,
+    he_normal=he_normal,
+    he_uniform=he_uniform,
+    xavier_normal=xavier_normal,
+    xavier_uniform=xavier_uniform,
+    lecun_normal=lecun_normal,
+    lecun_uniform=lecun_uniform,
+)
 optimizers = Container(
     name='optimizers',
 
@@ -108,10 +62,11 @@ exceptions = Container(
 bases = Container(
     name='bases',
 
+    Loss=BaseLoss,
     Layer=BaseLayer,
     Activation=BaseActivation,
-    Loss=BaseLoss,
     Initializer=BaseInitializer,
     Optimizer=BaseOptimizer,
     Scaler=BaseScaler,
 )
+nodes = autograd.namespace.nodes

@@ -16,15 +16,7 @@ Each graph consists of nodes. Nodes are divided into:
 """
 import itertools
 import numpy as np
-from collections import deque
 from api.lib.autograd.graph import get_current_graph
-
-
-__all__ = (
-    'Node', 'Constant', 'Variable', 'Placeholder', 'Operation', 'node_wrapper',
-    'topological_sort', 'add', 'mul', 'div', 'pow', 'dot', 'max', 'min',
-    'sum', 'mean', 'sqrt', 'abs', 'exp', 'log', 'log2', 'log10', 'sin', 'cos',
-)
 
 
 class NodeMixin:
@@ -46,44 +38,6 @@ class NodeMixin:
 # pylint: disable=E1101
 class Node(NodeMixin):
     """Base node class."""
-
-
-class Constant(Node):
-    """Represents a node with a fixed value.
-
-    :param value: value to set
-    :param name: name of the node, if none than name will be
-        created automatically, defaults to None
-    :param dtype: value type, defaults to None
-    :raises ValueError: when trying to change the value
-    """
-
-    def __init__(self, value, name=None, dtype=None):
-        """Constructor method.
-        """
-        self._value = np.asarray(value, dtype=dtype)
-        self.gradient = None
-
-        graph = self.current_graph()
-        self.name = name or f"{graph.name}/constant-{self.count()}"
-        self.prepare_graph(graph)
-
-    @property
-    def value(self):
-        """Get value of a node."""
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        """Set value of a node.
-
-        Constant value cannot be changed, so ValueError will be
-        raised when trying.
-        """
-        raise ValueError("Cannot reassign constant.")
-
-    def __str__(self):
-        return self.name
 
 
 class Placeholder(Node):
@@ -110,8 +64,7 @@ class Placeholder(Node):
     """
 
     def __init__(self, name):
-        """Constructor method.
-        """
+        """Constructor method."""
         self._value = None
         self.gradient = None
 
@@ -134,22 +87,58 @@ class Placeholder(Node):
         return self.name
 
 
+class Constant(Node):
+    """Represents a node with a fixed value.
+
+    :param value: value to set
+    :param name: name of the node, if none than name will be
+        created automatically, defaults to None
+    :raises ValueError: when trying to change the value
+    """
+
+    def __init__(self, value, name=None):
+        """Constructor method.
+        """
+        graph = self.current_graph()
+        self.name = name or f"{graph.name}/constant-{self.count()}"
+        self.prepare_graph(graph)
+
+        self._value = value
+        self.gradient = None
+
+    @property
+    def value(self):
+        """Get value of a node."""
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        """Set value of a node.
+
+        Constant value cannot be changed, so ValueError will be
+        raised when trying.
+        """
+        raise ValueError("Cannot reassign constant.")
+
+    def __str__(self):
+        return self.name
+
+
 class Variable(Node):
     """Represents a basic node with some changeable value.
 
     :param value: value to set
     :param name: name of the node, if none than name will be
         created automatically, defaults to None
-    :param dtype: value type
     """
 
-    def __init__(self, value, name=None, dtype=None):
-        self.value = np.asarray(value, dtype=dtype)
-        self.gradient = None
-
+    def __init__(self, value, name=None):
         graph = self.current_graph()
         self.name = name or f"{graph.name}/variable-{self.count()}"
         self.prepare_graph(graph)
+
+        self.value = value
+        self.gradient = None
 
     def __str__(self):
         return self.name
@@ -172,12 +161,10 @@ class Operation(Node):
     """
 
     def __init__(self, name=None, threshold=0):
-        """Constructor method.
-        """
+        """Constructor method."""
         self.inputs = ()
-        self.gradient = None
-        self.value = None
         self.threshold = threshold
+        self.gradient = None
 
         graph = self.current_graph()
         self.name = name or f'{graph.name}/operator-{self.count()}'
@@ -195,7 +182,7 @@ class Operation(Node):
         return self.name
 
 
-class UnaryOperator(Operation):
+class UnaryOperation(Operation):
     """Operation subclass that defines the base class for unary operators."""
 
     def forward(self, value):
@@ -207,7 +194,7 @@ class UnaryOperator(Operation):
         raise NotImplementedError("Must be implemented in child classes.")
 
 
-class BinaryOperator(Operation):
+class BinaryOperation(Operation):
     """Operation subclass that defines the base class for binary operations."""
 
     def forward(self, left, right):
@@ -219,7 +206,43 @@ class BinaryOperator(Operation):
         raise NotImplementedError("Must be implemented in child classes.")
 
 
-class Sum(Operation):
+class AssignOperation(Operation):
+    """Assign operations superclass.
+
+    :param ref: left operand of the operation, result of the
+    operation will be assigned to this node
+    :param op: right operand of the operation
+    """
+
+    def __init__(self, ref, op, *args, **kwargs):
+        """Constructor method."""
+        self._ref = ref
+        self.inputs = (self._ref, op)
+
+        super().__init__(*args, **kwargs)
+
+        if not isinstance(ref, Node):
+            raise ValueError("Reference object must be of the Node class")
+
+    @property
+    def value(self):
+        return self._ref.value
+
+    @value.setter
+    def value(self, value):
+        if self._ref:
+            self._ref.value = value
+
+    def forward(self, ref, op):
+        """Return output of the operation by given input."""
+        raise NotImplementedError("Must be implemented in child classes.")
+
+    def backward(self, value, dout):
+        """Return gradient of the operation by given input."""
+        raise NotImplementedError("Must be implemented in child classes.")
+
+
+class Sum(UnaryOperation):
     """Sum of array elements over a given axis.
 
     :param value: array to sum
@@ -230,8 +253,7 @@ class Sum(Operation):
         defaults to 0
     """
     def __init__(self, value, axis=None, name='sum', threshold=0):
-        """Constructor method
-        """
+        """Constructor method."""
         super().__init__(name, threshold)
         self.inputs = value,
         self.axis = axis
@@ -266,7 +288,7 @@ class Sum(Operation):
         return np.tile(dout, tile_scaling)
 
 
-class Mean(Operation):
+class Mean(UnaryOperation):
     """Mean value of array over a given axis.
 
     :param value: array to get the mean from
@@ -277,8 +299,7 @@ class Mean(Operation):
         defaults to 0
     """
     def __init__(self, value, axis=None, name='mean', threshold=0):
-        """Constructor method
-        """
+        """Constructor method."""
         super().__init__(name, threshold)
         self.inputs = value,
         self.axis = axis
@@ -312,7 +333,7 @@ class Mean(Operation):
         return np.tile(dout, tile_scaling) / value.size
 
 
-class Add(BinaryOperator):
+class Add(BinaryOperation):
     """Element-wise sum.
 
     :param left: left operand of the operation
@@ -322,8 +343,7 @@ class Add(BinaryOperator):
         defaults to 0
     """
     def __init__(self, left, right, name='add', threshold=0):
-        """Constructor method
-        """
+        """Constructor method."""
         super().__init__(name, threshold)
         self.inputs = (left, right)
 
@@ -365,7 +385,30 @@ class Add(BinaryOperator):
         return dout_wrt_left, dout_wrt_right
 
 
-class Multiply(BinaryOperator):
+class AssignAdd(AssignOperation, Add):
+    """Element-wise sum with value assignment.
+
+    :param ref: left operand of the operation, result of the
+        operation will be assigned to this node
+    :param op: right operand of the operation
+    :param name: node name, defaults to 'assign_add'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(self, ref, op, name='assign_add', threshold=0):
+        """Constructor method."""
+        super().__init__(
+            ref=ref, op=op,  # init AssignOperation
+            left=ref, right=op,  # init Add
+            name=name, threshold=threshold
+        )
+
+    forward = Add.forward
+    backward = Add.backward
+
+
+class Multiply(BinaryOperation):
     """Element-wise multiply.
 
     :param left: left operand of the operation
@@ -400,7 +443,30 @@ class Multiply(BinaryOperator):
         return np.multiply(dout, right), np.multiply(dout, left)
 
 
-class Divide(BinaryOperator):
+class AssignMultiply(AssignOperation, Multiply):
+    """Element-wise multiply with value assignment.
+
+    :param ref: left operand of the operation, result of the
+        operation will be assigned to this node
+    :param op: right operand of the operation
+    :param name: node name, defaults to 'assign_mul'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(self, ref, op, name='assign_mul', threshold=0):
+        """Constructor method."""
+        super().__init__(
+            ref=ref, op=op,  # init AssignOperation
+            left=ref, right=op,  # init Multiply
+            name=name, threshold=threshold
+        )
+
+    forward = Multiply.forward
+    backward = Multiply.backward
+
+
+class Divide(BinaryOperation):
     """Element-wise divide.
 
     :param left: left operand of the operation
@@ -435,7 +501,30 @@ class Divide(BinaryOperator):
         return dout / right, np.negative(dout) * d_wrt_right
 
 
-class Power(BinaryOperator):
+class AssignDivide(AssignOperation, Divide):
+    """Element-wise divide with value assignment.
+
+    :param ref: left operand of the operation, result of the
+        operation will be assigned to this node
+    :param op: right operand of the operation
+    :param name: node name, defaults to 'assign_div'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(self, ref, op, name='assign_div', threshold=0):
+        """Constructor method."""
+        super().__init__(
+            ref=ref, op=op,  # init AssignOperation
+            left=ref, right=op,  # init Divide
+            name=name, threshold=threshold
+        )
+
+    forward = Divide.forward
+    backward = Divide.backward
+
+
+class Power(BinaryOperation):
     """Power operator.
 
     :param left: left operand of the operation
@@ -478,7 +567,7 @@ class Power(BinaryOperator):
         return d_wrt_left, d_wrt_right
 
 
-class Matmul(BinaryOperator):
+class Matmul(BinaryOperation):
     """Matrix multiplication.
 
     :param left: left operand of the operation
@@ -514,7 +603,7 @@ class Matmul(BinaryOperator):
         return np.dot(dout, right.T), np.dot(left.T, dout)
 
 
-class Max(BinaryOperator):
+class Max(BinaryOperation):
     """Element-wise maximum.
 
     :param left: left operand of the operation
@@ -551,7 +640,7 @@ class Max(BinaryOperator):
         return d_wrt_left, d_wrt_right
 
 
-class Min(BinaryOperator):
+class Min(BinaryOperation):
     """Element-wise maximum.
 
     :param left: left operand of the operation
@@ -588,7 +677,7 @@ class Min(BinaryOperator):
         return d_wrt_left, d_wrt_right
 
 
-class Sqrt(UnaryOperator):
+class Sqrt(UnaryOperation):
     """Element-wise square root.
 
     :param value: value to get square root of
@@ -620,7 +709,7 @@ class Sqrt(UnaryOperator):
         return dout / (2 * np.sqrt(value)+self.threshold),
 
 
-class Abs(UnaryOperator):
+class Abs(UnaryOperation):
     """Take the number absolute (element-wise for arrays).
 
     :param value: value to get square root of
@@ -654,7 +743,7 @@ class Abs(UnaryOperator):
         return np.multiply(dout, (value / (np.abs(value)+self.threshold))),
 
 
-class Exp(UnaryOperator):
+class Exp(UnaryOperation):
     """Element-wise exponentiation.
 
     :param value: value to get exponent of
@@ -686,7 +775,7 @@ class Exp(UnaryOperator):
         return np.multiply(dout, np.exp(value)),
 
 
-class Log(UnaryOperator):
+class Log(UnaryOperation):
     """Element-wise natural logarithm.
 
     :param value: value to get natural logarithm of
@@ -718,7 +807,7 @@ class Log(UnaryOperator):
         return np.divide(dout, np.asarray(value)+self.threshold),
 
 
-class Log2(UnaryOperator):
+class Log2(UnaryOperation):
     """Element-wise natural logarithm.
 
     :param value: value to get natural logarithm of
@@ -750,7 +839,7 @@ class Log2(UnaryOperator):
         return np.divide(dout, np.multiply(value, np.log(2))+self.threshold),
 
 
-class Log10(UnaryOperator):
+class Log10(UnaryOperation):
     """Element-wise natural logarithm.
 
     :param value: value to get natural logarithm of
@@ -782,7 +871,7 @@ class Log10(UnaryOperator):
         return np.divide(dout, np.multiply(value, np.log(10))+self.threshold),
 
 
-class Sin(UnaryOperator):
+class Sin(UnaryOperation):
     """Element-wise trigonometric sine
 
     :param value: value to get sin of
@@ -812,7 +901,7 @@ class Sin(UnaryOperator):
         return np.multiply(dout, np.cos(value)),
 
 
-class Cos(UnaryOperator):
+class Cos(UnaryOperation):
     """Element-wise trigonometric cosine
 
     :param value: value to get cos of
@@ -868,6 +957,7 @@ def topological_sort(nodes):
         for node in iterator:
             _dfs(node)
             yield order
+            order = []
     except TypeError:
         _dfs(nodes)
         yield order
@@ -894,114 +984,3 @@ def node_wrapper(node, *args, **kwargs):
                 ) from e
 
     return node(*fnargs, **kwargs)
-
-
-# disabled W0622 (redefined-builtin)
-# max, min, pow, sum, etc. redefining built-ins for aesthetic purposes
-# pylint: disable=W0622
-
-def add(this, other, **kwargs):
-    """Add two operands."""
-    return node_wrapper(Add, this, other, **kwargs)
-
-
-def mul(this, other, **kwargs):
-    """Multiply two operands."""
-    return node_wrapper(Multiply, this, other, **kwargs)
-
-
-def div(this, other, **kwargs):
-    """Divide two operands."""
-    return node_wrapper(Divide, this, other, **kwargs)
-
-
-def pow(this, other, **kwargs):
-    """Raise the first operand to the power of the second."""
-    return node_wrapper(Power, this, other, **kwargs)
-
-
-def dot(this, other, **kwargs):
-    """Multiply two matrices."""
-    return node_wrapper(Matmul, this, other, **kwargs)
-
-
-def max(this, other, **kwargs):
-    """Check if 'this' is greater than 'other'."""
-    return node_wrapper(Max, this, other, **kwargs)
-
-
-def min(this, other, **kwargs):
-    """Check if 'this' is less than 'other'."""
-    return node_wrapper(Min, this, other, **kwargs)
-
-
-def sum(this, **kwargs):
-    """Sum of array elements over a given axis."""
-    return node_wrapper(Sum, this, **kwargs)
-
-
-def mean(this, **kwargs):
-    """Compute the arithmetic mean along the specified axis."""
-    return node_wrapper(Mean, this, **kwargs)
-
-
-def sqrt(this, **kwargs):
-    """Return the square-root of an array(element-wise) or a number."""
-    return node_wrapper(Sqrt, this, **kwargs)
-
-
-def abs(this, **kwargs):
-    """Return absolute value of an array(element-wise) or a number."""
-    return node_wrapper(Abs, this, **kwargs)
-
-
-def exp(this, **kwargs):
-    """Calculate the exponential of an array(element-wise) or a number."""
-    return node_wrapper(Exp, this, **kwargs)
-
-
-def log(this, **kwargs):
-    """Natural logarithm (element-wise for arrays)."""
-    return node_wrapper(Log, this, **kwargs)
-
-
-def log2(this, **kwargs):
-    """Logarithm with base 2 (element-wise for arrays)."""
-    return node_wrapper(Log2, this, **kwargs)
-
-
-def log10(this, **kwargs):
-    """Logarithm with base 10 (element-wise for arrays)."""
-    return node_wrapper(Log10, this, **kwargs)
-
-
-def sin(this, **kwargs):
-    """Trigonometric sine (element-wise for arrays)."""
-    return node_wrapper(Sin, this, **kwargs)
-
-
-def cos(this, **kwargs):
-    """Trigonometric cosine (element-wise for arrays)."""
-    return node_wrapper(Cos, this, **kwargs)
-
-
-Node.__add__ = add
-Node.__mul__ = mul
-Node.__truediv__ = div
-Node.__pow__ = pow
-Node.__matmul__ = dot
-
-# Make sure that all lambda functions have the relevant docstring
-Node.__radd__ = Node.__add__
-Node.__rmul__ = Node.__mul__
-Node.__sub__ = lambda this, other: node_wrapper(Add, this, -other)
-Node.__rsub__ = lambda this, other: node_wrapper(Add, -this, other)
-Node.__rtruediv__ = lambda this, other: node_wrapper(Divide, other, this)
-Node.__neg__ = lambda this: node_wrapper(Multiply, this, -1)
-Node.__rpow__ = lambda this, other: node_wrapper(Power, other, this)
-
-Node.__sub__.__doc__ = "Subtract the first operand from the second."
-Node.__rsub__.__doc__ = Node.__sub__.__doc__
-Node.__rtruediv__.__doc__ = Node.__truediv__.__doc__
-Node.__neg__.__doc__ = "Multiply operand by -1."
-Node.__rpow__.__doc__ = Node.__pow__.__doc__

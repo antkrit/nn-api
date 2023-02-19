@@ -1,17 +1,17 @@
-from api.lib import autograd as ag
+from api.lib.autograd import ops
 from api.lib.autograd.node import (
-    Variable, Add, Node, topological_sort, node_wrapper
+    Constant, Add, Node, topological_sort, node_wrapper
 )
 
 
 def test_topological_sort():
-    a = Variable(1, name='node1')
-    b = Variable(2, name='node2')
-    w = Variable(3, name='node3')
+    a = Constant(1, name='node1')
+    b = Constant(2, name='node2')
+    w = Constant(3, name='node3')
 
-    c = ag.add(a, b, name='sum')
-    x = ag.mul(c, b, name='mul')
-    y = ag.add(x, w, name='sum1')
+    c = ops.add(a, b, name='sum')
+    x = ops.mul(c, b, name='mul')
+    y = ops.add(x, w, name='sum1')
     # pay attention to the names of nodes and operators
     # to change something above make sure that expected
     # order will be changed too
@@ -19,8 +19,8 @@ def test_topological_sort():
     received = next(topological_sort(y))
     assert [n.name for n in received] == expected_order
 
-    s = ag.add(a, b, name='sum2')
-    s1 = ag.add(s, w, name='sum3')
+    s = ops.add(a, b, name='sum2')
+    s1 = ops.add(s, w, name='sum3')
 
     sorted_ = topological_sort([s, s1])
 
@@ -32,7 +32,7 @@ def test_topological_sort():
 
 
 def test_node_wrapper():
-    x, c = Variable(1), 2
+    x, c = Constant(1), 2
 
     node = Add(x, c)
     node_wrapped = node_wrapper(Add, x, c)
