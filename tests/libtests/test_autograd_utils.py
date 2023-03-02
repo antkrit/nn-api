@@ -50,3 +50,21 @@ def test_convert_to_node(session):
     )
     assert isinstance(test_case_cnst, ag.node.Constant)
     assert test_case_cnst.value == 1 and test_case_cnst.name == 'test'
+
+
+def test_fill_placeholders():
+    x_pl = ag.node.Placeholder('x')
+    y_pl = ag.node.Placeholder('y')
+
+    pls = [
+        ag.node.Variable(1, name='x'),
+        x_pl,
+        y_pl,
+        'not-placeholder'
+    ]
+
+    x_val = 1
+    utils.fill_placeholders(*pls, feed_dict={'x': x_val})
+    assert x_pl.value == x_val
+    assert y_pl.value is None
+

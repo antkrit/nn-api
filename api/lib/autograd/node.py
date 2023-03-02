@@ -34,7 +34,7 @@ class NodeMixin:
 
 
 # E1101(no-member) is disabled because this class should only
-# be used to detect Node objects
+# be used to detect Node objects (isinstance)
 # pylint: disable=E1101
 class Node(NodeMixin):
     """Base node class."""
@@ -81,7 +81,7 @@ class Placeholder(Node):
     @value.setter
     def value(self, value):
         """Set value of a node."""
-        self._value = np.asarray(value)
+        self._value = value
 
     def __str__(self):
         return self.name
@@ -216,13 +216,13 @@ class AssignOperation(Operation):
 
     def __init__(self, ref, op, *args, **kwargs):
         """Constructor method."""
+        if not isinstance(ref, Node):
+            raise ValueError("Reference object must be of the Node class")
+
         self._ref = ref
         self.inputs = (self._ref, op)
 
         super().__init__(*args, **kwargs)
-
-        if not isinstance(ref, Node):
-            raise ValueError("Reference object must be of the Node class")
 
     @property
     def value(self):
@@ -230,8 +230,7 @@ class AssignOperation(Operation):
 
     @value.setter
     def value(self, value):
-        if self._ref:
-            self._ref.value = value
+        self._ref.value = value
 
     def forward(self, ref, op):
         """Return output of the operation by given input."""
@@ -953,8 +952,7 @@ def topological_sort(nodes):
             order.append(node)
 
     try:
-        iterator = iter(nodes)
-        for node in iterator:
+        for node in iter(nodes):
             _dfs(node)
             yield order
             order = []

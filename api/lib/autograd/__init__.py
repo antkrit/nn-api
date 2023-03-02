@@ -27,7 +27,7 @@ Contains following modules:
 """
 # disabled W0622 (redefined-builtin)
 # pylint: disable=W0622
-from api.lib.autograd import utils, namespace, ops
+from api.lib.autograd import utils, ops
 from api.lib.autograd.node import *
 from api.lib.autograd.graph import Graph, get_current_graph, reset_current_graph
 from api.lib.autograd.session import Session

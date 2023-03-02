@@ -1,5 +1,5 @@
 """Contains various base classes."""
-from api.lib.autograd import Session
+from api.lib.autograd import Session, Operation, utils
 
 
 class BaseLayer:
@@ -72,7 +72,7 @@ class BaseInitializer:
         raise NotImplementedError("Must be implemented in a subclass.")
 
 
-class BaseOptimizer:
+class BaseOptimizer(Operation):
     """Base optimizer class.
 
     :param session: current session, if None - creates new, defaults to None
@@ -80,18 +80,40 @@ class BaseOptimizer:
         weight and bias
     """
 
-    def __init__(self, trainable_variables, session=None):
+    def __init__(self, trainable_variables, session=None, name=None):
         """Constructor method."""
+        super().__init__(name=name)
         self.session = session or Session()
-        self.trainable = trainable_variables or [None, ]
+        self.trainable = trainable_variables
 
     def apply_gradient(self, *args, **kwargs):
         """Apply computed gradients to trainable variables."""
-        raise NotImplementedError("Must be implemented in subclasses.")
+        raise NotImplementedError("Must be implemented in child classes.")
 
-    def minimize(self, *args, **kwargs):
-        """Combine gradient computing and applying."""
-        raise NotImplementedError("Must be implemented in subclasses.")
+    def forward(self, floss):
+        """Compute gradients and apply an update rule to trainable variables.
+
+        :parma floss: output of the network, head node
+        :return: list of results
+        """
+        self.session.gradients(floss)
+        apply_ops = [
+            self.apply_gradient(x, grad=x.gradient)
+            for x in self.trainable
+        ]
+
+        return self.session.run(apply_ops)
+
+    def minimize(self, operation):
+        """Set (target) operation for the optimizer."""
+        wrapped_op = utils.convert_to_tensor(
+            'constant',
+            value=operation,
+            name='optimizer-target-wrapper'
+        )
+
+        self.inputs = wrapped_op,
+        return self
 
 
 class BaseScaler:

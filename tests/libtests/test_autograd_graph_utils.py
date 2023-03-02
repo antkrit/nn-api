@@ -28,7 +28,7 @@ def test_topological_sort():
     assert [n.name for n in received] == ['node1', 'node2', 'sum2']
 
     received = next(sorted_)
-    assert [n.name for n in received] == ['node1', 'node2', 'sum2', 'node3', 'sum3']
+    assert [n.name for n in received] == ['node3', 'sum3']
 
 
 def test_node_wrapper():

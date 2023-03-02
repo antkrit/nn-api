@@ -1,6 +1,4 @@
 import numpy as np
-import pytest
-
 from api.lib import namespace
 from api.lib.autograd import ops
 
@@ -41,6 +39,7 @@ def test_assign_op(session, test_case_binary):
 
     x = namespace.nodes.variable(tcb[0])
     expected = np.add(*tcb)
+
     assert not np.array_equal(x.value, expected)
     assert np.array_equal(session.run(ops.assign_add(x, tcb[1])), expected)
     assert np.array_equal(x.value, expected)

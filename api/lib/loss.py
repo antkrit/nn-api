@@ -43,8 +43,8 @@ class MSE(BaseLoss):
         :return: node that contains (root) mean squared error
         """
         err = (y_pred - y_true) ** 2
-        total = ag.mean(err)
-        return ag.sqrt(total) if self.root else total
+        total = ag.ops.mean(err)
+        return ag.ops.sqrt(total) if self.root else total
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -67,8 +67,8 @@ class MAE(BaseLoss):
         :param y_true: actual values
         :return: node that contains mean absolute error
         """
-        err = ag.abs(y_pred - y_true)
-        return ag.mean(err)
+        err = ag.ops.abs(y_pred - y_true)
+        return ag.ops.mean(err)
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -92,7 +92,7 @@ class MBE(BaseLoss):
         :return: node that contains mean absolute error
         """
         err = y_pred - y_true
-        return ag.mean(err)
+        return ag.ops.mean(err)
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -120,7 +120,7 @@ class Huber(BaseLoss):
         :param y_true: actual values
         :return: node that contains mean absolute error
         """
-        err = ag.abs(y_pred - y_true)
+        err = ag.ops.abs(y_pred - y_true)
 
         is_err_small = self.session.run(err) <= self.delta
         # implementation details: initially, the Huber loss is a system with
@@ -128,17 +128,17 @@ class Huber(BaseLoss):
         # advance, multiply it and its inverted version by the system
         # inequalities and then just add them
         cond_true = ag.utils.convert_to_tensor(
-            ag.node.Constant,
+            'constant',
             value=np.asarray(is_err_small, dtype=int)
         )
         cond_false = ag.utils.convert_to_tensor(
-            ag.node.Constant,
+            'constant',
             value=np.asarray(np.invert(is_err_small), dtype=int)
         )
 
         lss_cond_true = cond_true * 0.5 * err ** 2
         lss_cond_false = cond_false * self.delta * (err - 0.5 * self.delta)
-        return ag.mean(lss_cond_true+lss_cond_false)
+        return ag.ops.mean(lss_cond_true+lss_cond_false)
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -165,7 +165,7 @@ class LHL(BaseLoss):
         :return: node that contains likelihood loss
         """
         err = (y_true * y_pred + (1 - y_true) * (1 - y_pred))
-        return ag.mean(err)
+        return ag.ops.mean(err)
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -189,9 +189,9 @@ class BCE(BaseLoss):
         :param y_true: actual values
         :return: node that contains binary cross entropy loss
         """
-        err = y_true * ag.log10(y_pred + self.threshold)
-        err_1 = (1 - y_true) * ag.log10(1 - y_pred + self.threshold)
-        return ag.mean(-(err+err_1))
+        err = y_true * ag.ops.log10(y_pred + self.threshold)
+        err_1 = (1 - y_true) * ag.ops.log10(1 - y_pred + self.threshold)
+        return ag.ops.mean(-(err+err_1))
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -218,8 +218,8 @@ class Hinge(BaseLoss):
         :param y_true: actual values
         :return: node, that contains (squared) hinge loss
         """
-        err = ag.max(0, 1 - (y_pred * y_true))
-        return ag.mean(err)
+        err = ag.ops.max(0, 1 - (y_pred * y_true))
+        return ag.ops.mean(err)
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -245,8 +245,8 @@ class CCE(BaseLoss):
         :param y_true: actual values
         :return: node, that contains categorical cross entropy loss
         """
-        err = y_true * ag.log10(y_pred + self.threshold)
-        return ag.mean(-err)
+        err = y_true * ag.ops.log10(y_pred + self.threshold)
+        return ag.ops.mean(-err)
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)
@@ -271,8 +271,8 @@ class KLD(BaseLoss):
         :return: node, that contains Kullback-Leibler loss
         """
         prob = (y_true + self.threshold) / (y_pred + self.threshold)
-        err = y_true * ag.log10(prob)
-        return ag.mean(err)
+        err = y_true * ag.ops.log10(prob)
+        return ag.ops.mean(err)
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         return ag.node_wrapper(self.forward, y_pred, y_true, *args, **kwargs)

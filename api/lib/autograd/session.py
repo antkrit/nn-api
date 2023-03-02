@@ -29,6 +29,11 @@ class Session:
     >>> session.run(c)
     30.0
     """
+    def __init__(self):
+        """Constructor method."""
+        self.__CTX_GLOBAL_TOKEN = 'globals'
+        self.__context = {self.__CTX_GLOBAL_TOKEN: []}
+
     def run(self, target, feed_dict=None):
         """Forward propagation aver a graph.
 
@@ -36,7 +41,7 @@ class Session:
 
         .. note::
             If there are placeholders in the graph you need to fill them
-            with data. Otherwise, KeyError will be raised. Pass that data
+            with data. Otherwise, TypeError will be raised. Pass that data
             to feed_dict in node_name:data format.
 
             >>> a = 2
@@ -48,30 +53,54 @@ class Session:
 
         :param target: node or list of nodes to perform the forward step for
         :param feed_dict: data for placeholders
-        :raises KeyError: in case where there are no values in feed_dict for
-            the empty Placeholder
         :return: value of the last node, i.e. result of graph
         """
         feed_dict = feed_dict or {}
-        outputs = []
+        session_output_token = 'FORWARD_OUTPUT'
+        output = {}
 
         try:
+            # infinite cycle is used to make sure all values
+            # from the feed dict entry will be used (iterate until there
+            # are no values in the batch).
             while True:
                 for sorted_ in topological_sort(target):
                     for node in sorted_:
-                        if isinstance(node, Placeholder):
-                            node.value = next(feed_dict[node.name])
-                        if isinstance(node, Operation):
-                            inputs = [x.value for x in node.inputs]
-                            node.value = node.forward(*inputs)
+                        self.__process_node_forward(node, feed_dict=feed_dict)
 
-                    outputs.append(sorted_[-1].value)
+                    head_node = sorted_[-1]
+                    head_node_entry = output.get(head_node, None)
+
+                    try:
+                        # add a new node output to the list
+                        head_node_entry.append(head_node.value)
+                    except AttributeError:
+                        if head_node_entry is not None:
+                            # if there is single node output in the
+                            # output dict, create list with the new one
+                            output[head_node] = [
+                                output[head_node],
+                                head_node.value
+                            ]
+                        else:
+                            # if this node's output does not exist in the
+                            # output dict, set it to a single value
+                            output[head_node] = head_node.value
 
                 if not feed_dict:
-                    return outputs[0] if len(outputs) == 1 else outputs
+                    # If there is no feed dict, then there is no batch.
+                    break
 
         except StopIteration:
-            return outputs[0] if len(outputs) == 1 else outputs
+            # If there are no more values from the feed dict
+            # entry (which is supposed to be an iterator) - StopIteration error
+            # will be raised (for implementation see the
+            # __process_node_forward -> __handle_placeholder_forward function)
+            pass
+        finally:
+            self.ctx_add(session_output_token, output)
+            results = list(output.values())
+            return results[0] if len(results) == 1 else results
 
     def gradients(self, target):
         """Compute gradients for the given graph.
@@ -108,7 +137,6 @@ class Session:
         :return: a dict with node and its gradient pairs
         """
         order = next(topological_sort(target))
-
         visited = set()
         order[-1].gradient = 1.0  # df/df
 
@@ -128,3 +156,63 @@ class Session:
                     visited.add(inp)
 
         return {node: node.gradient for node in order}
+
+    def ctx_add(self, v_name, v_value):
+        """Add a variable to the session context.
+
+        :param v_name: variable name
+        :param v_value: value of the variable
+        :return: None
+        """
+        if v_name not in self.__context:
+            self.ctx_add(self.__CTX_GLOBAL_TOKEN, v_name)
+        self.__context.setdefault(v_name, []).append(v_value)
+
+    def ctx_get(self, v_name):
+        """Get a variable from the session context.
+
+        :param v_name: variable name
+        :return: value of the variable or None if there is no such value
+        """
+        return self.__context.get(v_name, None)
+
+    @staticmethod
+    def __handle_operation_forward(node):
+        """Handle operation node.
+
+        :param node: operation node to process
+        """
+        inputs = [x.value for x in node.inputs]
+        node.value = node.forward(*inputs)
+
+    @staticmethod
+    def __handle_placeholder_forward(node, feed_dict):
+        """Handle placeholder node.
+
+        :param node: placeholder node to process
+        :param feed_dict: original feed_dict
+        :raises StopIteration: if the no more data for the placeholder entry
+        """
+        feed_dict = feed_dict or {}
+
+        try:
+            pl_iter = feed_dict[node.name]
+            node.value = next(pl_iter)
+        except KeyError:
+            node.value = node.value
+
+    def __process_node_forward(self, node, feed_dict=None):
+        """Get a node as input and process it depending on the class.
+
+        :param node: node to process
+        :param feed_dict: original feed dict (used to handle placeholders),
+            defaults to None
+        :return: handled node (variable nodes are returned in
+            their original form)
+        """
+        if isinstance(node, Placeholder):
+            self.__handle_placeholder_forward(node, feed_dict)
+        elif isinstance(node, Operation):
+            self.__handle_operation_forward(node)
+
+        return node

@@ -35,7 +35,7 @@ losses = Container(
     categorical_cross_entropy=CCE,
     kullback_leibler_divergence=KLD,
 )
-initializers_container = Container(
+initializers = Container(
     name='initializers',
 
     zeros=zeros,
@@ -69,4 +69,4 @@ bases = Container(
     Optimizer=BaseOptimizer,
     Scaler=BaseScaler,
 )
-nodes = autograd.namespace.nodes
+nodes = autograd.utils.NODES_CONTAINER

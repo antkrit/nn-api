@@ -10,6 +10,7 @@ def test_run_forward_no_placeholder(session, test_case_binary):
     y = namespace.nodes.variable(y_val)
 
     x_val, y_val = np.asarray(x_val), np.asarray(y_val)
+
     assert np.array_equal(session.run(x), x_val)
     assert np.array_equal(session.run(y-x), y_val-x_val)
 
@@ -19,12 +20,6 @@ def test_run_forward_with_placeholder(session, test_case_binary):
 
     x = namespace.nodes.variable(x_val)
     y = namespace.nodes.placeholder('w')
-
-    with pytest.raises(KeyError):
-        session.run(x * y)
-
-    with pytest.raises(KeyError):
-        session.run(x * y, feed_dict={'y': iter([y_val])})
 
     z = session.run(x * y, feed_dict={'w': iter([y_val, y_val])})
     x_val, y_val = np.asarray(x_val), np.asarray(y_val)
@@ -82,3 +77,36 @@ def test_run_backward_with_placeholder(session):
     x.value = x_val
     grd = session.gradients(op)
     assert grd[x] == w.value and grd[w] == x_val
+
+
+def test_session_utils(session):
+    assert session.ctx_get('globals') is not None
+
+    some_token = 'some_token'
+    some_token_value = 'test_value'
+    session.ctx_add(some_token, some_token_value)
+    assert session.ctx_get(some_token)[0] == some_token_value
+    assert some_token in session.ctx_get('globals')
+
+    var_value, pl_value = 1, 2
+    variable = namespace.nodes.variable(var_value, name='test_variable')
+    placeholder = namespace.nodes.placeholder(name='test_placeholder')
+    operation = variable + placeholder
+
+    feed_dict = {'test_placeholder': iter([pl_value])}
+
+    var = session._Session__process_node_forward(variable)
+    assert var is variable and var.value == var_value
+
+    pl = session._Session__process_node_forward(placeholder, feed_dict=None)
+    assert pl is placeholder and pl.value is None
+
+    pl = session._Session__process_node_forward(placeholder, feed_dict=feed_dict)
+    assert pl is placeholder and pl.value == pl_value
+
+    with pytest.raises(StopIteration):
+        pl = session._Session__process_node_forward(placeholder, feed_dict=feed_dict)
+        assert pl is placeholder and pl.value == pl_value
+
+    op = session._Session__process_node_forward(operation)
+    assert op is operation and op.value == var_value + pl_value

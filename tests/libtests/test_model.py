@@ -1,6 +1,6 @@
 import pytest
 import numpy as np
-from api.lib.model import Model
+from api.lib.generic import Model
 from api.lib.layers import Dense
 from api.lib.loss import MSE
 from api.lib.activation import ReLU
@@ -39,7 +39,7 @@ def test_model_compilation():
 
     assert model.optimizer is None and model.loss is None
 
-    opt = GradientDescent(lr=1)
+    opt = GradientDescent(learning_rate=1)
     model.compile(optimizer=opt, loss='mean_squared_error')
 
     assert isinstance(model.optimizer, GradientDescent)
@@ -47,10 +47,14 @@ def test_model_compilation():
     assert isinstance(model.loss, MSE)
 
     test_lr = 1
-    model.compile(optimizer='gradient_descent', loss='mean_squared_error', lr=test_lr)
+    model.compile(
+        optimizer='gradient_descent',
+        loss='mean_squared_error',
+        learning_rate=test_lr
+    )
 
     assert isinstance(model.optimizer, GradientDescent)
-    assert model.optimizer.lr == test_lr
+    assert model.optimizer._lr.value == test_lr
     assert _compare_trainable(all_trainable, model.optimizer.trainable)
 
 
@@ -63,17 +67,25 @@ def test_model_fit_predict(session, x):
     x_train = np.expand_dims(x, axis=0)
     y = np.ones(output_shape)
 
-    layer = Dense((x.size, output_shape), activation='relu', weight_initializer='ones')
+    layer = Dense(
+        (x.size, output_shape),
+        activation='relu',
+        weight_initializer='ones'
+    )
     w, b = layer.trainable
     model.add(layer)
 
     with pytest.raises(ModelIsNotCompiledException):
-        model.fit(x_train, y, epochs=1)
+        model.fit(iter([x_train, y]), epochs=1)
 
     with pytest.raises(ModelIsNotCompiledException):
         model.predict(x)
 
-    model.compile(optimizer='gradient_descent', loss='mean_absolute_error', lr=1)
+    model.compile(
+        optimizer='gradient_descent',
+        loss='mean_absolute_error',
+        learning_rate=1
+    )
 
     # following tests assume:
     # learning rate = 1,
@@ -83,7 +95,7 @@ def test_model_fit_predict(session, x):
     # 1 epoch: ReLU(X @ W + b)
     # b derivative = 1
     # W derivative = X.T
-    model.fit(x_train, y, epochs=1)
+    model.fit(iter([[x_train, y]]), epochs=1)
 
     # after the optimization step w.value should be equal to w - x.T
     assert np.array_equal(

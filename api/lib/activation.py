@@ -20,7 +20,7 @@ class Sigmoid(BaseActivation):
         The output of a sigmoid function ranges between 0 and 1. Mostly used for
         models where we have to predict the "probability".
         """
-        return 1 / (1 + ag.exp(-x))
+        return 1 / (1 + ag.ops.exp(-x))
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
@@ -39,7 +39,7 @@ class Tanh(BaseActivation):
         This function is relatively similar to class:`Sigmoid`, but with one big
         advantage - function is 0-centric(output is in range (-1, 1)).
         """
-        return (2 / (1+ag.exp(-2*x))) - 1
+        return (2 / (1+ag.ops.exp(-2*x))) - 1
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
@@ -63,7 +63,7 @@ class ReLU(BaseActivation):
         If the `a` parameter is 0, there is "dead ReLU" problem where the
         function is completely inactive with negative input values.
         """
-        return ag.max(x, self.alpha*x)
+        return ag.ops.max(x, self.alpha*x)
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
@@ -88,7 +88,7 @@ class ELU(BaseActivation):
 
         :param x: input value
         """
-        cond = self.session.run(x) > 0
+        cond = np.asarray(self.session.run(x)) > 0
 
         cond_true = ag.utils.convert_to_tensor(
             'constant',
@@ -98,7 +98,7 @@ class ELU(BaseActivation):
             'constant',
             value=np.asarray(np.invert(cond), dtype=int)
         )
-        return cond_true*x + cond_false*self.alpha*(ag.exp(x)-1)
+        return cond_true*x + cond_false*self.alpha*(ag.ops.exp(x)-1)
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
@@ -119,8 +119,8 @@ class Softmax(BaseActivation):
         :param x: input value
         """
         shiftx = x - np.max(self.session.run(x))
-        e = ag.exp(shiftx)
-        return e / (ag.sum(e)+self.threshold)
+        e = ag.ops.exp(shiftx)
+        return e / (ag.ops.sum(e)+self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
@@ -145,7 +145,7 @@ class Swish(BaseActivation):
 
         :param x: input value
         """
-        return x / (1 + ag.exp(-self.beta*x)+self.threshold)
+        return x / (1 + ag.ops.exp(-self.beta*x)+self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
@@ -165,7 +165,7 @@ class Softplus(BaseActivation):
 
         :param x: input value
         """
-        return ag.log(1+ag.exp(x)+self.threshold)
+        return ag.ops.log(1+ag.ops.exp(x)+self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.node_wrapper(self.forward, x, *args, **kwargs)
