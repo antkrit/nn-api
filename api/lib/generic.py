@@ -45,7 +45,7 @@ class Model:
         """Predict output with given input."""
         return self.session.run(
             self.__output_op,
-            ag_utils.form_feed_dict(data, self.__input)
+            feed_dict=ag_utils.form_feed_dict(data, self.__input)
         )
 
     @control_compile
@@ -55,12 +55,14 @@ class Model:
         optimize = self.optimizer.minimize(cost)
 
         for i in range(epochs):
-            feed_dict = ag_utils.form_feed_dict(
-                next(train),
-                self.__input, self.__y_true
+            err = self.session.run(
+                cost, optimize,
+                feed_dict=ag_utils.form_feed_dict(
+                    next(train),
+                    self.__input, self.__y_true
+                ),
+                returns=[cost]
             )
-
-            err, *_ = self.session.run([cost, optimize], feed_dict)
 
             err = np.mean(err)
             if i % max_step == 0:

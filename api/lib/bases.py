@@ -102,7 +102,7 @@ class BaseOptimizer(Operation):
             for x in self.trainable
         ]
 
-        return self.session.run(apply_ops)
+        return self.session.run(*apply_ops)
 
     def minimize(self, operation):
         """Set (target) operation for the optimizer."""

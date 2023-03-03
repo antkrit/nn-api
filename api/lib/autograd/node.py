@@ -941,7 +941,7 @@ def topological_sort(nodes):
 
     def _dfs(node):
         """Depth-first search recursion helper."""
-        nonlocal visited
+        nonlocal visited, order
 
         if node not in visited:
             visited.add(node)
@@ -955,7 +955,7 @@ def topological_sort(nodes):
         for node in iter(nodes):
             _dfs(node)
             yield order
-            order = []
+            order, visited = [], set()
     except TypeError:
         _dfs(nodes)
         yield order

@@ -25,7 +25,7 @@ def test_gradient_descent(session, lr):
     minimize_op = optimizer.minimize(op)
     assert isinstance(minimize_op, namespace.nodes.operation)
 
-    session.run([op, minimize_op])
+    session.run(op, minimize_op)
 
     w_expected = w_init_value - (np.ones(W.value.shape) + noise) * lr
     assert np.array_equal(W.value, w_expected)

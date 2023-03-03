@@ -11,8 +11,10 @@ def test_run_forward_no_placeholder(session, test_case_binary):
 
     x_val, y_val = np.asarray(x_val), np.asarray(y_val)
 
-    assert np.array_equal(session.run(x), x_val)
+    assert np.array_equal(session.run(x, feed_dict={'random': 'value'}), x_val)
     assert np.array_equal(session.run(y-x), y_val-x_val)
+
+    assert np.array_equal(session.run(y-x, x, returns=[x]), x_val)
 
 
 def test_run_forward_with_placeholder(session, test_case_binary):
@@ -20,6 +22,12 @@ def test_run_forward_with_placeholder(session, test_case_binary):
 
     x = namespace.nodes.variable(x_val)
     y = namespace.nodes.placeholder('w')
+
+    with pytest.raises(KeyError):
+        session.run(x * y)
+
+    with pytest.raises(KeyError):
+        session.run(x * y, feed_dict={'y': iter([y_val])})
 
     z = session.run(x * y, feed_dict={'w': iter([y_val, y_val])})
     x_val, y_val = np.asarray(x_val), np.asarray(y_val)
@@ -40,7 +48,7 @@ def test_run_forward_multiple_head_nodes(session, test_case_binary):
     add_1_op = add_op + mul_op
     useless = x * add_op
 
-    add_1_out, useless_out = session.run([add_1_op, useless])
+    add_1_out, useless_out = session.run(add_1_op, useless)
 
     assert np.array_equal(add_1_out, (x_val + y_val) + (y_val * x_val))
     assert np.array_equal(
@@ -98,15 +106,23 @@ def test_session_utils(session):
     var = session._Session__process_node_forward(variable)
     assert var is variable and var.value == var_value
 
-    pl = session._Session__process_node_forward(placeholder, feed_dict=None)
-    assert pl is placeholder and pl.value is None
+    with pytest.raises(KeyError):
+        session._Session__process_node_forward(placeholder, feed_dict=None)
 
-    pl = session._Session__process_node_forward(placeholder, feed_dict=feed_dict)
+    with pytest.raises(KeyError):
+        session._Session__process_node_forward(
+            placeholder, feed_dict={'wrong_name': iter([pl_value])}
+        )
+
+    pl = session._Session__process_node_forward(
+        placeholder, feed_dict=feed_dict
+    )
     assert pl is placeholder and pl.value == pl_value
 
     with pytest.raises(StopIteration):
-        pl = session._Session__process_node_forward(placeholder, feed_dict=feed_dict)
-        assert pl is placeholder and pl.value == pl_value
+        session._Session__process_node_forward(
+            placeholder, feed_dict=feed_dict
+        )
 
     op = session._Session__process_node_forward(operation)
     assert op is operation and op.value == var_value + pl_value

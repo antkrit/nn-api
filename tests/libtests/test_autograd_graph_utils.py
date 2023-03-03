@@ -9,6 +9,8 @@ def test_topological_sort():
     b = Constant(2, name='node2')
     w = Constant(3, name='node3')
 
+    assert next(topological_sort(a))[0].name == 'node1'
+
     c = ops.add(a, b, name='sum')
     x = ops.mul(c, b, name='mul')
     y = ops.add(x, w, name='sum1')
@@ -28,7 +30,8 @@ def test_topological_sort():
     assert [n.name for n in received] == ['node1', 'node2', 'sum2']
 
     received = next(sorted_)
-    assert [n.name for n in received] == ['node3', 'sum3']
+    expected_order = ['node1', 'node2', 'sum2', 'node3', 'sum3']
+    assert [n.name for n in received] == expected_order
 
 
 def test_node_wrapper():
