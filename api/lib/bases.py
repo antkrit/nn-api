@@ -1,4 +1,5 @@
 """Contains various base classes."""
+from api.lib.exception import NoGradientException
 from api.lib.autograd import Session, Operation, utils
 
 
@@ -90,19 +91,26 @@ class BaseOptimizer(Operation):
         """Apply computed gradients to trainable variables."""
         raise NotImplementedError("Must be implemented in child classes.")
 
-    def forward(self, floss):
+    def forward(self, objective):
         """Compute gradients and apply an update rule to trainable variables.
 
-        :parma floss: output of the network, head node
+        :parma objective: objective function, for which the gradients
+            will be calculated
         :return: list of results
         """
-        self.session.gradients(floss)
+        self.session.gradients(objective)
         apply_ops = [
             self.apply_gradient(x, grad=x.gradient)
             for x in self.trainable
         ]
 
         return self.session.run(*apply_ops)
+
+    def backward(self, *args, **kwargs):
+        """Return gradient of the operation by given inputs."""
+        raise NoGradientException(
+            f"There is no gradient for operation {self.name}."
+        )
 
     def minimize(self, operation):
         """Set (target) operation for the optimizer."""

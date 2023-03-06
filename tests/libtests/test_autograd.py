@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
 from api.lib import namespace, autograd as ag
-from api.lib.autograd import utils
 
 
 sigmoid_autograd = lambda x: 1 / (1 + ag.ops.exp(-x))
@@ -24,9 +23,9 @@ def test_autograd_using_complex_functions(session, test_fn, test_case_unary):
     x = namespace.nodes.placeholder('x')
     out = autograd_fn(x)
 
-    frwrd = session.run(out, feed_dict=utils.form_feed_dict([test_case_unary], x))
-    grads = session.gradients(out)
+    forward = session.run(out, feed_dict={x.name: iter([test_case_unary])})
+    x_grd = session.gradients(out, [x])
 
     test_case = np.asarray(test_case_unary)
-    assert np.allclose(numpy_fn(test_case), frwrd)
-    assert np.allclose(d_numpy_fn(test_case), grads[x])
+    assert np.allclose(numpy_fn(test_case), forward)
+    assert np.allclose(d_numpy_fn(test_case), x_grd)

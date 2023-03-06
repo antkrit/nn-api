@@ -46,7 +46,7 @@ def test_assign_op(session, test_case_binary):
 
     x = namespace.nodes.variable(tcb[0])
     expected = np.multiply(*tcb)
-    assert not np.array_equal(x.value, expected)
+    assert not np.array_equal(x.value, expected) or tcb[1] == 1
     assert np.array_equal(session.run(ops.assign_mul(x, tcb[1])), expected)
     assert np.array_equal(x.value, expected)
 

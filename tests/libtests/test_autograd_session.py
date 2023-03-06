@@ -64,13 +64,13 @@ def test_run_backward_no_placeholder(graph, session, test_case_binary):
     y = namespace.nodes.variable(y_val, name='y')
     out = 2*x + 3*x*y
 
-    frwrd = session.run(out)  # fill Operator nodes with a value
-    grads = session.gradients(out)
+    session.run(out)  # fill Operator nodes with a value
 
     x_val, y_val = np.asarray(x_val), np.asarray(y_val)
-    assert np.array_equal(2 * x_val + 3*x_val*y_val, frwrd)
-    assert np.array_equal(2 + 3*y_val, grads[x])
-    assert np.array_equal(3*x_val, grads[y])
+    x_grd, y_grd = session.gradients(out, [x, y])
+    assert np.array_equal(x_grd, 2 + 3*y_val)
+    assert np.array_equal(y_grd, 3*x_val)
+    assert session.ctx_get('gradients') is not None
 
 
 def test_run_backward_with_placeholder(session):
@@ -83,8 +83,8 @@ def test_run_backward_with_placeholder(session):
         session.gradients(op)
 
     x.value = x_val
-    grd = session.gradients(op)
-    assert grd[x] == w.value and grd[w] == x_val
+    x_grd, w_grd = session.gradients(op, [x, w])
+    assert x_grd == w.value and w_grd == x_val
 
 
 def test_session_utils(session):

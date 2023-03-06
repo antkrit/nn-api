@@ -14,7 +14,7 @@ class GradientDescent(BaseOptimizer):
 
     Update rule: :math:`x_{k+1} = x_k - \alpha \nabla f'`
 
-    :param lr: some small positive value, learning rate
+    :param learning_rate: some small positive value, learning rate
     :param trainable_variables: nodes, variables to minimize
     :param session: current session, defaults to None
     """

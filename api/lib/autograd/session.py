@@ -121,9 +121,11 @@ class Session:
             # no data for placeholder (error raised by the
             # __process_node_forward -> __handle_placeholder_forward function)
             raise
-        except Exception as exc:
-            # TODO: log the error appropriately (using logging and traceback)
-            pass
+        except Exception:
+            # TODO: log the error appropriately
+            import logging
+            import traceback
+            logging.error(traceback.format_exc())
         finally:
             if output:
                 self.ctx_add(run_output_token, output)
@@ -131,7 +133,7 @@ class Session:
                 returns = returns or output.keys()
                 return operator.itemgetter(*returns)(output)
 
-    def gradients(self, target):
+    def gradients(self, target, returns=None):
         """Compute gradients for the given graph.
 
         Function performs topological sort for the target node, then sets
@@ -157,12 +159,14 @@ class Session:
             >>> x = Placeholder(name='x')
             >>> op = w * x
             >>> session = Session()
-            >>> _ = session.run(op, feed_dict={'x': 2.0})
+            >>> _ = session.run(op, feed_dict={'x': iter([2.0])})
             >>> session.gradients(op)
             {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
 
         :param target: head nodes of the graph
-        :return: a dict with node and its gradient pairs
+        :param returns: list of nodes whose gradient should be returned,
+            if None - returns all targets resutls, defaults to None
+        :return: a list of gradients
         """
         order = next(topological_sort(target))
         visited = set()
@@ -183,7 +187,11 @@ class Session:
                         inp.gradient = grad
                     visited.add(inp)
 
-        return {node: node.gradient for node in order}
+        grads = {node: node.gradient for node in order}
+        self.ctx_add('gradients', grads)
+
+        returns = returns or grads.keys()
+        return operator.itemgetter(*returns)(grads)
 
     def ctx_add(self, v_name, v_value):
         """Add a variable to the session context.
@@ -241,7 +249,7 @@ class Session:
         :param node: node to process
         :param feed_dict: original feed dict (used to handle placeholders),
             defaults to None
-        :return: handled node
+        :return: processed node
         """
         if isinstance(node, Placeholder):
             self.__handle_placeholder_forward(node, feed_dict)

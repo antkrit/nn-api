@@ -58,6 +58,7 @@ exceptions = Container(
     name='exceptions',
 
     ModelIsNotCompiled=ModelIsNotCompiledException,
+    NoGradient=NoGradientException
 )
 bases = Container(
     name='bases',

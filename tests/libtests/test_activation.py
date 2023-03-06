@@ -42,7 +42,7 @@ class TestSigmoid:
         y = s(x)
         _ = session.run(y)
 
-        assert np.allclose(session.gradients(y)[x], expected)
+        assert np.allclose(session.gradients(y, [x]), expected)
 
 
 class TestTanh:
@@ -79,7 +79,7 @@ class TestTanh:
         y = a(x)
         _ = session.run(y)
 
-        assert np.allclose(session.gradients(y)[x], expected)
+        assert np.allclose(session.gradients(y, [x]), expected)
 
 
 class TestReluLike:
@@ -126,7 +126,7 @@ class TestReluLike:
         x = np.asarray(x)
         der = np.ones(x.shape)
         assert np.allclose(
-            session.gradients(y)[x_node],
+            session.gradients(y, [x_node]),
             np.where(x > 0, der, np.multiply(der, alpha))
         )
 
@@ -172,7 +172,7 @@ class TestReluLike:
         x = np.asarray(x)
         der = np.ones(x.shape)
         assert np.allclose(
-            session.gradients(y)[x_node],
+            session.gradients(y, [x_node]),
             np.where(x > 0, der, np.multiply(alpha, np.exp(x)))
         )
 
@@ -209,7 +209,7 @@ class TestSoftmax:
         _ = session.run(y)
 
         assert np.allclose(
-            session.gradients(y)[x_node],
+            session.gradients(y, [x_node]),
             np.zeros(np.asarray(x).shape)
         )
 
@@ -252,7 +252,7 @@ class TestSwish:
         _ = session.run(y)
 
         assert np.allclose(
-            session.gradients(y)[x_node],
+            session.gradients(y, [x_node]),
             expected,
             atol=0.01
         )
@@ -294,7 +294,7 @@ class TestSoftplus:
         _ = session.run(y)
 
         assert np.allclose(
-            session.gradients(y)[x_node],
+            session.gradients(y, [x_node]),
             expected,
             atol=0.01
         )

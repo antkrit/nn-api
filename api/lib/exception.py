@@ -2,4 +2,8 @@
 
 
 class ModelIsNotCompiledException(Exception):
-    """Raised when model is not compiled."""
+    """Raise when model is not compiled."""
+
+
+class NoGradientException(Exception):
+    """Raise for nodes that have no gradients."""

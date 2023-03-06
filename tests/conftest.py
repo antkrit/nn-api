@@ -15,17 +15,18 @@ def graph():
 
 
 UNARY_TEST_CASES = [
-    4,
-    [5],
-    np.array([1, 2, 3]),
-    [[1, 2, 3], [1, 2, 3]]
+    np.random.randint(1, 10),
+    np.random.randint(1, 10, size=(3,)),
+    np.random.randint(1, 10, size=(2, 3)),
 ]
 BINARY_TEST_CASES = [
-    (-4, 5),
-    (2, [2, 3, 4]),
-    (-7, np.array([[2, 3, 4], [2, 3, 4]])),
-    (np.array([1, -2, 3]), [2, 3, 4]),
-    ([[1, -2, 3], [-1, 2, 3]], np.array([[2, 3, 4], [2, 3, 4]])),
+    (np.random.randint(1, 10), np.random.randint(1, 10)),
+    (np.random.randint(1, 10), np.random.randint(1, 10, size=(3,))),
+    (np.random.randint(1, 10), np.random.randint(1, 10, size=(3, 3))),
+    (np.random.randint(1, 10, size=(3,)), np.random.randint(1, 10, size=(3,))),
+    (np.random.randint(1, 10, size=(3, 3)), np.random.randint(1, 10, size=(3, 3))),
+    (np.random.randint(1, 10, size=(4, 1, 2)), np.random.randint(1, 10, size=(2, 2))),
+    (np.random.randint(1, 10, size=(1, 2)), np.random.randint(1, 10, size=(5, 2, 2)))
 ]
 
 

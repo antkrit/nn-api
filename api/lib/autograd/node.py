@@ -329,7 +329,7 @@ class Mean(UnaryOperation):
         tile_scaling = value.shape // output_shape
         dout = np.reshape(dout, output_shape)
 
-        return np.tile(dout, tile_scaling) / value.size
+        return np.divide(np.tile(dout, tile_scaling), value.size)
 
 
 class Add(BinaryOperation):
@@ -365,6 +365,12 @@ class Add(BinaryOperation):
         """
         def _get_sum_gradient(inp, dout_wrt_inp):
             """Get `add` gradient in the case of different operands shapes."""
+            inp = np.asarray(inp)
+            dout_wrt_inp = np.asarray(dout_wrt_inp)
+
+            if not dout_wrt_inp.shape:
+                return dout_wrt_inp
+
             while np.ndim(dout_wrt_inp) > len(inp.shape):
                 dout_wrt_inp = np.sum(dout_wrt_inp, axis=0)
 
@@ -378,7 +384,6 @@ class Add(BinaryOperation):
 
             return dout_wrt_inp
 
-        left, right = np.asarray(left), np.asarray(right)
         dout_wrt_left = _get_sum_gradient(left, dout)
         dout_wrt_right = _get_sum_gradient(right, dout)
         return dout_wrt_left, dout_wrt_right
@@ -496,8 +501,8 @@ class Divide(BinaryOperation):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
-        d_wrt_right = left / (np.power(right, 2) + self.threshold)
-        return dout / right, np.negative(dout) * d_wrt_right
+        d_wrt_right = np.divide(left, np.power(right, 2) + self.threshold)
+        return np.divide(dout, right), np.multiply(np.negative(dout), d_wrt_right)
 
 
 class AssignDivide(AssignOperation, Divide):
@@ -558,10 +563,13 @@ class Power(BinaryOperation):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
-        d_wrt_left = np.multiply(dout, right * np.power(left, right - 1))
+        d_wrt_left = np.multiply(
+            dout,
+            np.multiply(right, np.power(left, right - 1))
+        )
         d_wrt_right = np.multiply(
             dout,
-            np.log(left+self.threshold) * np.power(left, right)
+            np.multiply(np.log(left+self.threshold), np.power(left, right))
         )
         return d_wrt_left, d_wrt_right
 
@@ -705,7 +713,7 @@ class Sqrt(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return dout / (2 * np.sqrt(value)+self.threshold),
+        return np.divide(dout, (2 * np.sqrt(value)+self.threshold)),
 
 
 class Abs(UnaryOperation):
@@ -739,7 +747,7 @@ class Abs(UnaryOperation):
         """
         # implementation details: |x| can be written as sqrt(x**2),
         # so derivative of this function will be x/|x|
-        return np.multiply(dout, (value / (np.abs(value)+self.threshold))),
+        return np.multiply(dout, (np.divide(value, (np.abs(value)+self.threshold)))),
 
 
 class Exp(UnaryOperation):
