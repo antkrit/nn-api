@@ -250,6 +250,23 @@ class TestBinaryOperators:
             [dout*1, dout*1]
         )
 
+    def test_assign(self, test_case, dout):
+        a, b = test_case
+        a_var = Variable(a)
+
+        with pytest.raises(ValueError):
+            Assign(a, b)
+
+        a_add = Assign(a_var, b)
+        assert np.array_equal(
+            a_add.forward(b, 0),
+            np.asarray(b) + np.asarray(0)
+        )
+        assert np.array_equal(
+            a_add.backward(a, b, dout),
+            [dout*1, dout*1]
+        )
+
     def test_multiply(self, test_case, dout):
         a, b = test_case
         mul = Multiply(a, b)
@@ -315,17 +332,17 @@ class TestBinaryOperators:
             ]
         )
 
-    # def test_matmul(self, test_case, dout):
-    #     a, b = test_case
-    #     mm = Matmul(a, b)
-    #     assert np.array_equal(mm.forward(a, b), np.asarray(a).dot(b))
-    #     assert element_wise_equal(
-    #         mm.backward(a, b, dout),
-    #         [
-    #             np.dot(dout, np.asarray(b).T),
-    #             np.dot(np.asarray(a).T, dout)
-    #         ]
-    #     )
+    def test_matmul(self, test_case, dout):
+        a, b = test_case
+        mm = Matmul(a, b)
+        assert np.array_equal(mm.forward(a, b), np.asarray(a).dot(b))
+        assert element_wise_equal(
+            mm.backward(a, b, dout),
+            [
+                np.dot(dout, np.asarray(b).T),
+                np.dot(np.asarray(a).T, dout)
+            ]
+        )
 
     def test_max(self, test_case, dout):
         a, b = test_case

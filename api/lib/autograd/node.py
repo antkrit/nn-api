@@ -396,16 +396,34 @@ class AssignAdd(AssignOperation, Add):
         operation will be assigned to this node
     :param op: right operand of the operation
     :param name: node name, defaults to 'assign_add'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
     """
 
-    def __init__(self, ref, op, name='assign_add', threshold=0):
+    def __init__(self, ref, op, name='assign_add'):
         """Constructor method."""
         super().__init__(
             ref=ref, op=op,  # init AssignOperation
             left=ref, right=op,  # init Add
-            name=name, threshold=threshold
+            name=name, threshold=0
+        )
+
+    forward = Add.forward
+    backward = Add.backward
+
+
+class Assign(AssignOperation, Add):
+    """Partial case of the addition operation.
+
+    :param ref: left operand of the operation, result of the
+        operation will be assigned to this node
+    :param op: right operand of the operation
+    :param name: node name, defaults to 'assign_add'
+    """
+    def __init__(self, ref, op, name='assign'):
+        """Constructor method."""
+        super().__init__(
+            ref=ref, op=op,  # init AssignOperation
+            left=op, right=Constant(0),  # init Add: ref = op + 0
+            name=name, threshold=0
         )
 
     forward = Add.forward

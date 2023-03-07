@@ -22,6 +22,11 @@ def assign_add(ref, op, **kwargs):
     return node_wrapper(AssignAdd, ref, op, **kwargs)
 
 
+def assign(ref, op, **kwargs):
+    """Assign operation to reference."""
+    return node_wrapper(Assign, ref, op, **kwargs)
+
+
 def mul(this, other, **kwargs):
     """Multiply two operands."""
     return node_wrapper(Multiply, this, other, **kwargs)

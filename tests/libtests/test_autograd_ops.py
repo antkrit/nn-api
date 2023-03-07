@@ -39,19 +39,19 @@ def test_assign_op(session, test_case_binary):
 
     x = namespace.nodes.variable(tcb[0])
     expected = np.add(*tcb)
-
-    assert not np.array_equal(x.value, expected)
     assert np.array_equal(session.run(ops.assign_add(x, tcb[1])), expected)
     assert np.array_equal(x.value, expected)
 
     x = namespace.nodes.variable(tcb[0])
+    assert np.array_equal(session.run(ops.assign(x, tcb[1])), tcb[1])
+    assert np.array_equal(x.value, tcb[1])
+
+    x = namespace.nodes.variable(tcb[0])
     expected = np.multiply(*tcb)
-    assert not np.array_equal(x.value, expected) or tcb[1] == 1
     assert np.array_equal(session.run(ops.assign_mul(x, tcb[1])), expected)
     assert np.array_equal(x.value, expected)
 
     x = namespace.nodes.variable(tcb[0])
     expected = np.divide(*tcb)
-    assert not np.array_equal(x.value, expected)
     assert np.array_equal(session.run(ops.assign_div(x, tcb[1])), expected)
     assert np.array_equal(x.value, expected)
