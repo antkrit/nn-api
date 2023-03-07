@@ -83,75 +83,81 @@ class UniformInitializer(BaseInitializer):
         )
 
 
-def zeros(n_in, n_out, *args, **kwargs):
+def zeros(shape, *args, **kwargs):
     """Get array of zeros."""
-    return NormalInitializer(*args, **kwargs)((n_in, n_out))
+    return NormalInitializer(*args, **kwargs)(shape)
 
 
-def ones(n_in, n_out, *args, **kwargs):
+def ones(shape, *args, **kwargs):
     """Get array of ones."""
-    return NormalInitializer(mu=1, sigma=0, *args, **kwargs)((n_in, n_out))
+    return NormalInitializer(mu=1, sigma=0, *args, **kwargs)(shape)
 
 
-def random_normal(n_in, n_out, *args, **kwargs):
+def random_normal(shape, *args, **kwargs):
     """Get random array from the standard normal distribution."""
-    return NormalInitializer(mu=0, sigma=1, *args, **kwargs)((n_in, n_out))
+    return NormalInitializer(mu=0, sigma=1, *args, **kwargs)(shape)
 
 
-def random_uniform(n_in, n_out, *args, **kwargs):
+def random_uniform(shape, *args, **kwargs):
     """Get random array from the uniform distribution in the range [-1, 1]."""
-    return UniformInitializer(low=-1, high=1, *args, **kwargs)((n_in, n_out))
+    return UniformInitializer(low=-1, high=1, *args, **kwargs)(shape)
 
 
-def xavier_normal(n_in, n_out, *args, **kwargs):
+def xavier_normal(shape, *args, **kwargs):
     """Xavier (or Glorot) normal initialization."""
-    distribution = np.sqrt(2/(n_in+n_out))
+    n_in, n_out = shape[-2:]
+    distribution = np.sqrt(2 / (n_in+n_out))
     return NormalInitializer(
         mu=0, sigma=distribution,
         *args, **kwargs
-    )((n_in, n_out))
+    )(shape)
 
 
-def xavier_uniform(n_in, n_out, *args, **kwargs):
+def xavier_uniform(shape, *args, **kwargs):
     """Xavier (or Glorot) uniform initialization."""
-    limit = np.sqrt(6/(n_in+n_out))
+    n_in, n_out = shape[-2:]
+    limit = np.sqrt(6 / (n_in+n_out))
     return UniformInitializer(
         low=-limit, high=limit,
         *args, **kwargs
-    )((n_in, n_out))
+    )(shape)
 
 
-def he_normal(n_in, n_out, *args, **kwargs):
+def he_normal(shape, *args, **kwargs):
     """Kaiming(or He) normal initialization."""
+    n_in = shape[-2]
     distribution = np.sqrt(2 / n_in)
     return NormalInitializer(
         mu=0, sigma=distribution,
         *args, **kwargs
-    )((n_in, n_out))
+    )(shape)
 
 
-def he_uniform(n_in, n_out, *args, **kwargs):
+def he_uniform(shape, *args, **kwargs):
     """Kaiming(or He) uniform initialization."""
+    n_in = shape[-2]
     limit = np.sqrt(6 / n_in)
     return UniformInitializer(
         low=-limit, high=limit,
         *args, **kwargs
-    )((n_in, n_out))
+    )(shape)
 
 
-def lecun_normal(n_in, n_out, *args, **kwargs):
+def lecun_normal(shape, *args, **kwargs):
     """LeCun normal initialization."""
+    n_in = shape[-2]
     distribution = np.sqrt(1 / n_in)
     return NormalInitializer(
         mu=0, sigma=distribution,
         *args, **kwargs
-    )((n_in, n_out))
+    )(shape)
 
 
-def lecun_uniform(n_in, n_out, *args, **kwargs):
+def lecun_uniform(shape, *args, **kwargs):
     """LeCun uniform initialization."""
+    n_in = shape[-2]
     limit = np.sqrt(3 / n_in)
     return UniformInitializer(
         low=-limit, high=limit,
         *args, **kwargs
-    )((n_in, n_out))
+    )(shape)

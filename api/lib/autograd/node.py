@@ -118,7 +118,7 @@ class Constant(Node):
         Constant value cannot be changed, so ValueError will be
         raised when trying.
         """
-        raise ValueError("Cannot reassign constant.")
+        raise ValueError(f"Cannot reassign constant {self.name}.")
 
     def __str__(self):
         return self.name

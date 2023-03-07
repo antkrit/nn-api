@@ -43,8 +43,8 @@ class Dense(BaseLayer):
                 compiled=False
             )
 
-        self.weights = self.weight_initializer(*size, *args, **kwargs)
-        self.bias = self.weight_initializer(1, size[1], *args, **kwargs)
+        self.weights = self.weight_initializer(size, *args, **kwargs)
+        self.bias = self.weight_initializer((1, size[1]), *args, **kwargs)
         self.trainable = [self.weights, self.bias]
 
     def forward(self, x, *args, **kwargs):

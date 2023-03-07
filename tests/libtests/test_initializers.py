@@ -58,14 +58,14 @@ class TestNormalDistribution:
         x = np.atleast_2d(test_case_unary)
         size = x.shape
 
-        init = zeros(*size)
+        init = zeros(size)
         assert np.array_equal(session.run(init), np.zeros(size))
 
     def test_ones(self, session, test_case_unary):
         x = np.atleast_2d(test_case_unary)
         size = x.shape
 
-        init = ones(*size)
+        init = ones(size)
         assert np.array_equal(session.run(init), np.ones(size))
 
     def test_random_normal(self, session, test_case_unary):
@@ -75,7 +75,7 @@ class TestNormalDistribution:
         np.random.seed(NUMPY_SEED)
         ndist = np.random.randn(*size)
 
-        init = random_normal(*size, seed=NUMPY_SEED)
+        init = random_normal(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), ndist)
 
     def test_xavier(self, session, test_case_unary):
@@ -86,7 +86,7 @@ class TestNormalDistribution:
         ndist = np.random.randn(*size)
         expected = np.sqrt(2/(np.sum(size))) * ndist
 
-        init = xavier_normal(*size, seed=NUMPY_SEED)
+        init = xavier_normal(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), expected)
 
     def test_he(self, session, test_case_unary):
@@ -97,7 +97,7 @@ class TestNormalDistribution:
         ndist = np.random.randn(*size)
         expected = np.sqrt(2 / size[0]) * ndist
 
-        init = he_normal(*size, seed=NUMPY_SEED)
+        init = he_normal(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), expected)
 
     def test_lecun(self, session, test_case_unary):
@@ -108,7 +108,7 @@ class TestNormalDistribution:
         ndist = np.random.randn(*size)
         expected = np.sqrt(1 / size[0]) * ndist
 
-        init = lecun_normal(*size, seed=NUMPY_SEED)
+        init = lecun_normal(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), expected)
 
 
@@ -121,7 +121,7 @@ class TestUniformDistribution:
         np.random.seed(NUMPY_SEED)
         udist = np.random.uniform(-1, 1, size=size)
 
-        init = random_uniform(*size, seed=NUMPY_SEED)
+        init = random_uniform(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), udist)
 
     def test_xavier(self, session, test_case_unary):
@@ -132,7 +132,7 @@ class TestUniformDistribution:
         bound = np.sqrt(6/np.sum(size))
         udist = np.random.uniform(-bound, bound, size=size)
 
-        init = xavier_uniform(*size, seed=NUMPY_SEED)
+        init = xavier_uniform(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), udist)
 
     def test_he(self, session, test_case_unary):
@@ -143,7 +143,7 @@ class TestUniformDistribution:
         bound = np.sqrt(6 / size[0])
         udist = np.random.uniform(-bound, bound, size=size)
 
-        init = he_uniform(*size, seed=NUMPY_SEED)
+        init = he_uniform(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), udist)
 
     def test_lecun(self, session, test_case_unary):
@@ -154,5 +154,5 @@ class TestUniformDistribution:
         bound = np.sqrt(3 / size[0])
         udist = np.random.uniform(-bound, bound, size=size)
 
-        init = lecun_uniform(*size, seed=NUMPY_SEED)
+        init = lecun_uniform(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), udist)

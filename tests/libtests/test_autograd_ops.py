@@ -25,6 +25,7 @@ def test_elementary_operations_unary(session, test_case_unary):
             session.run(ops.mean(tcu, axis=-1)), np.mean(tcu, axis=-1)
         )
     assert np.array_equal(session.run(ops.sqrt(tcu)), np.sqrt(tcu))
+    assert np.array_equal(session.run(ops.rsqrt(tcu)), 1 / np.sqrt(tcu))
     assert np.array_equal(session.run(ops.abs(tcu)), np.abs(tcu))
     assert np.array_equal(session.run(ops.exp(tcu)), np.exp(tcu))
     assert np.array_equal(session.run(ops.log(tcu)), np.log(tcu))

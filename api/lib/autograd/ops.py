@@ -3,8 +3,8 @@ from api.lib.autograd.node import *
 
 __all__ = (
     'add', 'mul', 'div', 'pow', 'dot', 'max', 'min', 'sin', 'cos',
-    'sum', 'mean', 'sqrt', 'abs', 'exp', 'log', 'log2', 'log10',
-    'assign_add', 'assign_mul'
+    'sum', 'mean', 'sqrt', 'rsqrt', 'abs', 'exp', 'log', 'log2',
+    'log10', 'assign', 'assign_add', 'assign_mul', 'assign_div'
 )
 
 
@@ -81,6 +81,10 @@ def sqrt(this, **kwargs):
     """Return the square-root of an array(element-wise) or a number."""
     return node_wrapper(Sqrt, this, **kwargs)
 
+def rsqrt(this, **kwargs):
+    """Return reciprocal square root of an array(element-wise) or a number."""
+    sqrt_op = node_wrapper(Sqrt, this)
+    return node_wrapper(Divide, 1, sqrt_op, **kwargs)
 
 def abs(this, **kwargs):
     """Return absolute value of an array(element-wise) or a number."""

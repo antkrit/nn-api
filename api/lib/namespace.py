@@ -53,6 +53,11 @@ optimizers = Container(
     name='optimizers',
 
     gradient_descent=GradientDescent,
+    adagrad=Adagrad,
+    adadelta=Adadelta,
+    rmsprop=RMSProp,
+    adam=Adam,
+    adamax=Adamax,
 )
 exceptions = Container(
     name='exceptions',

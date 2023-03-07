@@ -54,7 +54,7 @@ def test_model_compilation():
     )
 
     assert isinstance(model.optimizer, GradientDescent)
-    assert model.optimizer._lr.value == test_lr
+    assert model.optimizer.learning_rate == test_lr
     assert _compare_trainable(all_trainable, model.optimizer.trainable)
 
 
