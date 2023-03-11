@@ -37,7 +37,68 @@ class NodeMixin:
 # be used to detect Node objects (isinstance)
 # pylint: disable=E1101
 class Node(NodeMixin):
-    """Base node class."""
+    """Base node class.
+
+    :param value: value to set
+    :param name: name of the node, if None than name will be
+        created automatically, defaults to None
+    :param shape: static shape of the data
+    :raises ValueError: the data shape during initialization does not
+        match the one set as an argument
+    """
+    def __init__(self, value, name, shape):
+        """Constructor method."""
+        self._value = value
+        self.gradient = None
+        self.shape = None
+
+        self.graph = self.current_graph()
+        self._prefix = name or 'node'
+        self.name = f"{self.graph.name}/{self._prefix}-{self.count()}"
+        self.prepare_graph(self.graph)
+
+        value_not_none = self._value is not None
+
+        if value_not_none and not hasattr(self._value, 'shape'):
+            self._value = np.asarray(self._value)
+
+        if shape is not None and \
+                (value_not_none and self._value.shape != shape):
+            msg = f"Cannot match shapes {shape} and {self._value.shape}"
+            raise ValueError(msg)
+
+        self.shape = self._value.shape if value_not_none else shape
+
+    @property
+    def value(self):
+        """Get value of a node."""
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        """Set value of a node.
+
+        :param value: value to set
+        :raises ValueError: if the user tries to set data, the form of which
+            is different from the one set during placeholder initialization.
+        """
+        if value is not None:
+            if not hasattr(value, 'shape'):
+                value = np.asarray(value)
+
+            if self.shape and value.shape != self.shape:
+                msg = f"Cannot match shapes {self.shape} and {value.shape}"
+                raise ValueError(msg)
+
+            self._value = value
+            self.shape = value.shape
+        else:
+            if self.shape:
+                msg = f"Cannot match shapes {self.shape} and None"
+                raise ValueError(msg)
+
+            self._value = None
+            self.shape = None
 
 
 class Placeholder(Node):
@@ -58,30 +119,13 @@ class Placeholder(Node):
         >>> x.value = 1
         >>> Session().run(x, feed_dict={'x': 1}) # is OK
 
-    :param name: node name, if name is None than it will be
-        created automatically
     :raises ValueError: if Placeholder is initialized with name None
     """
 
-    def __init__(self, name):
+    def __init__(self, name=None, shape=None):
         """Constructor method."""
-        self._value = None
-        self.gradient = None
-
-        if name is None:
-            raise ValueError('Placeholder name cannot be None.')
-        self.name = name
-        self.prepare_graph(self.current_graph())
-
-    @property
-    def value(self):
-        """Get value of a node."""
-        return self._value
-
-    @value.setter
-    def value(self, value):
-        """Set value of a node."""
-        self._value = value
+        name = name or 'placeholder'
+        super().__init__(value=None, name=name, shape=shape)
 
     def __str__(self):
         return self.name
@@ -93,18 +137,14 @@ class Constant(Node):
     :param value: value to set
     :param name: name of the node, if none than name will be
         created automatically, defaults to None
-    :raises ValueError: when trying to change the value
+    :raises ValueError: when trying to change the value or the data shape
+        during initialization does not match the one set as an argument
     """
 
-    def __init__(self, value, name=None):
-        """Constructor method.
-        """
-        graph = self.current_graph()
-        self.name = name or f"{graph.name}/constant-{self.count()}"
-        self.prepare_graph(graph)
-
-        self._value = value
-        self.gradient = None
+    def __init__(self, value, name=None, shape=None):
+        """Constructor method."""
+        name = name or 'constant'
+        super().__init__(value=value, name=name, shape=shape)
 
     @property
     def value(self):
@@ -125,20 +165,30 @@ class Constant(Node):
 
 
 class Variable(Node):
-    """Represents a basic node with some changeable value.
+    """Represents a basic node with some changeable value."""
 
-    :param value: value to set
-    :param name: name of the node, if none than name will be
-        created automatically, defaults to None
-    """
+    def __init__(self, value, name=None, shape=None):
+        name = name or 'variable'
+        super().__init__(value=value, name=name, shape=shape)
 
-    def __init__(self, value, name=None):
-        graph = self.current_graph()
-        self.name = name or f"{graph.name}/variable-{self.count()}"
-        self.prepare_graph(graph)
+    @property
+    def value(self):
+        """Get value of a node."""
+        return self._value
 
-        self.value = value
-        self.gradient = None
+    @value.setter
+    def value(self, value):
+        """Set value of a node.
+
+        :param value: value to set
+        :raises ValueError: if the user tries to set data, the form of which
+            is different from the one set during variable initialization.
+        """
+        if not hasattr(value, 'shape'):
+            value = np.asarray(value)
+
+        self._value = value
+        self.shape = value.shape
 
     def __str__(self):
         return self.name
@@ -152,23 +202,16 @@ class Operation(Node):
     implementation). This is a base class, so it cannot be used for
     graph computations.
 
-    Note: all operation nodes have similar name:
-    graph-#/operator-`Operator Name`-#
-    the only thing that can be specified explicitly is `Operator Name`
-
-    :param name: operator name, defaults to 'Operator'
-    :param threshold: some minute float value to avoid problems like div by 0
+    :param threshold: small floating point value used to maintain numerical
+        stability, defaults to 0
     """
 
-    def __init__(self, name=None, threshold=0):
+    def __init__(self, name=None, shape=None, threshold=0):
         """Constructor method."""
+        name = name or 'operator'
+        super().__init__(value=None, name=name, shape=shape)
         self.inputs = ()
         self.threshold = threshold
-        self.gradient = None
-
-        graph = self.current_graph()
-        self.name = name or f'{graph.name}/operator-{self.count()}'
-        self.prepare_graph(graph)
 
     def forward(self, *args, **kwargs):
         """Return output of the operation by given inputs."""
@@ -251,9 +294,16 @@ class Sum(UnaryOperation):
     :param threshold: some minute float value to avoid problems like div by 0,
         defaults to 0
     """
-    def __init__(self, value, axis=None, name='sum', threshold=0):
+    def __init__(
+            self,
+            value,
+            axis=None,
+            name='sum',
+            shape=None,
+            threshold=0
+    ):
         """Constructor method."""
-        super().__init__(name, threshold)
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
         self.axis = axis
 
@@ -297,9 +347,16 @@ class Mean(UnaryOperation):
     :param threshold: some minute float value to avoid problems like div by 0,
         defaults to 0
     """
-    def __init__(self, value, axis=None, name='mean', threshold=0):
+    def __init__(
+            self,
+            value,
+            axis=None,
+            name='mean',
+            shape=None,
+            threshold=0
+    ):
         """Constructor method."""
-        super().__init__(name, threshold)
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
         self.axis = axis
 
@@ -333,17 +390,17 @@ class Mean(UnaryOperation):
 
 
 class Add(BinaryOperation):
-    """Element-wise sum.
-
-    :param left: left operand of the operation
-    :param right: right operand of the operation
-    :param name: node name, defaults to 'add'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, left, right, name='add', threshold=0):
+    """Element-wise sum."""
+    def __init__(
+            self,
+            left,
+            right,
+            name='add',
+            shape=None,
+            threshold=0
+    ):
         """Constructor method."""
-        super().__init__(name, threshold)
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -431,18 +488,17 @@ class Assign(AssignOperation, Add):
 
 
 class Multiply(BinaryOperation):
-    """Element-wise multiply.
-
-    :param left: left operand of the operation
-    :param right: right operand of the operation
-    :param name: node name, defaults to 'multiply'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, left, right, name='multiply', threshold=0):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise multiply."""
+    def __init__(
+            self,
+            left,
+            right,
+            name='multiply',
+            shape=None,
+            threshold=0
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -489,16 +545,17 @@ class AssignMultiply(AssignOperation, Multiply):
 
 
 class Divide(BinaryOperation):
-    """Element-wise divide.
-
-    :param left: left operand of the operation
-    :param right: right operand of the operation
-    :param name: node name, defaults to 'divide'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 10^-32
-    """
-    def __init__(self, left, right, name='divide', threshold=1e-32):
-        super().__init__(name, threshold)
+    """Element-wise divide."""
+    def __init__(
+            self,
+            left,
+            right,
+            name='divide',
+            shape=None,
+            threshold=1e-32
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -547,18 +604,17 @@ class AssignDivide(AssignOperation, Divide):
 
 
 class Power(BinaryOperation):
-    """Power operator.
-
-    :param left: left operand of the operation
-    :param right: right operand of the operation
-    :param name: node name, defaults to 'power'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 10^-32
-    """
-    def __init__(self, left, right, name='power', threshold=1e-32):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Power operator."""
+    def __init__(
+            self,
+            left,
+            right,
+            name='power',
+            shape=None,
+            threshold=1e-32
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -593,18 +649,17 @@ class Power(BinaryOperation):
 
 
 class Matmul(BinaryOperation):
-    """Matrix multiplication.
-
-    :param left: left operand of the operation
-    :param right: right operand of the operation
-    :param name: node name, defaults to 'matmul'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, left, right, name='matmul', threshold=0):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Matrix multiplication."""
+    def __init__(
+            self,
+            left,
+            right,
+            name='matmul',
+            shape=None,
+            threshold=0
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -629,18 +684,17 @@ class Matmul(BinaryOperation):
 
 
 class Max(BinaryOperation):
-    """Element-wise maximum.
-
-    :param left: left operand of the operation
-    :param right: right operand of the operation
-    :param name: node name, defaults to 'max'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, left, right, name='max', threshold=0):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise maximum."""
+    def __init__(
+            self,
+            left,
+            right,
+            name='max',
+            shape=None,
+            threshold=0
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -666,18 +720,17 @@ class Max(BinaryOperation):
 
 
 class Min(BinaryOperation):
-    """Element-wise maximum.
-
-    :param left: left operand of the operation
-    :param right: right operand of the operation
-    :param name: node name, defaults to 'max'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, left, right, name='min', threshold=0):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise maximum."""
+    def __init__(
+            self,
+            left,
+            right,
+            name='min',
+            shape=None,
+            threshold=0
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
 
     def forward(self, left, right):
@@ -703,17 +756,10 @@ class Min(BinaryOperation):
 
 
 class Sqrt(UnaryOperation):
-    """Element-wise square root.
-
-    :param value: value to get square root of
-    :param name: node name, defaults to 'sqrt'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 10^-32
-    """
-    def __init__(self, value, name='sqrt', threshold=1e-32):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise square root."""
+    def __init__(self, value, name='sqrt', shape=None, threshold=1e-32):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -735,17 +781,10 @@ class Sqrt(UnaryOperation):
 
 
 class Abs(UnaryOperation):
-    """Take the number absolute (element-wise for arrays).
-
-    :param value: value to get square root of
-    :param name: node name, defaults to 'sqrt'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 10^-32
-    """
-    def __init__(self, value, name='abs', threshold=1e-32):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Take the number absolute (element-wise for arrays)."""
+    def __init__(self, value, name='abs', shape=None, threshold=1e-32):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -769,17 +808,10 @@ class Abs(UnaryOperation):
 
 
 class Exp(UnaryOperation):
-    """Element-wise exponentiation.
-
-    :param value: value to get exponent of
-    :param name: node name, defaults to 'exp'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, value, name='exp', threshold=0):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise exponentiation."""
+    def __init__(self, value, name='exp', shape=None, threshold=0):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -801,17 +833,10 @@ class Exp(UnaryOperation):
 
 
 class Log(UnaryOperation):
-    """Element-wise natural logarithm.
-
-    :param value: value to get natural logarithm of
-    :param name: node name, defaults to 'log'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 10^-32
-    """
-    def __init__(self, value, name='log', threshold=1e-32):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise natural logarithm."""
+    def __init__(self, value, name='log', shape=None, threshold=1e-32):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -833,17 +858,10 @@ class Log(UnaryOperation):
 
 
 class Log2(UnaryOperation):
-    """Element-wise natural logarithm.
-
-    :param value: value to get natural logarithm of
-    :param name: node name, defaults to 'log'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 10^-32
-    """
-    def __init__(self, value, name='log2', threshold=1e-32):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise natural logarithm."""
+    def __init__(self, value, name='log2', shape=None, threshold=1e-32):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -865,17 +883,10 @@ class Log2(UnaryOperation):
 
 
 class Log10(UnaryOperation):
-    """Element-wise natural logarithm.
-
-    :param value: value to get natural logarithm of
-    :param name: node name, defaults to 'log'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 10^-32
-    """
-    def __init__(self, value, name='log10', threshold=1e-32):
-        """Constructor method
-        """
-        super().__init__(name, threshold)
+    """Element-wise natural logarithm."""
+    def __init__(self, value, name='log10', shape=None, threshold=1e-32):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -897,15 +908,10 @@ class Log10(UnaryOperation):
 
 
 class Sin(UnaryOperation):
-    """Element-wise trigonometric sine
-
-    :param value: value to get sin of
-    :param name: node name, defaults to 'sin'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, value, name='sin', threshold=0):
-        super().__init__(name, threshold)
+    """Element-wise trigonometric sine"""
+    def __init__(self, value, name='sin', shape=None, threshold=0):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -927,15 +933,10 @@ class Sin(UnaryOperation):
 
 
 class Cos(UnaryOperation):
-    """Element-wise trigonometric cosine
-
-    :param value: value to get cos of
-    :param name: node name, defaults to 'cos'
-    :param threshold: some minute float value to avoid problems like div by 0,
-        defaults to 0
-    """
-    def __init__(self, value, name='cos', threshold=0):
-        super().__init__(name, threshold)
+    """Element-wise trigonometric cosine"""
+    def __init__(self, value, name='cos', shape=None, threshold=0):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = value,
 
     def forward(self, value):
@@ -954,57 +955,3 @@ class Cos(UnaryOperation):
         :return: gradient of the operation
         """
         return np.multiply(dout, (-np.sin(value))),
-
-
-def topological_sort(nodes):
-    """Generates topological sort for a given graph using DFS algorithm.
-
-    :param nodes: node to start sorting from
-    :return: list  of sorted nodes
-    """
-    visited = set()
-    order = []
-
-    def _dfs(node):
-        """Depth-first search recursion helper."""
-        nonlocal visited, order
-
-        if node not in visited:
-            visited.add(node)
-            if isinstance(node, Operation):
-                for input_node in node.inputs:
-                    _dfs(input_node)
-
-            order.append(node)
-
-    try:
-        for node in iter(nodes):
-            _dfs(node)
-            yield order
-            order, visited = [], set()
-    except TypeError:
-        _dfs(nodes)
-        yield order
-
-
-def node_wrapper(node, *args, **kwargs):
-    """Automatically convert non-Node types to `Constant`.
-
-    :raises TypeError: in case some operands are not Node
-    """
-    fnargs = []
-    for arg in args:
-        # in this implementation of the wrapper,
-        # only numeric types are automatically converted
-        # to a Constant node
-        if isinstance(arg, Node):
-            fnargs.append(arg)
-        else:
-            try:
-                fnargs.append(Constant(arg))
-            except TypeError as e:
-                raise TypeError(
-                    f"Incompatible argument type: {type(arg)}."
-                ) from e
-
-    return node(*fnargs, **kwargs)

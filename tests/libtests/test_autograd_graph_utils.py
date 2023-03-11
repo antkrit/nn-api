@@ -1,7 +1,6 @@
 from api.lib.autograd import ops
-from api.lib.autograd.node import (
-    Constant, Add, Node, topological_sort, node_wrapper
-)
+from api.lib.autograd.node import Constant, Add, Node
+from api.lib.autograd.utils import topological_sort, node_wrapper
 
 
 def test_topological_sort():
@@ -9,29 +8,34 @@ def test_topological_sort():
     b = Constant(2, name='node2')
     w = Constant(3, name='node3')
 
-    assert next(topological_sort(a))[0].name == 'node1'
+    assert next(topological_sort(a))[0] is a
 
     c = ops.add(a, b, name='sum')
     x = ops.mul(c, b, name='mul')
     y = ops.add(x, w, name='sum1')
+
+    def check_order(rcv, exp):
+        return all([n == exp[i] for i, n in enumerate(rcv)])
+
     # pay attention to the names of nodes and operators
     # to change something above make sure that expected
     # order will be changed too
-    expected_order = ['node1', 'node2', 'sum', 'mul', 'node3', 'sum1']
+    expected_order = [a, b, c, x, w, y]
     received = next(topological_sort(y))
-    assert [n.name for n in received] == expected_order
+    assert check_order(received, expected_order)
 
     s = ops.add(a, b, name='sum2')
     s1 = ops.add(s, w, name='sum3')
 
     sorted_ = topological_sort([s, s1])
 
+    expected_order = [a, b, s]
     received = next(sorted_)
-    assert [n.name for n in received] == ['node1', 'node2', 'sum2']
+    assert check_order(received, expected_order)
 
+    expected_order = [a, b, s, w, s1]
     received = next(sorted_)
-    expected_order = ['node1', 'node2', 'sum2', 'node3', 'sum3']
-    assert [n.name for n in received] == expected_order
+    assert check_order(received, expected_order)
 
 
 def test_node_wrapper():

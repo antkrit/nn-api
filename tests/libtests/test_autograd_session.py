@@ -29,7 +29,7 @@ def test_run_forward_with_placeholder(session, test_case_binary):
     with pytest.raises(KeyError):
         session.run(x * y, feed_dict={'y': iter([y_val])})
 
-    z = session.run(x * y, feed_dict={'w': iter([y_val, y_val])})
+    z = session.run(x * y, feed_dict={y.name: iter([y_val, y_val])})
     x_val, y_val = np.asarray(x_val), np.asarray(y_val)
     assert np.array_equal(z, [y_val*x_val, y_val*x_val])
 
@@ -101,7 +101,7 @@ def test_session_utils(session):
     placeholder = namespace.nodes.placeholder(name='test_placeholder')
     operation = variable + placeholder
 
-    feed_dict = {'test_placeholder': iter([pl_value])}
+    feed_dict = {placeholder.name: iter([pl_value])}
 
     var = session._Session__process_node_forward(variable)
     assert var is variable and var.value == var_value

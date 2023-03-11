@@ -5,58 +5,86 @@ from api.lib.autograd.graph import Graph
 from api.lib.autograd.node import *
 from tests.utils import element_wise_equal
 
+
 def test_base_node():
-    n = Node()
+    n = Node(value=None, name=None, shape=None)
     assert hasattr(n, 'count')
     assert hasattr(n, 'current_graph')
 
-    ograph = n.current_graph()
-    assert isinstance(ograph, Graph)
+    pgraph = n.current_graph()
+    assert isinstance(pgraph, Graph)
 
     g = Graph()
     g.as_default()
     cgraph = n.current_graph()
     assert cgraph is g
-    assert cgraph is not ograph
+    assert cgraph is not pgraph
+
+    assert n.value is None
 
 
 def test_variable_node(session):
     v_val, v_name = 3, 'v1'
-    v = Variable(v_val)
-    assert session.run(v) == v_val and isinstance(v.name, str)
+    var = Variable(v_val)
+    assert var.value == v_val and isinstance(var.name, str)
+    assert var.shape == var.value.shape
 
     vrbl_rgx = re.compile(r'^.*/variable-\d+$')
-    assert re.search(vrbl_rgx, v.name) is not None
+    assert re.search(vrbl_rgx, var.name) is not None
 
-    v.name = v_name
-    assert str(v) == v_name
+    var.name = v_name
+    assert str(var) == v_name
+
+    with pytest.raises(ValueError):
+        _ = Variable(1, shape=(1, 2))
+
+    _ = Variable(1, shape=())
+    _ = Variable([1, 2], shape=(2,))
 
 
 def test_constant_node():
     c_val, c_name = 3, 'c1'
-    c = Constant(c_val)
-    assert c.value == c_val and isinstance(c.name, str)
+    cnst = Constant(c_val)
+    assert cnst.value == c_val and isinstance(cnst.name, str)
+    assert cnst.shape == cnst.value.shape
 
     cnst_rgx = re.compile(r'^.*/constant-\d+$')
-    assert re.search(cnst_rgx, c.name) is not None
+    assert re.search(cnst_rgx, cnst.name) is not None
 
-    c.name = c_name
-    assert str(c) == c_name
+    cnst.name = c_name
+    assert str(cnst) == c_name
 
     with pytest.raises(ValueError):
-        c.value = 1
+        cnst.value = 1
+
+    with pytest.raises(ValueError):
+        _ = Constant(1, shape=(1, 2))
+
+    _ = Constant(1, shape=())
+    _ = Constant([1, 2], shape=(2,))
 
 
 def test_placeholder_node():
     p_val, p_name = 3, 'p1'
-    p = Placeholder(p_name)
-    assert p.value is None and p.name == p_name
+    plc = Placeholder(p_name)
+    assert plc.value is None and isinstance(plc.name, str)
+
+    plc.name = p_name
+    assert str(plc) == p_name
+
+    plc = Placeholder()
+    plc_rgx = re.compile(r'^.*/placeholder-\d+$')
+    print(plc.name)
+    assert re.search(plc_rgx, plc.name) is not None
+
+    shape = (3, 4)
+    plc_with_shape = Placeholder(name=p_name, shape=shape)
 
     with pytest.raises(ValueError):
-        Placeholder(name=None)
+        plc_with_shape.value = p_val
 
-    p.name = p_name
-    assert str(p) == p_name
+    plc_with_shape.value = np.ones(shape)
+    assert np.array_equal(plc_with_shape.value, np.ones(shape))
 
 
 def test_operation_nodes():
@@ -74,6 +102,12 @@ def test_operation_nodes():
 
     with pytest.raises(NotImplementedError):
         op.backward()
+
+    shape = (4, 3)
+    test_value = np.ones(shape)
+    op.value = test_value
+    assert np.array_equal(op.value, test_value)
+    assert op.shape == test_value.shape
 
 
 dout_cases = [2, [1, 2, 3], [[1, 2, 3], [1, 2, 3]]]

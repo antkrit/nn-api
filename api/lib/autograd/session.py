@@ -3,9 +3,8 @@
 # because pylint doesn't recognize objects in code samples for doctest
 # pylint: disable=W0611
 import operator
-from api.lib.autograd.node import (
-    Variable, Placeholder, Operation, topological_sort
-)
+from api.lib.autograd.node import Variable, Placeholder, Operation
+from api.lib.autograd.utils import topological_sort
 
 
 class Session:
@@ -126,12 +125,12 @@ class Session:
             import logging
             import traceback
             logging.error(traceback.format_exc())
-        finally:
-            if output:
-                self.ctx_add(run_output_token, output)
 
-                returns = returns or output.keys()
-                return operator.itemgetter(*returns)(output)
+        if output:
+            self.ctx_add(run_output_token, output)
+
+            returns = returns or output.keys()
+            return operator.itemgetter(*returns)(output)
 
     def gradients(self, target, returns=None):
         """Compute gradients for the given graph.

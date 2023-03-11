@@ -1,5 +1,5 @@
 from api.lib.autograd.node import *
-
+from api.lib.autograd.utils import node_wrapper
 
 __all__ = (
     'add', 'mul', 'div', 'pow', 'dot', 'max', 'min', 'sin', 'cos',
@@ -11,7 +11,6 @@ __all__ = (
 # disabled W0622 (redefined-builtin)
 # max, min, pow, sum, etc. redefining built-ins for aesthetic purposes
 # pylint: disable=W0622
-
 def add(this, other, **kwargs):
     """Add two operands."""
     return node_wrapper(Add, this, other, **kwargs)
