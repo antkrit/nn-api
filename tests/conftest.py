@@ -1,17 +1,17 @@
 import pytest
 import numpy as np
-import api.lib.autograd as ag
-
-
-@pytest.fixture
-def session():
-    return ag.Session()
+import api.core.autograd as ag
 
 
 @pytest.fixture
 def graph():
     with ag.Graph() as g:
         yield g
+
+
+@pytest.fixture
+def session(graph):
+    return ag.Session()
 
 
 UNARY_TEST_CASES = [
