@@ -124,6 +124,32 @@ dout_ids = ['dout_scalar', 'dout_vector', 'dout_matrix']
 
 class TestOtherOperations:
 
+    def test_einsum(self):
+        a = np.ones((3, 1, 2))
+        b = np.ones((2, 1))
+        expected_output_shape = (3, 1, 1)
+        expected_subscript = 'bhw, wk->bhk'
+
+        es = Einsum(a, b, subscripts=['bhw', 'wk'], o_subscript='bhk')
+
+        assert es.subscripts() == expected_subscript
+        assert np.array_equal(
+            es.forward(*es.inputs),
+            np.einsum(expected_subscript, a, b)
+        )
+        assert es.forward(*es.inputs).shape == expected_output_shape
+        a_grd, b_grd = es.backward(
+            *es.inputs,
+            dout=np.zeros(expected_output_shape)
+        )
+        assert a_grd.shape == a.shape
+        assert b_grd.shape == b.shape
+
+        a = np.array([[1, 2], [3, 4]])
+        es = Einsum(a, subscripts=['ij'], o_subscript='ji')
+        assert np.array_equal(es.forward(*es.inputs), np.transpose(a))
+        assert es.backward(a, dout=np.zeros(a.shape)).shape == a.shape
+
     @pytest.mark.parametrize('dout', dout_cases, ids=dout_ids)
     @pytest.mark.parametrize('test_case', [
         (np.random.randint(1, 10), np.random.randint(1, 10)),

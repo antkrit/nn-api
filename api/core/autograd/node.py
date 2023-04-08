@@ -16,6 +16,7 @@ Each graph consists of nodes. Nodes are divided into:
 """
 import itertools
 import numpy as np
+
 from api.core.autograd.graph import get_current_graph
 
 
@@ -285,6 +286,95 @@ class AssignOperation(Operation):
     def backward(self, value, dout):
         """Return gradient of the operation by given input."""
         raise NotImplementedError("Must be implemented in child classes.")
+
+
+class Einsum(Operation):
+    """Evaluates the Einstein summation convention on the operands.
+
+    For details see:
+    https://numpy.org/doc/stable/reference/generated/numpy.einsum.html
+
+    :param arrays: arrays for the operation
+    :param subscripts: array of labels of forms for summation
+    :param o_subscript: label, output form
+    :param delimiter: separates labels for summation and output form
+    :param name: node name, defaults to 'mean'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(
+            self,
+            *arrays,
+            subscripts=None,
+            o_subscript=None,
+            delimiter='->',
+            name='einsum',
+            shape=None,
+            threshold=0
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
+        self.inputs = arrays
+        self._subscripts = subscripts
+        self._o_subscript = o_subscript
+        self._delimiter = delimiter
+
+        self._subscripts_str = None
+
+    def subscripts(self, reverse=None):
+        """Return subscripts string.
+
+        :param reverse: int, the index for which is needed
+            to replace the value with the output form. This
+            argument is used to implement the gradient.
+        :return: subscripts string
+        """
+        if self._subscripts_str and reverse is None:
+            return self._subscripts_str
+
+        subscripts = self._subscripts.copy()
+        out_subscript = self._o_subscript
+
+        if reverse is not None:
+            out_subscript = subscripts[reverse]
+            subscripts[reverse] = self._o_subscript
+
+        self._subscripts_str = ', '.join(subscripts) +\
+                               self._delimiter +\
+                               out_subscript
+
+        return self._subscripts_str
+
+    def forward(self, *values):
+        """Return output of the operation by given input.
+
+        :param value: input
+        :return: sum of array over a given axis
+        """
+        return np.einsum(self.subscripts(), *values)
+
+    def backward(self, *values, dout):
+        """Return gradient of the operation by given input.
+
+        :param values: input
+        :param dout: gradient of the path to this node
+        :return: gradient of the operation
+        """
+        dout = np.ones_like(dout)
+        values = list(values) or []
+
+        def _subroutine(array, i):
+            nonlocal dout
+            _values = array.copy()
+            _values[i] = dout
+
+            return np.einsum(self.subscripts(reverse=i), *_values)
+
+        result = [_subroutine(values, i) for i, _ in enumerate(values)]
+        output = result[0] if len(result) == 1 else result
+
+        return output
 
 
 class Sum(UnaryOperation):

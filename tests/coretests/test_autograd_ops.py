@@ -56,3 +56,13 @@ def test_assign_op(session, test_case_binary):
     expected = np.divide(*tcb)
     assert np.array_equal(session.run(ops.assign_div(x, tcb[1])), expected)
     assert np.array_equal(x.value, expected)
+
+
+def test_other_ops(session):
+    a, b = np.ones((3, 1, 1, 2)), np.ones((2, 3))
+    a_var = namespace.nodes.variable(a)
+
+    subscr = 'ijhw, wk -> ijhk'
+    expected = np.einsum(subscr, a, b)
+    assert np.array_equal(session.run(ops.einsum(subscr, a_var, b)), expected)
+    assert session.run(ops.einsum(subscr, a_var, b)).shape == (3, 1, 1, 3)
