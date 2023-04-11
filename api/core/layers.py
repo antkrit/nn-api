@@ -3,12 +3,14 @@ import abc
 import functools
 import numpy as np
 
+from string import ascii_letters
 from api.core import namespace
+from api.core.autograd import Session, Node
+from api.core.autograd import ops, utils as ag_utils
 from api.core.preprocessing import initializers
-from api.core.autograd import Session, Node, utils as ag_utils
 
 
-__all__ = ('BaseLayer', 'Dense', 'Input')
+__all__ = ('BaseLayer', 'Dense', 'Input', 'InputShape')
 
 
 class BaseLayer(metaclass=abc.ABCMeta):
@@ -48,6 +50,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
                     size=[1, self.units]
                 )
                 self._built = True
+                return input_shape[-2], self.units
 
             def forward(self, value, *args, **kwargs):
                 return value @ self.weights + self.bias
@@ -61,12 +64,30 @@ class BaseLayer(metaclass=abc.ABCMeta):
         self.session = session or Session()
         self.name = name
 
+        self.input_shape = None
+
         self._trainable = []
         self._non_trainable = []
 
         self._built = False
 
-    def build(self, input_shape):
+    @property
+    def shape(self):
+        if self.input_shape:
+            return self.input_shape.shape
+
+    @property
+    def batch(self):
+        if self.input_shape:
+            return self.input_shape.batch
+
+    @property
+    def batch_shape(self):
+        if self.input_shape:
+            bshape = self.input_shape.batch_input_shape
+            return tuple([x for x in bshape if x is not None])
+
+    def build(self, *args, **kwargs):
         """Initialize layer variables.
 
         This method may be implemented by subclasses. It will be called
@@ -117,8 +138,8 @@ class BaseLayer(metaclass=abc.ABCMeta):
         """Perform forward step with some preprocessing.
 
         .. note::
-            `input_shape` keyword argument is reserved for special purposes,
-            see the function implementation for details.
+            `input_shape` and `input_cache` keyword arguments is reserved for
+            special purposes, see the function implementation for details.
 
         :param x: input data
         :return: layer output operation(result of `self.forward` function call)
@@ -126,30 +147,45 @@ class BaseLayer(metaclass=abc.ABCMeta):
         if x is not None and not isinstance(x, Node):
             x = np.atleast_1d(x)
 
-        # input shape will be set during first function call,
-        # or it can be set in a different way in custom layer
-        # implementation (e.g. Input layer)
-        if hasattr(self, 'input_shape'):
-            input_shape = self.input_shape
-        else:
-            if x is not None and hasattr(x, 'shape'):
+        # it is possible to pass input shape as keyword argument,
+        # but it has the lowest priority and may be not used, if
+        # none of the options are true, then input_shape will be
+        # set to None
+        input_shape = kwargs.pop('input_shape', None)
+
+        # the first set input can be cached, but this
+        # argument is ignored if `self.input` is None
+        # or x is not None
+        input_cache = kwargs.pop('input_cache', False)
+        input_cache = (
+            input_cache
+            and hasattr(self, 'input')
+            and self.input is not None
+            and x is None
+        )
+
+        if not input_cache:
+            # input shape will be set during first function call,
+            # or it can be set in a different way in custom layer
+            # implementation (e.g. Input layer)
+            if self.shape:
+                input_shape = self.batch_shape
+            elif x is not None and hasattr(x, 'shape') and x.shape:
                 input_shape = x.shape
-            else:
-                # it is possible to pass input shape as keyword argument,
-                # but it has the lowest priority and may be not used,
-                # if none of the options are true, then input_shape
-                # will be set to None
-                input_shape = kwargs.pop('input_shape', None)
 
-        # if x is None, a placeholder will be created
-        x = ag_utils.convert_to_node(x, shape=input_shape)
+            # if x is None, a placeholder will be created
+            x = ag_utils.convert_to_node(x, shape=input_shape)
 
-        self.build(input_shape)
+            input_shape = InputShape(input_shape)
+            self.input = x
+        else:
+            x = self.input
+            input_shape = self.input_shape
 
-        self.input = x
-        self.input_shape = input_shape
+        self.build(input_shape.batch_input_shape)
+        output = self.forward(x, *args, **kwargs)
 
-        return self.forward(x, *args, **kwargs)
+        return output
 
 
 class Dense(BaseLayer):
@@ -165,10 +201,10 @@ class Dense(BaseLayer):
         will not be applied to the resulting formula, defaults to None
     :param weight_initializer: str or callable, name of the function
         (or function itself) used to initialize the weights, if None -
-        xavier_uniform will be used as default, defaults to None
+        `xavier_uniform` will be used as default, defaults to None
     :param bias_initializer: str or callable, name of the function
         (or function itself) used to initialize the biases, if None -
-        zeros will be used as default, defaults to None
+        `zeros` will be used as default, defaults to None
     :param use_bias: whether to use a bias when the forward pass
     """
     def __init__(
@@ -186,33 +222,24 @@ class Dense(BaseLayer):
         super().__init__(session=session, name=name)
         self.units = units
 
-        if isinstance(activation, str):
+        if not isinstance(activation, str) or activation is None:
+            self.activation = activation
+        else:
             self.activation = namespace.activations(
                 activation,
                 compiled=True,
                 session=session,
                 *args, **kwargs
             )
-        else:
-            self.activation = activation
 
-        if isinstance(weight_initializer, str):
-            self.weight_initializer = namespace.initializers(
-                weight_initializer,
-                compiled=False
-            )
-        else:
-            self.weight_initializer = weight_initializer \
-                                      or namespace.initializers.xavier_uniform
-
-        if isinstance(bias_initializer, str):
-            self.bias_initializer = namespace.initializers(
-                bias_initializer,
-                compiled=False
-            )
-        else:
-            self.bias_initializer = bias_initializer \
-                                    or namespace.initializers.zeros
+        self.weight_initializer = namespace.initializers(
+            weight_initializer or namespace.initializers.xavier_uniform,
+            compiled=False
+        )
+        self.bias_initializer = namespace.initializers(
+            bias_initializer or namespace.initializers.zeros,
+            compiled=False
+        )
 
         self.use_bias = use_bias
 
@@ -224,17 +251,24 @@ class Dense(BaseLayer):
         if self._built:
             return
 
+        if input_shape is None:
+            raise ValueError("`input_shape` cannot be None.")
+
         if len(input_shape) < 1:
             raise ValueError(
-                "Dense layer input must have at least 1 dimension."
+                f"Dense layer input must have at least 1 dimension."
                 f"Full input shape received: {input_shape}"
             )
 
         last_dim = input_shape[-1]
 
+        input_shape = list(input_shape)
+        input_shape[-2:] = (last_dim, self.units)
+        self.input_shape = InputShape(input_shape)
+
         self.weight = self.add_variable(
             "weight",
-            shape=[last_dim, self.units],
+            shape=(last_dim, self.units),
             initializer=self.weight_initializer,
             trainable=True
         )
@@ -242,9 +276,7 @@ class Dense(BaseLayer):
         if self.use_bias:
             self.bias = self.add_variable(
                 "bias",
-                shape=[
-                    self.units,
-                ],
+                shape=(self.units,),
                 initializer=self.bias_initializer,
                 trainable=True
             )
@@ -252,11 +284,14 @@ class Dense(BaseLayer):
         self._built = True
 
     def forward(self, value, *args, **kwargs):
-        output = value @ self.weight
-        output = output + self.bias if self.use_bias else output
+        output = ops.einsum('bhw, wk -> bhk', value, self.weight, **kwargs)
+
+        if self.use_bias:
+            output = ops.add(output, self.bias, **kwargs)
 
         if self.activation:
             return self.activation(output, *args, **kwargs)
+
         return output
 
 
@@ -274,7 +309,13 @@ class Input(BaseLayer):
     :raises ValueError: if input_shape dimension < 1
     """
 
-    def __init__(self, input_shape, session=None, name='Input'):
+    def __init__(
+            self,
+            input_shape,
+            batch_size=None,
+            session=None,
+            name='Input'
+    ):
         """Constructor method."""
         super().__init__(session=session, name=name)
 
@@ -282,7 +323,8 @@ class Input(BaseLayer):
             msg = f"Input shape must be at least 1d, received: {input_shape}"
             raise ValueError(msg)
 
-        self.input_shape = input_shape
+        batch_input_shape = (batch_size, *input_shape)
+        self.input_shape = InputShape(batch_input_shape)
 
     def forward(self, x, *args, **kwargs):
         """Calculate output of the Input layer."""
@@ -293,4 +335,37 @@ class Input(BaseLayer):
     # is automatically created during function call
     # this behavior can be changed manually by passing x argument
     # in this case, Variable will be created instead of Placeholder
-    __call__ = functools.partialmethod(BaseLayer.__call__, x=None)
+    __call__ = functools.partialmethod(
+        BaseLayer.__call__,
+        x=None,
+        input_cache=True
+    )
+
+
+class InputShape:
+    """Contains information about the shape of the input data.
+
+    If the length of the batch_input_shape is less than 2, then
+    batch will be set to None. Otherwise, the first element of
+    the batch_input_shape will be the batch size. The rest of
+    the batch_input_shape elements are considered input_shape.
+
+    :param batch_input_shape: array that contains at least 2 elements,
+        the first element is batch size and all the rest are input shape.
+    :raises ValueError: array length is less than 2
+    """
+
+    def __init__(self, batch_input_shape):
+        """Constructor method."""
+        if isinstance(batch_input_shape, list):
+            batch_input_shape = tuple(batch_input_shape)
+
+        # if batch_input_shape length is greater than or equal to 2,
+        # then batch_idx will be equal to 1 and 0 otherwise
+        batch_idx = int(len(batch_input_shape) >= 2)
+        batch_size = batch_input_shape[0:batch_idx]
+
+        self.batch = batch_size[0] if batch_size else None
+        self.shape = batch_input_shape[batch_idx:]
+
+        self.batch_input_shape = (self.batch, *self.shape)

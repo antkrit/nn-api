@@ -4,7 +4,8 @@ from api.core.autograd.utils import node_wrapper
 __all__ = (
     'add', 'mul', 'div', 'pow', 'dot', 'max', 'min', 'sin', 'cos',
     'sum', 'mean', 'sqrt', 'rsqrt', 'abs', 'exp', 'log', 'log2',
-    'log10', 'assign', 'assign_add', 'assign_mul', 'assign_div'
+    'log10', 'assign', 'assign_add', 'assign_mul', 'assign_div',
+    'einsum'
 )
 
 
@@ -44,6 +45,34 @@ def div(this, other, **kwargs):
 def assign_div(ref, op, **kwargs):
     """Divide two operands with reference assignment.."""
     return node_wrapper(AssignDivide, ref, op, **kwargs)
+
+
+def einsum(subscripts, *arrays, **kwargs):
+    """Evaluates the Einstein summation convention on the operands."""
+    delimiter = kwargs.pop('delimiter', '->')
+    subscripts, o_subscript = _parse_subscripts(subscripts, delim=delimiter)
+
+    return node_wrapper(
+        Einsum,
+        *arrays,
+        subscripts=subscripts,
+        o_subscript=o_subscript,
+        delimiter=delimiter,
+        **kwargs
+    )
+
+
+def _parse_subscripts(string, delim='->'):
+    """Parse subscripts for einsum.
+
+    :param string: subscripts to parse
+    :param delim: str operator that separates input subscripts
+        from output subscript, defaults to '->'
+    :return: tuple, array of input subscripts and the output subscript
+    """
+    string = string.replace(',', '')
+    inp, out = string.split(delim)
+    return inp.split(), out
 
 
 def pow(this, other, **kwargs):

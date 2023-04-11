@@ -3,6 +3,8 @@
 # because pylint doesn't recognize objects in code samples for doctest
 # pylint: disable=W0611
 import operator
+import numpy as np
+
 from api.core.autograd.node import Variable, Placeholder, Operation
 from api.core.autograd.utils import topological_sort
 
@@ -58,7 +60,7 @@ class Session:
             >>> b = Placeholder('x')
             >>> c = a * b  # Node.__mul__(a, b)
             >>> session = Session()
-            >>> session.run(c, feed_dict={'x':iter([15])})
+            >>> session.run(c, feed_dict={'x': 15)})
             30.0
 
         :param target: node or list of nodes to perform the forward step for
@@ -71,66 +73,33 @@ class Session:
         run_output_token = 'FORWARD_OUTPUT'
         output = {}
 
-        try:
-            # infinite cycle is used to make sure all values
-            # from the feed dict entry will be used (iterate until there
-            # are no values in the batch).
-            # note: If there are several feed_dict entries then the cycle
-            # will work until no values remain in the largest of them.
-            # Placeholders for which no data is left - will save the last value
-            while True:
-                for sorted_ in topological_sort(target):
-                    for node in sorted_:
-                        self.__process_node_forward(node, feed_dict=feed_dict)
+        for sorted_ in topological_sort(target):
+            for node in sorted_:
+                self.__step_forward(node, feed_dict=feed_dict)
 
-                    head_node = sorted_[-1]
-                    head_node_entry = output.get(head_node, None)
+            head_node = sorted_[-1]
+            head_node_entry = output.get(head_node, None)
 
-                    try:
-                        # add a new node output to the list
-                        head_node_entry.append(head_node.value)
-                    except AttributeError:
-                        if head_node_entry is not None:
-                            # if there is single node output in the
-                            # output dict, create list with the new one
-                            output[head_node] = [
-                                output[head_node],
-                                head_node.value
-                            ]
-                        else:
-                            # if this node's output does not exist in the
-                            # output dict, set it to a single value
-                            output[head_node] = head_node.value
+            try:
+                # add a new node output to the list
+                head_node_entry.append(head_node.value)
+            except AttributeError:
+                if head_node_entry is not None:
+                    # if there is single node output in the
+                    # output dict, create list with the new one
+                    output[head_node] = [
+                        output[head_node],
+                        head_node.value
+                    ]
+                else:
+                    # if this node's output does not exist in the
+                    # output dict, set it to a single value
+                    output[head_node] = head_node.value
 
-                if not feed_dict:
-                    # If there is no feed dict - stop iterate.
-                    break
+        self.ctx_add(run_output_token, output)
 
-                if feed_dict and not self.ctx_get('placeholders'):
-                    # if there is feed_dict and no placeholders - stop iterate
-                    break
-
-        except StopIteration:
-            # If there are no more values from the feed dict
-            # entry (which is supposed to be an iterator) - StopIteration error
-            # will be raised (error raised by the
-            # __process_node_forward -> __handle_placeholder_forward function)
-            pass
-        except KeyError:
-            # no data for placeholder (error raised by the
-            # __process_node_forward -> __handle_placeholder_forward function)
-            raise
-        except Exception:
-            # TODO: log the error appropriately
-            import logging
-            import traceback
-            logging.error(traceback.format_exc())
-
-        if output:
-            self.ctx_add(run_output_token, output)
-
-            returns = returns or output.keys()
-            return operator.itemgetter(*returns)(output)
+        returns = returns or output.keys()
+        return operator.itemgetter(*returns)(output)
 
     def gradients(self, target, returns=None):
         """Compute gradients for the given graph.
@@ -158,7 +127,7 @@ class Session:
             >>> x = Placeholder(name='x')
             >>> op = w * x
             >>> session = Session()
-            >>> _ = session.run(op, feed_dict={'x': iter([2.0])})
+            >>> _ = session.run(op, feed_dict={'x': 2.0})
             >>> session.gradients(op)
             {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
 
@@ -169,6 +138,7 @@ class Session:
         """
         order = next(topological_sort(target))
         visited = set()
+
         order[-1].gradient = 1.0  # df/df
 
         for node in reversed(order):
@@ -221,28 +191,17 @@ class Session:
         inputs = [x.value for x in node.inputs]
         node.value = node.forward(*inputs)
 
-    def __handle_placeholder_forward(self, node, feed_dict):
+    @staticmethod
+    def __handle_placeholder_forward(node, feed_dict):
         """Process placeholder node.
 
         :param node: placeholder node to process
         :param feed_dict: original feed_dict
-        :raises KeyError: if the placeholder is empty and there is no data
-            for it in feed_dict
-        :raises StopIteration: if the no more data for the placeholder entry
         """
         feed_dict = feed_dict or {}
-        self.ctx_add('placeholders', node)
+        node.value = feed_dict[node.name]
 
-        try:
-            pl_iter = feed_dict[node.name]
-            node.value = next(pl_iter)
-        except KeyError as exc:
-            if node.value is not None:
-                node.value = node.value
-            else:
-                raise KeyError(f"Unfilled placeholder '{node.name}'") from exc
-
-    def __process_node_forward(self, node, feed_dict=None):
+    def __step_forward(self, node, feed_dict=None):
         """Get a node as input and process it depending on the class.
 
         :param node: node to process

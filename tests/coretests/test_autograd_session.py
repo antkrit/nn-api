@@ -27,11 +27,7 @@ def test_run_forward_with_placeholder(session, test_case_binary):
         session.run(x * y)
 
     with pytest.raises(KeyError):
-        session.run(x * y, feed_dict={'y': iter([y_val])})
-
-    z = session.run(x * y, feed_dict={y.name: iter([y_val, y_val])})
-    x_val, y_val = np.asarray(x_val), np.asarray(y_val)
-    assert np.array_equal(z, [y_val*x_val, y_val*x_val])
+        session.run(x * y, feed_dict={'y': y_val})
 
 
 def test_run_forward_multiple_head_nodes(session, test_case_binary):
@@ -101,28 +97,23 @@ def test_session_utils(session):
     placeholder = namespace.nodes.placeholder(name='test_placeholder')
     operation = variable + placeholder
 
-    feed_dict = {placeholder.name: iter([pl_value])}
+    feed_dict = {placeholder.name: pl_value}
 
-    var = session._Session__process_node_forward(variable)
+    var = session._Session__step_forward(variable)
     assert var is variable and var.value == var_value
 
     with pytest.raises(KeyError):
-        session._Session__process_node_forward(placeholder, feed_dict=None)
+        session._Session__step_forward(placeholder, feed_dict=None)
 
     with pytest.raises(KeyError):
-        session._Session__process_node_forward(
-            placeholder, feed_dict={'wrong_name': iter([pl_value])}
+        session._Session__step_forward(
+            placeholder, feed_dict={'wrong_name': pl_value}
         )
 
-    pl = session._Session__process_node_forward(
+    pl = session._Session__step_forward(
         placeholder, feed_dict=feed_dict
     )
     assert pl is placeholder and pl.value == pl_value
 
-    with pytest.raises(StopIteration):
-        session._Session__process_node_forward(
-            placeholder, feed_dict=feed_dict
-        )
-
-    op = session._Session__process_node_forward(operation)
+    op = session._Session__step_forward(operation)
     assert op is operation and op.value == var_value + pl_value

@@ -1,7 +1,16 @@
 import pytest
 import numpy as np
 import api.core.autograd as ag
+
 from api.core.loss import *
+
+
+def test_representation(mocker):
+    mocker.patch.object(BaseLoss, 'forward', lambda *args, **kwargs: 10.0)
+
+    bl = BaseLoss(name='some_name')
+    _ = bl(None, None)
+    assert str(bl) == f'{bl.name}: {10.0}'
 
 
 @pytest.mark.parametrize('y_true, y_pred, expected', [

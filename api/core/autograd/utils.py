@@ -1,6 +1,4 @@
 """Contains useful frequently used objects."""
-import re
-import numpy as np
 from api.core.autograd.node import Node
 from api.core.autograd.node import Variable, Placeholder, Constant, Operation
 
@@ -22,7 +20,7 @@ def form_feed_dict(data, *placeholders):
         )
 
     return {
-        p.name: iter(np.atleast_2d(data[i]))
+        p.name: data[i]
         for i, p in enumerate(placeholders)
     }
 

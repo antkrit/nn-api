@@ -18,29 +18,49 @@ import numpy as np
 from api.core import autograd as ag
 
 
-__all__ = ('MSE', 'MAE', 'MBE', 'Huber', 'LHL', 'BCE', 'Hinge', 'CCE', 'KLD')
+__all__ = (
+    'BaseLoss', 'MSE', 'MAE', 'MBE', 'Huber', 'LHL',
+    'BCE', 'Hinge', 'CCE', 'KLD',
+)
 
 
 class BaseLoss:
     """Base loss class.
 
+    :param name: name of the loss, defaults to loss
+    :param session: current session, if None - creates new, defaults to None
     :param threshold: some minute value to avoid problems like
         div by 0 or log(0), defaults to 0
-    :param session: current session, if None - creates new, defaults to None
     """
 
-    def __init__(self, session=None, threshold=0):
+    def __init__(self, name='loss', session=None, threshold=0):
         self.session = session or ag.Session()
         self.threshold = threshold
+        self.name = name
+
+        self._value = None
+
+    @property
+    def value(self):
+        if hasattr(self._value, 'value'):
+            return self._value.value
+        return self._value
 
     @abc.abstractmethod
     def forward(self, y_true, y_pred):
         """Calculate loss."""
         raise NotImplementedError("Must be implemented in child classes.")
 
-    @abc.abstractmethod
-    def __call__(self, *args, **kwargs):
-        raise NotImplementedError("Must be implemented in child classes.")
+    def __call__(self, y_pred, y_true, *args, **kwargs):
+        self._value = ag.utils.node_wrapper(
+            self.forward,
+            y_pred, y_true,
+            *args, **kwargs
+        )
+        return self._value
+
+    def __str__(self):
+        return f'{self.name}: {self.value}'
 
 
 class MSE(BaseLoss):
@@ -49,10 +69,19 @@ class MSE(BaseLoss):
     :param root: set to True when RMSE loss is required, defaults to False
     """
 
-    def __init__(self, session=None, root=False, threshold=0):
+    def __init__(
+            self,
+            name='mean_squared_error',
+            session=None,
+            root=False,
+            threshold=0
+    ):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
+
         self.root = root
+        if root:
+            self.name = 'root_' + self.name
 
     def forward(self, y_pred, y_true):
         """Calculate (R)MSE.
@@ -68,20 +97,13 @@ class MSE(BaseLoss):
         total = ag.ops.mean(err)
         return ag.ops.sqrt(total) if self.root else total
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class MAE(BaseLoss):
     """Mean Absolute Error."""
 
-    def __init__(self, session=None, threshold=0):
+    def __init__(self, name='mean_absolute_error', session=None, threshold=0):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
         """Calculate MAE.
@@ -96,20 +118,13 @@ class MAE(BaseLoss):
         err = ag.ops.abs(y_pred - y_true)
         return ag.ops.mean(err)
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class MBE(BaseLoss):
     """Mean Bias Error."""
 
-    def __init__(self, session=None, threshold=0):
+    def __init__(self, name='mean_bias_error', session=None, threshold=0):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
         """Calculate MBE.
@@ -124,13 +139,6 @@ class MBE(BaseLoss):
         err = y_pred - y_true
         return ag.ops.mean(err)
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class Huber(BaseLoss):
     """Huber Loss.
@@ -142,9 +150,9 @@ class Huber(BaseLoss):
         defaults to 1
     """
 
-    def __init__(self, delta=1, session=None, threshold=0):
+    def __init__(self, name='huber', delta=1, session=None, threshold=0):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
         self.delta = delta
 
     def forward(self, y_pred, y_true):
@@ -172,13 +180,6 @@ class Huber(BaseLoss):
         lss_cond_false = cond_false * self.delta * (err - 0.5 * self.delta)
         return ag.ops.mean(lss_cond_true+lss_cond_false)
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class LHL(BaseLoss):
     """Likelihood Loss.
@@ -189,9 +190,9 @@ class LHL(BaseLoss):
     binary classification.
     """
 
-    def __init__(self, session=None, threshold=0):
+    def __init__(self, name='likelihood', session=None, threshold=0):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
         """Calculate LHL.
@@ -203,13 +204,6 @@ class LHL(BaseLoss):
         err = (y_true * y_pred + (1 - y_true) * (1 - y_pred))
         return ag.ops.mean(err)
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class BCE(BaseLoss):
     """Binary Cross Entropy.
@@ -218,9 +212,14 @@ class BCE(BaseLoss):
     more severe penalties for large errors.
     """
 
-    def __init__(self, session=None, threshold=1e-32):
+    def __init__(
+            self,
+            name='binary_cross_entropy',
+            session=None,
+            threshold=1e-32
+    ):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
         """Calculate BCE.
@@ -233,13 +232,6 @@ class BCE(BaseLoss):
         err_1 = (1 - y_true) * ag.ops.log10(1 - y_pred + self.threshold)
         return ag.ops.mean(-(err+err_1))
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class Hinge(BaseLoss):
     """Hinge Loss.
@@ -251,9 +243,9 @@ class Hinge(BaseLoss):
         To apply Hinge Loss, classes must be marked as 1 and -1 (not 0)
     """
 
-    def __init__(self, session=None, threshold=0):
+    def __init__(self, name='hinge', session=None, threshold=0):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
         """Calculate HL.
@@ -265,13 +257,6 @@ class Hinge(BaseLoss):
         err = ag.ops.max(0, 1 - (y_pred * y_true))
         return ag.ops.mean(err)
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class CCE(BaseLoss):
     """Categorical Cross Entropy.
@@ -282,9 +267,14 @@ class CCE(BaseLoss):
     of targets and predictions and return the mean
     """
 
-    def __init__(self, session=None, threshold=1e-32):
+    def __init__(
+            self,
+            name='categorical_cross_entropy',
+            session=None,
+            threshold=1e-32
+    ):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
         """Calculate CCE.
@@ -296,13 +286,6 @@ class CCE(BaseLoss):
         err = y_true * ag.ops.log10(y_pred + self.threshold)
         return ag.ops.mean(-err)
 
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )
-
 
 class KLD(BaseLoss):
     """Kullback-Leibler Divergence.
@@ -311,9 +294,14 @@ class KLD(BaseLoss):
     of observations. Useful when classes are not balanced.
     """
 
-    def __init__(self, session=None, threshold=1e-32):
+    def __init__(
+            self,
+            name='kullback_leibler_divergence',
+            session=None,
+            threshold=1e-32
+    ):
         """Constructor method."""
-        super().__init__(session, threshold)
+        super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
         """Calculate KLD.
@@ -325,10 +313,3 @@ class KLD(BaseLoss):
         prob = (y_true + self.threshold) / (y_pred + self.threshold)
         err = y_true * ag.ops.log10(prob)
         return ag.ops.mean(err)
-
-    def __call__(self, y_pred, y_true, *args, **kwargs):
-        return ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
-        )

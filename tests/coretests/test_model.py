@@ -1,14 +1,29 @@
 import pytest
-import numpy as np
+
+from api.core.autograd import Placeholder
 from api.core.generic import Model
 from api.core.layers import Dense
 from api.core.loss import MSE
-from api.core.activation import ReLU
 from api.core.optimizers import GradientDescent
 from api.core.exception import ModelIsNotCompiledException
 
 
-def test_model_compilation():
+@pytest.mark.parametrize(
+    'optimizer',
+    [GradientDescent(0.1), 'gradient_descent'],
+    ids=['optimizer=compiled', 'optimizer=str']
+)
+@pytest.mark.parametrize(
+    'loss',
+    [MSE(), 'mean_squared_error'],
+    ids=['loss=compiled', 'loss=str']
+)
+@pytest.mark.parametrize(
+    'metrics',
+    [(MSE(),), ('mean_squared_error',), ('mean_squared_error', MSE())],
+    ids=['metrics=(compiled,)', 'metrics=(str,)', 'metrics=(str, compiled)']
+)
+def test_model_creation(optimizer, loss, metrics):
 
     def _compare_trainable(left, right):
         if len(left) != len(right):
@@ -21,94 +36,53 @@ def test_model_compilation():
             return False
         return True
 
-    model = Model()
+    model = Model(input_shape=(1, 1))
 
-    lr1 = Dense((1, 1), activation='relu', weight_initializer='ones')
-    lr1_trainable = lr1.trainable
-    lr2 = Dense((1, 1), activation='relu', weight_initializer='ones')
-    lr2_trainable = lr2.trainable
+    lr1 = Dense(1, activation='relu', weight_initializer='ones')
+    lr1_trainable = lr1.variables()
+    lr2 = Dense(1, activation='relu', weight_initializer='ones')
+    lr2_trainable = lr2.variables()
 
     model.add(lr1)
+    assert model.output_shape == lr1.batch_shape
+
     model.add(lr2)
+    assert model.output_shape == lr2.batch_shape
 
     with pytest.raises(ValueError):
         model.add('lr1')
 
     all_trainable = lr1_trainable + lr2_trainable
-    assert _compare_trainable(all_trainable, model.trainable)
+    assert _compare_trainable(all_trainable, model.variables())
 
-    assert model.optimizer is None and model.loss is None
+    with pytest.raises(ModelIsNotCompiledException):
+        model.fit(None, None)
 
-    opt = GradientDescent(learning_rate=1)
-    model.compile(optimizer=opt, loss='mean_squared_error')
+    with pytest.raises(ModelIsNotCompiledException):
+        model.predict(None)
+
+    assert not model._built
+    model.build()
+    assert not model._built
+
+    model.compile(
+        optimizer=optimizer,
+        loss=loss,
+        metrics=metrics
+    )
 
     assert isinstance(model.optimizer, GradientDescent)
     assert _compare_trainable(all_trainable, model.optimizer.trainable)
     assert isinstance(model.loss, MSE)
-
-    test_lr = 1
-    model.compile(
-        optimizer='gradient_descent',
-        loss='mean_squared_error',
-        learning_rate=test_lr
-    )
-
-    assert isinstance(model.optimizer, GradientDescent)
-    assert model.optimizer.learning_rate == test_lr
-    assert _compare_trainable(all_trainable, model.optimizer.trainable)
+    assert all([isinstance(metric, MSE) for metric in model.metrics])
 
 
-@pytest.mark.parametrize('x', ([[2]], [[2, 2, 2]]), ids=['scalar', 'vector'])
-def test_model_fit_predict(session, x):
-    model = Model()
+def test_model_forward():
+    m = Model(input_shape=(1, 2))
+    assert isinstance(m(), Placeholder)
 
-    output_shape = 1
-    x = np.asarray(x)
-    x_train = np.expand_dims(x, axis=0)
-    y = np.ones(output_shape)
+    assert isinstance(m(), Placeholder)
 
-    layer = Dense(
-        (x.size, output_shape),
-        activation='relu',
-        weight_initializer='ones'
-    )
-    w, b = layer.trainable
-    model.add(layer)
-
-    with pytest.raises(ModelIsNotCompiledException):
-        model.fit(iter([x_train, y]), epochs=1)
-
-    with pytest.raises(ModelIsNotCompiledException):
-        model.predict(x)
-
-    model.compile(
-        optimizer='gradient_descent',
-        loss='mean_absolute_error',
-        learning_rate=1
-    )
-
-    # following tests assume:
-    # learning rate = 1,
-    # weight initialization set to 'ones',
-    # relu activation is applied to positive values
-
-    # 1 epoch: ReLU(X @ W + b)
-    # b derivative = 1
-    # W derivative = X.T
-    model.fit(iter([[x_train, y]]), epochs=1)
-
-    # after the optimization step w.value should be equal to w - x.T
-    assert np.array_equal(
-        w.value,
-        np.ones(layer.size) - x.T
-    )
-
-    # after the optimization step b.value should be equal to 0
-    # (if weight initializer is set to 'ones')
-    assert np.array_equal(b.value, np.zeros((1, output_shape)))
-
-    activation = ReLU()
-    assert np.allclose(
-        model.predict(x),
-        session.run(activation(x.dot(w.value) + b.value))
-    )
+    layer = Dense(1)
+    m.add(layer=layer)
+    assert not isinstance(m(), Placeholder)

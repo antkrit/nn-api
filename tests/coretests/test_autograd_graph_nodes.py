@@ -22,9 +22,6 @@ def test_base_node():
 
     assert n.value is None
 
-    with pytest.raises(ValueError):
-        _ = Node(value=[1], name=None, shape=(2, 3))
-
     _ = Node(value=[1], name=None, shape=(1,))
     n = Node(value=[1], name=None, shape=None)
     assert n.shape == (1,)
@@ -42,9 +39,6 @@ def test_variable_node(session):
 
     var.name = v_name
     assert str(var) == v_name
-
-    with pytest.raises(ValueError):
-        _ = Variable(1, shape=(1, 2))
 
     _ = Variable(1, shape=())
     _ = Variable([1, 2], shape=(2,))
@@ -65,9 +59,6 @@ def test_constant_node():
     with pytest.raises(ValueError):
         cnst.value = 1
 
-    with pytest.raises(ValueError):
-        _ = Constant(1, shape=(1, 2))
-
     _ = Constant(1, shape=())
     _ = Constant([1, 2], shape=(2,))
 
@@ -82,15 +73,10 @@ def test_placeholder_node():
 
     plc = Placeholder()
     plc_rgx = re.compile(r'^.*/placeholder-\d+$')
-    print(plc.name)
     assert re.search(plc_rgx, plc.name) is not None
 
     shape = (3, 4)
     plc_with_shape = Placeholder(name=p_name, shape=shape)
-
-    with pytest.raises(ValueError):
-        plc_with_shape.value = p_val
-
     plc_with_shape.value = np.ones(shape)
     assert np.array_equal(plc_with_shape.value, np.ones(shape))
 

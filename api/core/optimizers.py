@@ -1,6 +1,7 @@
 """Contains implementation of Gradient Descent optimizers (GD, SGD)"""
 import abc
 import numpy as np
+
 from api.core.autograd import ops
 from api.core.autograd import Operation, Session, Constant, Variable
 from api.core.exception import NoGradientException
@@ -54,16 +55,16 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
             def apply_gradient(self, x, grad):
                 return autograd.ops.assign_add(x, -self._lr * grad)
 
+    :param trainable_variables: variables to optimize, defaults to None
     :param session: current session, if None - creates new, defaults to None
-    :param trainable_variables: variables to optimize, defaults to
-        weight and bias
+    :param name: optimizer name
     """
 
     def __init__(self, trainable_variables, session=None, name=None, **kwargs):
         """Constructor method."""
         super().__init__(name=name, **kwargs)
         self.session = session or Session()
-        self.trainable = trainable_variables
+        self.trainable = trainable_variables or []
         self._variables = []
 
         # should be initialized with build() method
@@ -166,9 +167,8 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
 
     def backward(self, *args, **kwargs):
         """Return gradient of the operation by given inputs."""
-        raise NoGradientException(
-            f"There is no gradient for operation {self.name}."
-        )
+        msg = f"There is no gradient for operation {self.name}."
+        raise NoGradientException(msg)
 
     def minimize(self, operation):
         """Set operation [to minimize] for the optimizer."""
@@ -206,8 +206,6 @@ class GradientDescent(BaseOptimizer):
     :param learning_rate: hyperparameter, some small value, defaults to 0.001
     :param momentum: hyperparameter, value in range [0, 1], defaults to 0
     :param nesterov: whether to apply Nesterov momentum, defaults to False
-    :param trainable_variables: nodes, variables to minimize
-    :param session: current session, defaults to None
     """
 
     def __init__(
@@ -238,7 +236,6 @@ class GradientDescent(BaseOptimizer):
             raise ValueError("momentum must be in range [0, 1].")
 
     def build(self, var_list):
-        """Initialize optimizer variables."""
         super().build(var_list)
         if self.__built:
             return
@@ -290,8 +287,6 @@ class Adagrad(BaseOptimizer):
         defaults to 0
     :param epsilon: small floating point value used to maintain numerical
         stability, defaults to 1e-16
-    :param trainable_variables: nodes, variables to minimize
-    :param session: current session, defaults to None
     """
 
     def __init__(
@@ -320,7 +315,6 @@ class Adagrad(BaseOptimizer):
         self.__built = False
 
     def build(self, var_list):
-        """Initialize optimizer variables."""
         super().build(var_list)
         if self.__built:
             return
@@ -372,8 +366,6 @@ class Adadelta(BaseOptimizer):
     :param rho: hyperparameter, the decay rate, defaults to 0.9
     :param epsilon: small floating point value used to maintain numerical
         stability, defaults to 1e-16
-    :param trainable_variables: nodes, variables to minimize
-    :param session: current session, defaults to None
     """
 
     def __init__(
@@ -404,7 +396,6 @@ class Adadelta(BaseOptimizer):
         self.__built = False
 
     def build(self, var_list):
-        """Initialize optimizer variables."""
         super().build(var_list)
         if self.__built:
             return
@@ -475,8 +466,6 @@ class RMSProp(BaseOptimizer):
         variance of the gradient; if False, by the uncentered second moment.
         Setting this to True may help with training, but is slightly more
         expensive in terms of computation and memory, defaults to False
-    :param trainable_variables: nodes, variables to minimize
-    :param session: current session, defaults to None
     """
 
     def __init__(
@@ -513,7 +502,6 @@ class RMSProp(BaseOptimizer):
         self.__built = False
 
     def build(self, var_list):
-        """Initialize optimizer variables."""
         super().build(var_list)
         if self.__built:
             return
@@ -601,8 +589,6 @@ class Adam(BaseOptimizer):
         stability, defaults to 1e-16
     :param amsgrad: whether to apply AMSGrad variant of this algorithm from
         the paper "On the Convergence of Adam and beyond", defaults to False
-    :param trainable_variables: nodes, variables to minimize
-    :param session: current session, defaults to None
     """
 
     def __init__(
@@ -639,7 +625,6 @@ class Adam(BaseOptimizer):
         self.__built = False
 
     def build(self, var_list):
-        """Initialize optimizer variables."""
         super().build(var_list)
         if self.__built:
             return
@@ -709,11 +694,9 @@ class Adamax(BaseOptimizer):
     :param beta_1: hyperparameter, the exponential decay rate for the 1st
         moment estimates, defaults to 0.9.
     :param beta_2: hyperparameter, the exponential decay rate for the 2nd
-        moment estimates, defaults to 0.9.
+        moment estimates, defaults to 0.999.
     :param epsilon: small floating point value used to maintain numerical
         stability, defaults to 1e-16
-    :param trainable_variables: nodes, variables to minimize
-    :param session: current session, defaults to None
     """
 
     def __init__(
@@ -747,7 +730,6 @@ class Adamax(BaseOptimizer):
         self.__built = False
 
     def build(self, var_list):
-        """Initialize optimizer variables."""
         super().build(var_list)
         if self.__built:
             return

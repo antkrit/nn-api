@@ -8,15 +8,9 @@ def test_form_feed_dict():
     x = ag.Placeholder('x')
     y = ag.Placeholder('y')
 
-    formed = utils.form_feed_dict([['x_val']], x)
-    assert next(formed[x.name]) == 'x_val'
-
-    formed = utils.form_feed_dict([[['x_val'], ['x_val_1']], ['y_val']], x, y)
-    assert next(formed[x.name]) == 'x_val'
-    assert next(formed[x.name]) == 'x_val_1'
-    with pytest.raises(StopIteration):
-        next(formed[x.name])
-    assert next(formed[y.name]) == 'y_val'
+    formed = utils.form_feed_dict(['x_val', 'y_val'], x, y)
+    assert formed[x.name] == 'x_val'
+    assert formed[y.name] == 'y_val'
 
     with pytest.raises(ValueError):
         utils.form_feed_dict([], x)

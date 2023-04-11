@@ -1,7 +1,20 @@
 import numpy as np
+from collections.abc import MutableMapping
 
 
 class Dataset:
+    """Collection of data.
+
+    Implemented as an infinite generator. Use `__len__` property to find out
+    number of unique batches in one dataset.
+
+    :param x_data: input data
+    :param y_data: input data
+    :param batch_size: number of samples per one batch, defaults to 1
+    :param dim: x_data shape, while y_data shape will be equal to
+        np.ones_like(dim), defaults to (1, 1)
+    :param shuffle: whether to shuffle data on epoch end
+    """
 
     def __init__(
             self,
@@ -17,7 +30,7 @@ class Dataset:
 
         if len(self.x) != len(self.y):
             raise ValueError(
-                f"Cannot match the lengths: {len(self.x)} and {len(self.x)}."
+                f"Cannot match the lengths: {len(self.x)} and {len(self.y)}."
             )
 
         self.shuffle = shuffle
@@ -32,7 +45,7 @@ class Dataset:
         self.__inner_state = 0
 
     def __len__(self):
-        return max(len(self.x) // self.batch_size, 1)
+        return max(len(self.x) // max(1, self.batch_size), 1)
 
     def __getitem__(self, index):
         """Generate batch of data."""
@@ -61,9 +74,9 @@ class Dataset:
         return result
 
     def on_epoch_end(self):
-        """Must be implemented."""
-        # TODO: shuffle on epoch end
-        return
+        """Do some postprocessing at the end of each epoch."""
+        if self.shuffle:
+            np.random.shuffle(self.indexes)
 
     def __generate_data(self, ids):
         """Generate data containing batch_size samples."""
@@ -77,3 +90,84 @@ class Dataset:
             y[i, ] = self.y[id_]
 
         return x, y
+
+
+class Container(MutableMapping):
+    """Base dict-like container class.
+
+    To get an object use any of the three options
+    >>> container = Container(name=..., obj=3)
+    >>> container['obj']
+    >>> container.obj
+    >>> container('obj')
+
+    To get the compiled instance - use __call__ method
+    >>> container = Container(name=..., obj=lambda x: x)
+    >>> container('obj_name', compiled=True, x=3)
+    3
+
+    .. note::
+        if in `__call__()` the first argument is not str, then this
+        object will be returned.
+    """
+
+    def __init__(self, name, *args, **kwargs):
+        """Constructor method."""
+        self.name = name
+        self.store = dict()
+        self.update(dict(*args, **kwargs))
+
+    def __getitem__(self, key):
+        return self.store[key]
+
+    def __getattr__(self, item):
+        return self.__getitem__(item)
+
+    def __setitem__(self, key, value):
+        self.store[key] = value
+
+    def __delitem__(self, key):
+        del self.store[key]
+
+    def __call__(self, obj_name, compiled=False, *args, **kwargs):
+        if not isinstance(obj_name, str):
+            return obj_name
+
+        obj = self.__getitem__(key=obj_name)
+        if callable(obj) and compiled:
+            return obj(*args, **kwargs)
+
+        return obj
+
+    def __iter__(self):
+        return iter(self.store)
+
+    def __len__(self):
+        return len(self.store)
+
+    def __repr__(self):
+        return f'Container-{self.name}({self.store.items()})'
+
+
+def unpack_x_y(data):
+    """Unpacks user-provided data.
+
+    This utility works with the following data forms: x; (x,); (x, y)
+
+    :param data: data to unpack
+    :raises ValueError: unexpected data format provided
+    :return: one of x, (x,), (x, y)
+    """
+    if isinstance(data, list):
+        data = tuple(data)
+    if not isinstance(data, tuple):
+        return data, None
+    elif 0 < len(data) <= 2:
+        representation = [None, None]
+        representation[:len(data)] = data
+        return representation
+    else:
+        msg = (
+            "Data is expected to be in format x, (x,), (x, y), received: {}"
+        ).format(data)
+        raise ValueError(msg)

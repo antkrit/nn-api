@@ -1,7 +1,6 @@
 import pytest
 import numpy as np
 
-
 from api.core import activation as actv
 from api.core.autograd import Variable, Placeholder
 from api.core.layers import *
@@ -36,7 +35,6 @@ def test_base_layer(mocker, test_case_unary):
     assert isinstance(layer_output, Placeholder)
     assert layer_output.shape == size
     assert bl.input is layer_output
-    assert bl.input_shape == layer_output.shape
 
 
 def test_base_layer_docstring_example(session, test_case_unary):
@@ -69,8 +67,8 @@ def test_base_layer_docstring_example(session, test_case_unary):
 
 @pytest.mark.parametrize(
     'x',
-    [1, [1, 1, 1]],
-    ids=['scalar', 'vector']
+    [np.ones(()), np.ones((3,)), np.ones((3, 3)), np.ones((4, 3, 3))],
+    ids=['scalar', 'vector', 'matrix', 'tensor']
 )
 @pytest.mark.parametrize(
     'activation',
@@ -93,9 +91,9 @@ def test_base_layer_docstring_example(session, test_case_unary):
     ids=['with bias', 'without bias']
 )
 def test_dense_layer(session, x, activation, weight_init, use_bias):
-    test_case = np.atleast_2d(x)
+    batch_test_case = np.atleast_3d(x)
     units = np.random.randint(1, 5)
-    x = Variable(test_case)
+    x = Variable(batch_test_case)
 
     layer = Dense(
         units=units,
@@ -108,8 +106,8 @@ def test_dense_layer(session, x, activation, weight_init, use_bias):
     layer_output = session.run(layer(x))
     assert np.array_equal(layer_output, session.run(layer.forward(x)))
 
-    expected_output_shape = (test_case.shape[-2], layer.units)
-    assert np.array_equal(layer_output.shape, expected_output_shape)
+    expected_output_shape = (*batch_test_case.shape[:-1], layer.units)
+    assert layer_output.shape == expected_output_shape
 
 
 @pytest.mark.parametrize('shape', [(1,), (1, 1)], ids=['shape-1d', 'shape-2d'])
@@ -123,8 +121,63 @@ def test_input_layer(session, shape):
     assert output.shape == shape
 
     inp = Input(input_shape=shape)
-    with pytest.raises(ValueError):
-        different_shape = (2, 3)
-        _ = inp(x=np.ones(different_shape))
+    out = inp(x=np.ones(shape))
+    assert out is not None
 
-    assert inp(x=np.ones(shape)) is not None
+    out_not_cached = inp(x=np.ones(shape))
+    assert out_not_cached is not None
+    assert out_not_cached is not out
+
+    out = inp(x=None)
+    assert out is not None
+
+    out_is_cached = inp(x=None)
+    assert out_is_cached is not None
+    assert out_is_cached is out
+
+    inp = Input(input_shape=shape, batch_size=1)
+    assert inp.shape == shape
+    assert inp.batch == 1
+    assert inp.batch_shape == (1, *shape)
+
+
+@pytest.mark.parametrize(
+    'x',
+    [np.ones(()), np.ones((3,)), np.ones((3, 3)), np.ones((4, 3, 3))],
+    ids=['scalar', 'vector', 'matrix', 'tensor']
+)
+def test_multiple_layers(session, x):
+    test_case = np.atleast_3d(x)
+    hidden_units = np.random.randint(2, 5)
+
+    inp = Input(input_shape=test_case.shape)()
+    hl = Dense(units=hidden_units)
+    out = Dense(units=1)
+
+    op = out(hl(inp), input_shape=hl.batch_shape)
+
+    inp.value = test_case
+
+    layer_output = session.run(op, feed_dict={inp.name: np.zeros(inp.shape)})
+    assert layer_output.shape[-1] == 1
+
+
+def test_input_shape():
+    shape = (1,)
+    input_shape = InputShape(shape)
+    assert input_shape.shape == shape
+    assert input_shape.batch is None
+    assert input_shape.batch_input_shape == (None, *shape)
+
+    shape = (1, 1)
+    input_shape = InputShape(shape)
+    assert input_shape.shape == shape[1:]
+    assert input_shape.batch == 1
+    assert input_shape.batch_input_shape == shape
+
+    shape = (1, 1, 1)
+    input_shape = InputShape(shape)
+    assert input_shape.shape == shape[1:]
+    assert input_shape.batch == 1
+    assert input_shape.batch_input_shape == shape
+

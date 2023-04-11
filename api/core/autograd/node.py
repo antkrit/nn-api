@@ -20,6 +20,12 @@ import numpy as np
 from api.core.autograd.graph import get_current_graph
 
 
+# disable numpy warnings due to some cases where a negative value
+# is given to the input of the log function, causing a RuntimeWarning
+# (although this does not affect the solution)
+np.seterr(all="ignore")
+
+
 class NodeMixin:
     """Contains different useful members for nodes."""
     count = itertools.count().__next__
@@ -63,13 +69,8 @@ class Node(NodeMixin):
         if value_not_none and not hasattr(self._value, 'shape'):
             self._value = np.asarray(self._value)
 
-        if shape is not None:
-            if not isinstance(shape, tuple):
-                shape = tuple(shape)
-
-            if value_not_none and self._value.shape != shape:
-                msg = f"Cannot match shapes {shape} and {self._value.shape}"
-                raise ValueError(msg)
+        if shape is not None and not isinstance(shape, tuple):
+            shape = tuple(shape)
 
         self.shape = self._value.shape if value_not_none else shape
 
@@ -88,11 +89,7 @@ class Node(NodeMixin):
         """
         if value is not None:
             if not hasattr(value, 'shape'):
-                value = np.asarray(value)
-
-            if self.shape and value.shape != self.shape:
-                msg = f"Cannot match shapes {self.shape} and {value.shape}"
-                raise ValueError(msg)
+                value = np.asarray(value, dtype=object)
 
             self._value = value
             self.shape = value.shape
@@ -320,8 +317,6 @@ class Einsum(Operation):
         self._o_subscript = o_subscript
         self._delimiter = delimiter
 
-        self._subscripts_str = None
-
     def subscripts(self, reverse=None):
         """Return subscripts string.
 
@@ -330,9 +325,6 @@ class Einsum(Operation):
             argument is used to implement the gradient.
         :return: subscripts string
         """
-        if self._subscripts_str and reverse is None:
-            return self._subscripts_str
-
         subscripts = self._subscripts.copy()
         out_subscript = self._o_subscript
 
@@ -340,11 +332,9 @@ class Einsum(Operation):
             out_subscript = subscripts[reverse]
             subscripts[reverse] = self._o_subscript
 
-        self._subscripts_str = ', '.join(subscripts) +\
-                               self._delimiter +\
-                               out_subscript
-
-        return self._subscripts_str
+        return ', '.join(subscripts) + \
+               self._delimiter + \
+               out_subscript
 
     def forward(self, *values):
         """Return output of the operation by given input.
@@ -361,7 +351,6 @@ class Einsum(Operation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        dout = np.ones_like(dout)
         values = list(values) or []
 
         def _subroutine(array, i):

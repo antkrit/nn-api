@@ -1,7 +1,7 @@
 """Defines containers with available names that are used to identify and refer
 to objects of various kinds.
 """
-from api.core.utils import Container
+from api.core.data import Container
 from api.core.autograd import *
 from api.core.activation import *
 from api.core.exception import *
