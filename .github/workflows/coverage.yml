@@ -1,0 +1,21 @@
+name: Build and tests
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python 3.9
+        uses: actions/setup-python@master
+        with:
+          python-version: 3.9
+      - name: Generate Report
+        run: |
+          python -m pip install --upgrade pip
+          pip install coverage
+          coverage run -m pytest
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v2

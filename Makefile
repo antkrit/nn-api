@@ -9,3 +9,7 @@ lint:
 # target: format - run automatic code styler (black)
 format:
 	black api/ -l 80
+
+# target: isort - sort imports
+isort:
+	isort api/ --profile black -l 80
