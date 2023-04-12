@@ -13,12 +13,9 @@ simple operations (add, multiply and so on) of complex functions
 ...     out = 4*x + y
 ...     sess = Session()
 ...     sess.run(out)  # forward pass 4 * 0.5 + 1 = 3.0
-...     grads = sess.gradients(out)  # backward pass
-...     grads[x]  # d(out)/dx = 4.0
-...     grads[y]  # d(out)/dy = 1.0
+...     sess.gradients(out, returns=[x])  # backward pass d(out)/dx = 4.0
 3.0
 4.0
-1.0
 
 Contains following modules:
 - `graph`: contains definition of graph
@@ -27,5 +24,6 @@ Contains following modules:
 """
 from api.core.autograd import utils, ops
 from api.core.autograd.node import *
-from api.core.autograd.graph import Graph, get_current_graph, reset_current_graph
+from api.core.autograd.graph import Graph
+from api.core.autograd.graph import get_current_graph, reset_current_graph
 from api.core.autograd.session import Session

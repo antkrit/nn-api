@@ -20,6 +20,14 @@ import numpy as np
 from api.core.autograd.graph import get_current_graph
 
 
+# this module is not logically separable
+# pylint: disable=too-many-lines
+
+# some classes have 5 or more arguments (which cannot be logically combined)
+# due to a large number of parent classes
+# e.g. `Add` -> `BinaryOperation` -> `Operation` -> `Node`
+# pylint: disable=too-many-arguments
+
 # disable numpy warnings due to some cases where a negative value
 # is given to the input of the log function, causing a RuntimeWarning
 # (although this does not affect the solution)
@@ -36,6 +44,7 @@ class NodeMixin:
         return get_current_graph()
 
     def prepare_graph(self, graph):
+        """Do some graph post-processing."""
         graph.nodes.append(self)
         graph.head_node = self
 
@@ -109,16 +118,24 @@ class Placeholder(Node):
         The node name is crucial here, it can be used later by
         :class:`Session` to fill this node with a value.
 
-        >>> x = Placeholder('a')
-        >>> Session().run(x, feed_dict={'x': 1}) # will raise KeyError
-        >>> Session().run(x, feed_dict={'a': 1}) # is OK
+        .. code-block:: python
+
+            from api.core.autograd import Session
+
+            x = Placeholder('a')
+            Session().run(x, feed_dict={'x': 1}) # will raise KeyError
+            Session().run(x, feed_dict={'a': 1}) # is OK
 
         In particular, you can fill it manually, but before computing
         the graph output.
 
-        >>> x = Placeholder('a')
-        >>> x.value = 1
-        >>> Session().run(x, feed_dict={'x': 1}) # is OK
+        .. code-block:: python
+
+            from api.core.autograd import Session
+
+            x = Placeholder('a')
+            x.value = 1
+            Session().run(x, feed_dict={'x': 1}) # is OK
 
     :raises ValueError: if Placeholder is initialized with name None
     """
@@ -658,8 +675,11 @@ class Divide(BinaryOperation):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
+
+        _dout = np.negative(dout)
         d_wrt_right = np.divide(left, np.power(right, 2) + self.threshold)
-        return np.divide(dout, right), np.multiply(np.negative(dout), d_wrt_right)
+
+        return np.divide(dout, right), np.multiply(_dout, d_wrt_right)
 
 
 class AssignDivide(AssignOperation, Divide):
@@ -886,7 +906,8 @@ class Abs(UnaryOperation):
         """
         # implementation details: |x| can be written as sqrt(x**2),
         # so derivative of this function will be x/|x|
-        return np.multiply(dout, (np.divide(value, (np.abs(value)+self.threshold)))),
+        abs_ = (np.abs(value)+self.threshold)
+        return np.multiply(dout, (np.divide(value, abs_))),
 
 
 class Exp(UnaryOperation):

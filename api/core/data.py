@@ -1,3 +1,4 @@
+"""Contains objects to work with data."""
 import numpy as np
 from collections.abc import MutableMapping
 
@@ -98,12 +99,15 @@ class Container(MutableMapping):
     To get an object use any of the three options
     >>> container = Container(name=..., obj=3)
     >>> container['obj']
+    3
     >>> container.obj
+    3
     >>> container('obj')
+    3
 
     To get the compiled instance - use __call__ method
     >>> container = Container(name=..., obj=lambda x: x)
-    >>> container('obj_name', compiled=True, x=3)
+    >>> container('obj', compiled=True, x=3)
     3
 
     .. note::
@@ -114,7 +118,7 @@ class Container(MutableMapping):
     def __init__(self, name, *args, **kwargs):
         """Constructor method."""
         self.name = name
-        self.store = dict()
+        self.store = {}
         self.update(dict(*args, **kwargs))
 
     def __getitem__(self, key):
@@ -129,7 +133,7 @@ class Container(MutableMapping):
     def __delitem__(self, key):
         del self.store[key]
 
-    def __call__(self, obj_name, compiled=False, *args, **kwargs):
+    def __call__(self, obj_name, *args, compiled=False, **kwargs):
         if not isinstance(obj_name, str):
             return obj_name
 
@@ -162,12 +166,11 @@ def unpack_x_y(data):
         data = tuple(data)
     if not isinstance(data, tuple):
         return data, None
-    elif 0 < len(data) <= 2:
+    if 0 < len(data) <= 2:
         representation = [None, None]
         representation[:len(data)] = data
         return representation
-    else:
-        msg = (
-            "Data is expected to be in format x, (x,), (x, y), received: {}"
-        ).format(data)
-        raise ValueError(msg)
+
+    msg = "Data is expected to be in format x, (x,), (x, y)," \
+          f" received: {data}"
+    raise ValueError(msg)

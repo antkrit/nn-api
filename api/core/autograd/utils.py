@@ -75,9 +75,9 @@ def convert_to_node(
 
 def fill_placeholders(*placeholders, feed_dict):
     """Fill placeholders with value from feed_dict without running session."""
-    for pl in placeholders:
-        if isinstance(pl, Placeholder):
-            pl.value = feed_dict.get(pl.name, None)
+    for plc in placeholders:
+        if isinstance(plc, Placeholder):
+            plc.value = feed_dict.get(plc.name, None)
 
 
 def topological_sort(nodes):
@@ -126,9 +126,9 @@ def node_wrapper(node, *args, **kwargs):
         else:
             try:
                 fnargs.append(Constant(arg))
-            except TypeError as e:
+            except TypeError as exc:
                 raise TypeError(
                     f"Incompatible argument type: {type(arg)}."
-                ) from e
+                ) from exc
 
     return node(*fnargs, **kwargs)

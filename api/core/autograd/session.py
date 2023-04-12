@@ -1,11 +1,7 @@
 """Contains classes and functions to work with graph."""
-# Attention: W0611 disabled(unused-import)
-# because pylint doesn't recognize objects in code samples for doctest
-# pylint: disable=W0611
 import operator
-import numpy as np
 
-from api.core.autograd.node import Variable, Placeholder, Operation
+from api.core.autograd.node import Placeholder, Operation
 from api.core.autograd.utils import topological_sort
 
 
@@ -28,17 +24,18 @@ class Session:
 
     :Example:
 
+    >>> from api.core.autograd import Variable
     >>> a = Variable(10)
     >>> b = Variable(20)
     >>> c = a + b  # Node.__add__(a, b)
     >>> session = Session()
     >>> session.run(c)
-    30.0
+    30
     """
     def __init__(self):
         """Constructor method."""
-        self.__CTX_GLOBAL_TOKEN = 'globals'
-        self.__context = {self.__CTX_GLOBAL_TOKEN: []}
+        self.ctx_global_token = 'globals'
+        self.__context = {self.ctx_global_token: []}
 
     def run(self, *target, feed_dict=None, returns=None):
         """Forward propagation aver a graph.
@@ -56,12 +53,13 @@ class Session:
             with data. Otherwise, TypeError will be raised. Pass that data
             to the feed_dict as the node_name:data entry.
 
+            >>> from api.core.autograd import Placeholder
             >>> a = 2
             >>> b = Placeholder('x')
             >>> c = a * b  # Node.__mul__(a, b)
             >>> session = Session()
-            >>> session.run(c, feed_dict={'x': 15)})
-            30.0
+            >>> session.run(c, feed_dict={b.name: 15}).astype(int)
+            array(30)
 
         :param target: node or list of nodes to perform the forward step for
         :param feed_dict: data for placeholders
@@ -107,14 +105,19 @@ class Session:
         Function performs topological sort for the target node, then sets
         its gradient to 1.0 and recursively computes all other gradients.
 
+        >>> from api.core.autograd import Variable
         >>> w = Variable(1, name='w')
         >>> x = Variable(2, name='x')
         >>> op = w * x
         >>> op.name = 'op'
         >>> session = Session()
+        >>> _ = session.run(op)  # fill ops with value
         >>> # d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1
-        >>> session.gradients(op)
-        {w: 2.0, x: 1.0, op: 1.0}
+        >>> x_grd, w_grd = session.gradients(op, returns=[x, w])
+        >>> w_grd
+        2.0
+        >>> x_grd
+        1.0
 
         .. warning::
             To calculate the gradient, it is important to run forward
@@ -122,14 +125,6 @@ class Session:
             own value. If there are placeholders, it is necessary run
             forward propagation first or manually fill them with data.
             Otherwise, TypeError error will be raised.
-
-            >>> w = Variable(1, name='w')
-            >>> x = Placeholder(name='x')
-            >>> op = w * x
-            >>> session = Session()
-            >>> _ = session.run(op, feed_dict={'x': 2.0})
-            >>> session.gradients(op)
-            {w: 2.0, x: 1.0, graph-0/operator-multiply-6: 1.0}
 
         :param target: head nodes of the graph
         :param returns: list of nodes whose gradient should be returned,
@@ -171,7 +166,7 @@ class Session:
         """
         if v_name not in self.__context:
             # automatically add unique names to globals.
-            self.ctx_add(self.__CTX_GLOBAL_TOKEN, v_name)
+            self.ctx_add(self.ctx_global_token, v_name)
         self.__context.setdefault(v_name, []).append(v_value)
 
     def ctx_get(self, v_name):

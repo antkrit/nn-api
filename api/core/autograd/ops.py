@@ -1,4 +1,9 @@
-from api.core.autograd.node import *
+"""Contains math operations definition."""
+from api.core.autograd.node import (
+    Add, AssignAdd, Assign, Multiply, AssignMultiply, Divide, AssignDivide,
+    Matmul, Max, Min, Power, Sqrt, Sum, Sin, Cos, Mean, Abs, Exp, Einsum,
+    Log, Log2, Log10, Node
+)
 from api.core.autograd.utils import node_wrapper
 
 __all__ = (
@@ -17,14 +22,14 @@ def add(this, other, **kwargs):
     return node_wrapper(Add, this, other, **kwargs)
 
 
-def assign_add(ref, op, **kwargs):
+def assign_add(ref, operation, **kwargs):
     """Add operation with reference assignment."""
-    return node_wrapper(AssignAdd, ref, op, **kwargs)
+    return node_wrapper(AssignAdd, ref, operation, **kwargs)
 
 
-def assign(ref, op, **kwargs):
+def assign(ref, operation, **kwargs):
     """Assign operation to reference."""
-    return node_wrapper(Assign, ref, op, **kwargs)
+    return node_wrapper(Assign, ref, operation, **kwargs)
 
 
 def mul(this, other, **kwargs):
@@ -32,9 +37,9 @@ def mul(this, other, **kwargs):
     return node_wrapper(Multiply, this, other, **kwargs)
 
 
-def assign_mul(ref, op, **kwargs):
+def assign_mul(ref, operation, **kwargs):
     """Multiply two operands with reference assignment.."""
-    return node_wrapper(AssignMultiply, ref, op, **kwargs)
+    return node_wrapper(AssignMultiply, ref, operation, **kwargs)
 
 
 def div(this, other, **kwargs):
@@ -42,9 +47,9 @@ def div(this, other, **kwargs):
     return node_wrapper(Divide, this, other, **kwargs)
 
 
-def assign_div(ref, op, **kwargs):
+def assign_div(ref, operation, **kwargs):
     """Divide two operands with reference assignment.."""
-    return node_wrapper(AssignDivide, ref, op, **kwargs)
+    return node_wrapper(AssignDivide, ref, operation, **kwargs)
 
 
 def einsum(subscripts, *arrays, **kwargs):

@@ -1,3 +1,4 @@
+"""Contains utility functions used for models."""
 from functools import wraps
 from api.core import namespace
 
@@ -10,7 +11,7 @@ def control_compile(func):
     """
     @wraps(func)
     def wrapper(self, *args, **kwargs):
-        if not self._built:
+        if not self.built:
             raise namespace.exceptions.ModelIsNotCompiled(
                 "Model must be compiled first."
             )

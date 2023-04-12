@@ -42,12 +42,14 @@ class BaseLoss:
 
     @property
     def value(self):
+        """Return loss value."""
         if hasattr(self._value, 'value'):
+            # if loss value is Node return its value
             return self._value.value
         return self._value
 
     @abc.abstractmethod
-    def forward(self, y_true, y_pred):
+    def forward(self, y_pred, y_true):
         """Calculate loss."""
         raise NotImplementedError("Must be implemented in child classes.")
 

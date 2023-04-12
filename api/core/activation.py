@@ -32,10 +32,6 @@ class BaseActivation:
 class Sigmoid(BaseActivation):
     """Sigmoid activation function."""
 
-    def __init__(self, session=None, threshold=0):
-        """Constructor method."""
-        super().__init__(session, threshold)
-
     def forward(self, x):
         """Calculate sigmoid.
 
@@ -50,10 +46,6 @@ class Sigmoid(BaseActivation):
 
 class Tanh(BaseActivation):
     """Hyperbolic Tangent activation function."""
-
-    def __init__(self, session=None, threshold=0):
-        """Constructor method."""
-        super().__init__(session, threshold)
 
     def forward(self, x):
         """Calculate tanh.
@@ -137,8 +129,8 @@ class Softmax(BaseActivation):
         :param x: input value
         """
         shiftx = x - np.max(self.session.run(x))
-        e = ag.ops.exp(shiftx)
-        return e / (ag.ops.sum(e)+self.threshold)
+        exp = ag.ops.exp(shiftx)
+        return exp / (ag.ops.sum(exp)+self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.utils.node_wrapper(self.forward, x, *args, **kwargs)

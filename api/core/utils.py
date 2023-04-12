@@ -16,9 +16,9 @@ def at_least3d(array):
 
     if len(array.shape) == 0:
         return array.reshape((1, 1, 1))
-    elif len(array.shape) == 1:
+    if len(array.shape) == 1:
         return array[np.newaxis, :, np.newaxis]
-    elif len(array.shape) == 2:
+    if len(array.shape) == 2:
         return array[np.newaxis, :, :]
-    else:
-        return array
+
+    return array

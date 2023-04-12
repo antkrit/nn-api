@@ -13,6 +13,10 @@ __all__ = (
     'Adam', 'Adamax',
 )
 
+# optimizers have many abbreviations (such as lr=learning_rate) well known
+# to users. Therefore, for convenience, C0103 has been disabled in this file
+# pylint: disable=invalid-name
+
 
 class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
     """Base optimizer class.
@@ -49,7 +53,9 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
                 if self._built:
                     return
 
-                self._lr = self.add_variable(self.learning_rate, 'learning_rate')
+                self._lr = self.add_variable(
+                    self.learning_rate, 'learning_rate'
+                )
                 self._built = True
 
             def apply_gradient(self, x, grad):
@@ -71,13 +77,15 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
         self._iteration = None
         self._built = False
 
+        self._index_dict = {}
+
     @abc.abstractmethod
     def build(self, var_list):
         """Initialize optimizer variables.
 
         This method should be implemented and called by subclasses.
         """
-        if hasattr(self, '__built') and self.__built:
+        if hasattr(self, '_built') and self._built:
             return
 
         self._iteration = self.add_variable(0, self.name + '/local-iteration')
@@ -228,7 +236,7 @@ class GradientDescent(BaseOptimizer):
         self._momentum = None
         self._momentums = None
 
-        self.__built = False
+        self._built = False
 
         if isinstance(momentum, (int, float)) and (
             momentum < 0 or momentum > 1
@@ -237,7 +245,7 @@ class GradientDescent(BaseOptimizer):
 
     def build(self, var_list):
         super().build(var_list)
-        if self.__built:
+        if self._built:
             return
 
         self._lr = self.add_variable(self.learning_rate, 'learning_rate')
@@ -251,7 +259,7 @@ class GradientDescent(BaseOptimizer):
                 )
             )
 
-        self.__built = True
+        self._built = True
 
     def apply_gradient(self, x, grad):
         """Apply computed gradients to trainable variables using update rule.
@@ -268,10 +276,12 @@ class GradientDescent(BaseOptimizer):
             m = ops.assign(m, m * momentum - lr * grad)
             if self.nesterov:
                 return ops.assign_add(x, m * momentum - lr * grad)
-            else:
-                return ops.assign_add(x, m)
-        else:
-            return ops.assign_add(x, -lr * grad)
+
+            return ops.assign_add(x, m)
+
+        # pylint: disable=invalid-unary-operand-type
+        # learning rate is defined with `build()` method
+        return ops.assign_add(x, -lr * grad)
 
 
 class Adagrad(BaseOptimizer):
@@ -312,11 +322,11 @@ class Adagrad(BaseOptimizer):
         self._lr = None
         self._accumulators = None
 
-        self.__built = False
+        self._built = False
 
     def build(self, var_list):
         super().build(var_list)
-        if self.__built:
+        if self._built:
             return
 
         self._lr = self.add_variable(self.learning_rate, 'learning_rate')
@@ -334,7 +344,7 @@ class Adagrad(BaseOptimizer):
                 )
             )
 
-        self.__built = True
+        self._built = True
 
     def apply_gradient(self, x, grad):
         """Apply computed gradients to trainable variables using update rule.
@@ -349,6 +359,8 @@ class Adagrad(BaseOptimizer):
         accumulator = ops.assign_add(accumulator, grad**2)
         acc_grad = ops.div(grad, ops.sqrt(accumulator + self.threshold))
 
+        # pylint: disable=invalid-unary-operand-type
+        # learning rate is defined with `build()` method
         return ops.assign_add(x, -lr * acc_grad)
 
 
@@ -393,11 +405,11 @@ class Adadelta(BaseOptimizer):
         self._accumulated_grads = None
         self._accumulated_delta_vars = None
 
-        self.__built = False
+        self._built = False
 
     def build(self, var_list):
         super().build(var_list)
-        if self.__built:
+        if self._built:
             return
 
         self._lr = self.add_variable(self.learning_rate, 'learning_rate')
@@ -413,7 +425,7 @@ class Adadelta(BaseOptimizer):
                 self.add_variable_from_reference(var, 'accumulated_delta_var')
             )
 
-        self.__built = True
+        self._built = True
 
     def apply_gradient(self, x, grad):
         """Apply computed gradients to trainable variables using update rule.
@@ -499,11 +511,11 @@ class RMSProp(BaseOptimizer):
         self._momentums = None
         self._average_gradients = None
 
-        self.__built = False
+        self._built = False
 
     def build(self, var_list):
         super().build(var_list)
-        if self.__built:
+        if self._built:
             return
 
         self._lr = self.add_variable(self.learning_rate, 'learning_rate')
@@ -530,7 +542,7 @@ class RMSProp(BaseOptimizer):
                     self.add_variable_from_reference(var, "average_gradient")
                 )
 
-        self.__built = True
+        self._built = True
 
     def apply_gradient(self, x, grad):
         """Apply computed gradients to trainable variables using update rule.
@@ -570,8 +582,8 @@ class RMSProp(BaseOptimizer):
                 self.momentum * momentum + increment
             )
             return ops.assign_add(x, -momentum)
-        else:
-            return ops.assign_add(x, -increment)
+
+        return ops.assign_add(x, -increment)
 
 
 class Adam(BaseOptimizer):
@@ -622,11 +634,11 @@ class Adam(BaseOptimizer):
         self._momentums = None
         self._velocity_hats = None
 
-        self.__built = False
+        self._built = False
 
     def build(self, var_list):
         super().build(var_list)
-        if self.__built:
+        if self._built:
             return
 
         self._lr = self.add_variable(self.learning_rate, 'learning_rate')
@@ -655,7 +667,7 @@ class Adam(BaseOptimizer):
                     )
                 )
 
-        self.__built = True
+        self._built = True
 
     def apply_gradient(self, x, grad):
         """Apply computed gradients to trainable variables using update rule.
@@ -673,7 +685,8 @@ class Adam(BaseOptimizer):
         m = self._momentums[self._index_dict[x]]
         v = self._velocities[self._index_dict[x]]
 
-        alpha = lr * ops.sqrt(1 - beta_2_power) / (1 - beta_1_power + self.threshold)
+        alpha = lr * ops.sqrt(1 - beta_2_power)
+        alpha /= (1 - beta_1_power + self.threshold)
 
         m = ops.assign_add(m, (grad - m) * (1 - beta_1))
         v = ops.assign_add(v, (ops.pow(grad, 2) - v) * (1 - beta_2))
@@ -727,11 +740,11 @@ class Adamax(BaseOptimizer):
         self._momentums = None
         self._norm = None
 
-        self.__built = False
+        self._built = False
 
     def build(self, var_list):
         super().build(var_list)
-        if self.__built:
+        if self._built:
             return
 
         self._lr = self.add_variable(self.learning_rate, 'learning_rate')
@@ -752,7 +765,7 @@ class Adamax(BaseOptimizer):
                 )
             )
 
-        self.__built = True
+        self._built = True
 
     def apply_gradient(self, x, grad):
         """Apply computed gradients to trainable variables using update rule.

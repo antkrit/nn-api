@@ -156,7 +156,8 @@ disable=raw-checker-failed,
         use-symbolic-message-instead,
         arguments-differ,
         trailing-comma-tuple,
-        wrong-import-order
+        wrong-import-order,
+        fixme
 
 # Enable the message, report, category or checker with the given id(s). You can
 # either give multiple identifier separated by comma (,) or put this option
@@ -248,7 +249,8 @@ good-names=i,
            Y,
            x,
            y,
-           _
+           _,
+           mu,  # using for initializers and scalers
 
 # Good variable names regexes, separated by a comma. If names match any regex,
 # they will always be accepted
@@ -342,10 +344,10 @@ exclude-too-few-public-methods=
 ignored-parents=
 
 # Maximum number of arguments for function / method.
-max-args=5
+max-args=9
 
 # Maximum number of attributes for a class (see R0902).
-max-attributes=7
+max-attributes=12
 
 # Maximum number of boolean expressions in an if statement (see R0916).
 max-bool-expr=5

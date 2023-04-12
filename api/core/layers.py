@@ -3,7 +3,6 @@ import abc
 import functools
 import numpy as np
 
-from string import ascii_letters
 from api.core import namespace
 from api.core.autograd import Session, Node
 from api.core.autograd import ops, utils as ag_utils
@@ -59,11 +58,16 @@ class BaseLayer(metaclass=abc.ABCMeta):
         defaults to None
     :param name: name of the layer, defaults to 'Layer'
     """
+
+    # shape of the layer could be None
+    # pylint: disable=inconsistent-return-statements
+
     def __init__(self, session=None, name='Layer'):
         """Constructor method."""
         self.session = session or Session()
         self.name = name
 
+        self.input = None
         self.input_shape = None
 
         self._trainable = []
@@ -73,19 +77,32 @@ class BaseLayer(metaclass=abc.ABCMeta):
 
     @property
     def shape(self):
+        """Return shape of the layer (without batch size)."""
         if self.input_shape:
             return self.input_shape.shape
 
     @property
     def batch(self):
+        """Return batch size."""
         if self.input_shape:
             return self.input_shape.batch
 
     @property
     def batch_shape(self):
+        """Return full shape of the data."""
         if self.input_shape:
             bshape = self.input_shape.batch_input_shape
-            return tuple([x for x in bshape if x is not None])
+            return tuple(x for x in bshape if x is not None)
+
+    @property
+    def built(self):
+        """Access protected built argument."""
+        return self._built
+
+    @built.setter
+    def built(self, _):
+        msg = "Cannot be built manually. Instead, run the `build()` method."
+        raise ValueError(msg)
 
     def build(self, *args, **kwargs):
         """Initialize layer variables.
@@ -94,6 +111,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
         before execution of `forward()`. Typically used to automatically
         define and validate I/O shapes.
         """
+        del args, kwargs  # are used in subclasses
         self._built = True
 
     def add_variable(
@@ -216,7 +234,7 @@ class Dense(BaseLayer):
             use_bias=True,
             session=None,
             name='Dense',
-            *args, **kwargs
+            **kwargs
     ):
         """Constructor method."""
         super().__init__(session=session, name=name)
@@ -229,7 +247,7 @@ class Dense(BaseLayer):
                 activation,
                 compiled=True,
                 session=session,
-                *args, **kwargs
+                **kwargs
             )
 
         self.weight_initializer = namespace.initializers(

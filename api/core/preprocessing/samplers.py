@@ -1,3 +1,4 @@
+"""Contains objects for data sampling."""
 import numpy as np
 
 
@@ -13,7 +14,7 @@ def train_test_split(*arrays, split=0.7, shuffle=False, seed=None):
     :return: partitioned arrays
     """
     if len(arrays) == 0:
-        raise ValueError(f'Cannot split 0 arrays.')
+        raise ValueError('Cannot split 0 arrays.')
 
     size = len(arrays[0])
     idx = np.arange(size)

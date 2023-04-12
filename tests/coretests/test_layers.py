@@ -14,7 +14,10 @@ def test_base_layer(mocker, test_case_unary):
     mocker.patch.multiple(BaseLayer, __abstractmethods__=set())
 
     bl = BaseLayer()
-    assert not bl._built
+    assert not bl.built
+
+    with pytest.raises(ValueError):
+        bl.built = True
 
     bl.build(input_shape=())
     assert bl._built

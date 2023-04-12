@@ -164,8 +164,8 @@ class Model(Input):
         :param epochs: number of epochs to train model, defaults to 1
         :param verbosity: 0 or 1, verbosity mode. 0 - silent mode,
             1 - progress bar, defaults to 1
-        :raises ModelIsNotCompiledException: if this method was called without first
-            compiling the model
+        :raises ModelIsNotCompiledException: if this method was called without
+            first compiling the model
         """
         if validation_data is None:
             x_val, x_train, y_val, y_train = train_test_split(
@@ -219,8 +219,8 @@ class Model(Input):
             to the function, not only will the predicted data be returned,
             but also the calculated metrics will be output to the console,
             defaults to None
-        :raises ModelIsNotCompiledException: if this method was called without first
-            compiling the model
+        :raises ModelIsNotCompiledException: if this method was called without
+            first compiling the model
         :return: predicted output
         """
         dataset_test = data_adapter.Dataset(
@@ -270,10 +270,10 @@ class Model(Input):
                 for metric in metrics
             ]
 
-        self.metric_names = tuple([
+        self.metric_names = tuple(
             metric.name
             for metric in (self.loss, *self.metrics)
-        ])
+        )
 
         self._built = True
 
@@ -294,7 +294,7 @@ class Model(Input):
         # numpy's DeprecationWarning: The true value of an
         # empty array is ambiguous.
         if len(x) == 0 or len(y) == 0:
-            return
+            return None
 
         y_pred = self()
         loss = self.loss(y_pred, y)
