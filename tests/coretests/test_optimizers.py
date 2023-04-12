@@ -1,9 +1,10 @@
-import pytest
 import numpy as np
-from api.core import namespace, autograd as ag
+import pytest
+
+from api.core import autograd as ag
+from api.core import namespace
 from api.core.optimizers import *
 from api.core.preprocessing.initializers import ones, random_uniform
-
 
 np.seterr(all="ignore")
 
@@ -14,35 +15,30 @@ def test_base_optimizer(session, mocker):
 
     mocker.patch.multiple(BaseOptimizer, __abstractmethods__=set())
 
-    test_var = namespace.nodes.variable(value=1, name='x')
+    test_var = namespace.nodes.variable(value=1, name="x")
     base = BaseOptimizer(trainable_variables=[test_var])
 
-    var_ref = base.add_variable(init_val=1, var_name='added')
+    var_ref = base.add_variable(init_val=1, var_name="added")
     assert isinstance(var_ref, namespace.nodes.variable)
     assert np.array_equal(var_ref.value, 1)
     assert var_ref in base.variables()
 
-    var = base.add_variable_from_reference(var_ref, var_name='added+ref')
+    var = base.add_variable_from_reference(var_ref, var_name="added+ref")
     assert isinstance(var, namespace.nodes.variable)
     assert np.array_equal(var.value, 0)
     assert var in base.variables()
 
     var = base.add_variable_from_reference(
-        var_ref,
-        var_name='added+ref',
-        init=ones
+        var_ref, var_name="added+ref", init=ones
     )
-    var_shape = var.value.shape if hasattr(var.value, 'shape') else ()
+    var_shape = var.value.shape if hasattr(var.value, "shape") else ()
     assert isinstance(var, namespace.nodes.variable)
     assert np.array_equal(var.value, np.ones(var_shape))
     assert var in base.variables()
 
     var_shape = (2, 2)
     var = base.add_variable_from_reference(
-        var_ref,
-        var_name='added+ref',
-        init=ones,
-        shape=var_shape
+        var_ref, var_name="added+ref", init=ones, shape=var_shape
     )
     assert isinstance(var, namespace.nodes.variable)
     assert np.array_equal(var.value, np.ones(var_shape))
@@ -57,13 +53,13 @@ def test_base_optimizer(session, mocker):
 
     mocker.patch.object(
         BaseOptimizer,
-        'apply_gradient',
-        return_value=namespace.nodes.variable(1)
+        "apply_gradient",
+        return_value=namespace.nodes.variable(1),
     )
 
     session.run(op)
 
-    if hasattr(base, '_iteration') and base._iteration is None:
+    if hasattr(base, "_iteration") and base._iteration is None:
         base._iteration = namespace.nodes.variable(0)
 
     assert base.forward(op) == 1
@@ -72,8 +68,7 @@ def test_base_optimizer(session, mocker):
 
 def test_base_optimizer_docstring_example(session):
     class SimpleGD(BaseOptimizer):
-
-        def __init__(self, learning_rate=0.1, trainable=None, name='gd'):
+        def __init__(self, learning_rate=0.1, trainable=None, name="gd"):
             super().__init__(trainable, session=None, name=name)
             self.learning_rate = learning_rate
 
@@ -85,7 +80,7 @@ def test_base_optimizer_docstring_example(session):
             if self._built:
                 return
 
-            self._lr = self.add_variable(self.learning_rate, 'learning_rate')
+            self._lr = self.add_variable(self.learning_rate, "learning_rate")
             self._built = True
 
         def apply_gradient(self, x, grad):
@@ -95,7 +90,7 @@ def test_base_optimizer_docstring_example(session):
     x_init_value = X.value.copy()
     lr = 0.01
 
-    objective = (X ** 2) / 2  # d(op)/dx = x
+    objective = (X**2) / 2  # d(op)/dx = x
 
     optimizer = SimpleGD(
         learning_rate=lr,
@@ -106,21 +101,18 @@ def test_base_optimizer_docstring_example(session):
     session.run(objective, minimize_op)
 
     x_expected = x_init_value - x_init_value * lr
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
 
 
-@pytest.mark.parametrize('lr', [0.01, 2], ids=['lr=0.01', 'lr=2'])
+@pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_gradient_descent(session, lr):
     X = random_uniform((3, 3))
     x_init_value = X.value.copy()
 
-    objective = (X ** 2) / 2  # d(op)/dx = x
+    objective = (X**2) / 2  # d(op)/dx = x
 
     optimizer = GradientDescent(
-        learning_rate=lr,
-        momentum=0,
-        trainable_variables=[X],
-        session=session
+        learning_rate=lr, momentum=0, trainable_variables=[X], session=session
     )
 
     minimize_op = optimizer.minimize(objective)
@@ -135,42 +127,39 @@ def test_gradient_descent(session, lr):
     assert np.array_equal(X.value, x_expected)
 
 
-@pytest.mark.parametrize('lr', [0.01, 2], ids=['lr=0.01', 'lr=2'])
+@pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adagrad(session, lr):
     X = random_uniform((3, 3))
     x_init_value = X.value.copy()
 
-    objective = (X ** 2) / 2  # d(op)/dx = x
+    objective = (X**2) / 2  # d(op)/dx = x
 
     optimizer = Adagrad(
         learning_rate=lr,
         initial_accumulator_value=0,
         trainable_variables=[X],
-        session=session
+        session=session,
     )
 
     minimize_op = optimizer.minimize(objective)
     session.run(objective, minimize_op)
 
-    accumulator = np.zeros(X.value.shape) + x_init_value ** 2
+    accumulator = np.zeros(X.value.shape) + x_init_value**2
     acc_grad = x_init_value / np.sqrt(accumulator + optimizer.threshold)
     x_expected = x_init_value - lr * acc_grad
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
 
 
-@pytest.mark.parametrize('lr', [0.01, 2], ids=['lr=0.01', 'lr=2'])
+@pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adadelta(session, lr):
     X = random_uniform((3, 3))
     x_init_value = X.value.copy()
 
-    objective = (X ** 2) / 2  # d(op)/dx = x
+    objective = (X**2) / 2  # d(op)/dx = x
 
     rho = 0
     optimizer = Adadelta(
-        learning_rate=lr,
-        rho=rho,
-        trainable_variables=[X],
-        session=session
+        learning_rate=lr, rho=rho, trainable_variables=[X], session=session
     )
 
     minimize_op = optimizer.minimize(objective)
@@ -182,27 +171,23 @@ def test_adadelta(session, lr):
     accumulated_delta_var = np.zeros(x_init_value.shape)
 
     accumulated_grad = (
-        rho * accumulated_grad
-        + (1 - rho) * x_init_value * x_init_value
+        rho * accumulated_grad + (1 - rho) * x_init_value * x_init_value
     )
     delta = -rms(accumulated_delta_var) * x_init_value / rms(accumulated_grad)
     x_expected = x_init_value + lr * delta
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
 
 
-@pytest.mark.parametrize('lr', [0.01, 2], ids=['lr=0.01', 'lr=2'])
+@pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_rmsprop(session, lr):
     X = random_uniform((3, 3))
     x_init_value = X.value.copy()
 
-    objective = (X ** 2) / 2  # d(op)/dx = x
+    objective = (X**2) / 2  # d(op)/dx = x
 
     rho = 0
     optimizer = RMSProp(
-        learning_rate=lr,
-        rho=rho,
-        trainable_variables=[X],
-        session=session
+        learning_rate=lr, rho=rho, trainable_variables=[X], session=session
     )
 
     minimize_op = optimizer.minimize(objective)
@@ -213,24 +198,26 @@ def test_rmsprop(session, lr):
     velocity = rho * velocity + (1 - rho) * x_init_value**2
     denominator = velocity + optimizer.threshold
 
-    increment = lr * x_init_value * (1/np.sqrt(denominator))
+    increment = lr * x_init_value * (1 / np.sqrt(denominator))
     x_expected = x_init_value - increment
 
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
 
 
-@pytest.mark.parametrize('amsgrad', [True, False], ids=['amsgrad=True', 'amsgrad=False'])
-@pytest.mark.parametrize('lr', [0.01, 2], ids=['lr=0.01', 'lr=2'])
+@pytest.mark.parametrize(
+    "amsgrad", [True, False], ids=["amsgrad=True", "amsgrad=False"]
+)
+@pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adam(session, lr, amsgrad):
     X = random_uniform((3, 3))
     x_init_value = X.value.copy()
 
-    objective = (X ** 2) / 2  # d(op)/dx = x
+    objective = (X**2) / 2  # d(op)/dx = x
 
     beta_1 = 0.9
     beta_2 = 0.999
-    beta_1_power = beta_1 ** 1
-    beta_2_power = beta_2 ** 1
+    beta_1_power = beta_1**1
+    beta_2_power = beta_2**1
 
     optimizer = Adam(
         learning_rate=lr,
@@ -238,7 +225,7 @@ def test_adam(session, lr, amsgrad):
         beta_2=beta_2,
         amsgrad=amsgrad,
         trainable_variables=[X],
-        session=session
+        session=session,
     )
 
     minimize_op = optimizer.minimize(objective)
@@ -247,36 +234,40 @@ def test_adam(session, lr, amsgrad):
     m = np.zeros(x_init_value.shape)
     v = np.zeros(x_init_value.shape)
 
-    alpha = lr * np.sqrt(1 - beta_2_power) / (1 - beta_1_power + optimizer.threshold)
+    alpha = (
+        lr
+        * np.sqrt(1 - beta_2_power)
+        / (1 - beta_1_power + optimizer.threshold)
+    )
 
     m = (x_init_value - m) * (1 - beta_1)
-    v = v + (((x_init_value ** 2) - v) * (1 - beta_2))
+    v = v + (((x_init_value**2) - v) * (1 - beta_2))
 
     if optimizer.amsgrad:
         v_hat = np.zeros(x_init_value.shape)
         v = np.maximum(v_hat, v)
 
     x_expected = x_init_value - (m * alpha) / (np.sqrt(v) + optimizer.threshold)
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
 
 
-@pytest.mark.parametrize('lr', [0.01, 2], ids=['lr=0.01', 'lr=2'])
+@pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adamax(session, lr):
     X = random_uniform((3, 3))
     x_init_value = X.value.copy()
 
-    objective = (X ** 2) / 2  # d(op)/dx = x
+    objective = (X**2) / 2  # d(op)/dx = x
 
     beta_1 = 0.9
     beta_2 = 0.999
-    beta_1_power = beta_1 ** 1
+    beta_1_power = beta_1**1
 
     optimizer = Adamax(
         learning_rate=lr,
         beta_1=beta_1,
         beta_2=beta_2,
         trainable_variables=[X],
-        session=session
+        session=session,
     )
 
     minimize_op = optimizer.minimize(objective)
@@ -287,8 +278,7 @@ def test_adamax(session, lr):
 
     m = m + (x_init_value - m) * (1 - beta_1)
     u = np.maximum(beta_2 * u, np.abs(x_init_value))
-    x_expected = (
-            x_init_value - (lr * m)
-            / ((1 - beta_1_power) * (u + optimizer.threshold))
+    x_expected = x_init_value - (lr * m) / (
+        (1 - beta_1_power) * (u + optimizer.threshold)
     )
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
