@@ -1,14 +1,15 @@
 """Contains `Model` definition."""
 import functools
+
 import numpy as np
 
 # tqdm.auto is using to work in both a terminal and notebooks
 from tqdm.auto import trange
 
-from api.core import namespace, data as data_adapter
+from api.core import data as data_adapter
+from api.core import namespace
 from api.core.autograd import utils as ag_utils
 from api.core.layers import BaseLayer, Input
-
 from api.core.model.utils import control_compile
 from api.core.preprocessing.samplers import train_test_split
 
@@ -94,13 +95,9 @@ class Model(Input):
     :param name: model name, defaults to 'model'
     """
 
-    def __init__(self, input_shape, session=None, name='model'):
+    def __init__(self, input_shape, session=None, name="model"):
         """Constructor method."""
-        super().__init__(
-            input_shape=input_shape,
-            session=session,
-            name=name
-        )
+        super().__init__(input_shape=input_shape, session=session, name=name)
 
         self.output = None
         self.output_shape = self.batch_shape
@@ -133,15 +130,15 @@ class Model(Input):
 
     @control_compile
     def fit(
-            self,
-            x_train,
-            y_train,
-            validation_data=None,
-            validation_split=0.0,
-            batch_size=1,
-            shuffle=False,
-            epochs=1,
-            verbosity=1
+        self,
+        x_train,
+        y_train,
+        validation_data=None,
+        validation_split=0.0,
+        batch_size=1,
+        shuffle=False,
+        epochs=1,
+        verbosity=1,
     ):
         """Train model for a fixed number of epochs.
 
@@ -169,30 +166,25 @@ class Model(Input):
         """
         if validation_data is None:
             x_val, x_train, y_val, y_train = train_test_split(
-                x_train,
-                y_train,
-                split=validation_split
+                x_train, y_train, split=validation_split
             )
         else:
             x_val, y_val = validation_data
 
         dataset_train = data_adapter.Dataset(
-            x_train, y_train,
+            x_train,
+            y_train,
             dim=self.shape,
             batch_size=batch_size,
-            shuffle=shuffle
+            shuffle=shuffle,
         )
         dataset_validation = data_adapter.Dataset(
-            x_val, y_val,
-            dim=self.shape,
-            batch_size=len(x_val),
-            shuffle=shuffle
+            x_val, y_val, dim=self.shape, batch_size=len(x_val), shuffle=shuffle
         )
 
         epochs = self.__progress_bar(epochs) if verbosity else range(epochs)
 
         for _ in epochs:
-
             # the dataset is infinite and has a limited number (its length)
             # of unique batches, so the loop iterates not over the dataset,
             # but over its length
@@ -224,10 +216,11 @@ class Model(Input):
         :return: predicted output
         """
         dataset_test = data_adapter.Dataset(
-            x_test, np.empty((len(x_test),)) if y_test is None else y_test,
+            x_test,
+            np.empty((len(x_test),)) if y_test is None else y_test,
             dim=self.shape,
             batch_size=len(x_test),
-            shuffle=False
+            shuffle=False,
         )
 
         output = None
@@ -250,18 +243,15 @@ class Model(Input):
         :param metrics: array of str or callable, additional metrics
             to evaluate, defaults to None
         """
-        optimizer = optimizer or 'gradient_descent'
-        loss = loss or 'mean_squared_error'
+        optimizer = optimizer or "gradient_descent"
+        loss = loss or "mean_squared_error"
 
         self.optimizer = namespace.optimizers(optimizer, compiled=True)
         self.optimizer.session = self.session
         self.optimizer.trainable = self.variables()
 
         self.loss = namespace.losses(
-            loss,
-            name='loss',
-            compiled=True,
-            session=self.session
+            loss, name="loss", compiled=True, session=self.session
         )
 
         if metrics:
@@ -271,8 +261,7 @@ class Model(Input):
             ]
 
         self.metric_names = tuple(
-            metric.name
-            for metric in (self.loss, *self.metrics)
+            metric.name for metric in (self.loss, *self.metrics)
         )
 
         self._built = True
@@ -319,10 +308,7 @@ class Model(Input):
         feed_dict = ag_utils.form_feed_dict([x], self.input)
 
         return self.session.run(
-            loss,
-            optimize,
-            returns=[loss],
-            feed_dict=feed_dict
+            loss, optimize, returns=[loss], feed_dict=feed_dict
         )
 
     def predict_step(self, data):

@@ -1,6 +1,7 @@
 """Contains objects to work with data."""
-import numpy as np
 from collections.abc import MutableMapping
+
+import numpy as np
 
 
 class Dataset:
@@ -18,12 +19,12 @@ class Dataset:
     """
 
     def __init__(
-            self,
-            x_data,
-            y_data,
-            batch_size=1,
-            dim=(1, 1),
-            shuffle=True,
+        self,
+        x_data,
+        y_data,
+        batch_size=1,
+        dim=(1, 1),
+        shuffle=True,
     ):
         """Constructor method."""
         self.x = x_data
@@ -55,7 +56,9 @@ class Dataset:
                 f"Index {index} out of range for {self.__max} batches."
             )
 
-        indexes = self.indexes[index*self.batch_size:(index+1)*self.batch_size]
+        indexes = self.indexes[
+            index * self.batch_size : (index + 1) * self.batch_size
+        ]
         x, y = self.__generate_data(indexes)
 
         return x, y
@@ -87,8 +90,8 @@ class Dataset:
         # TODO: instead of getting data by index, load it with some method
         # this works only for arrays of data. Need to make this procedure lazy
         for i, id_ in enumerate(ids):
-            x[i, ] = self.x[id_]
-            y[i, ] = self.y[id_]
+            x[i,] = self.x[id_]
+            y[i,] = self.y[id_]
 
         return x, y
 
@@ -150,7 +153,7 @@ class Container(MutableMapping):
         return len(self.store)
 
     def __repr__(self):
-        return f'Container-{self.name}({self.store.items()})'
+        return f"Container-{self.name}({self.store.items()})"
 
 
 def unpack_x_y(data):
@@ -168,9 +171,10 @@ def unpack_x_y(data):
         return data, None
     if 0 < len(data) <= 2:
         representation = [None, None]
-        representation[:len(data)] = data
+        representation[: len(data)] = data
         return representation
 
-    msg = "Data is expected to be in format x, (x,), (x, y)," \
-          f" received: {data}"
+    msg = (
+        "Data is expected to be in format x, (x,), (x, y)," f" received: {data}"
+    )
     raise ValueError(msg)

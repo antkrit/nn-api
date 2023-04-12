@@ -1,22 +1,23 @@
 """Contains simple functions for generating arrays with numbers."""
 import abc
+
 import numpy as np
+
 from api.core.autograd.utils import convert_to_node
 
-
 __all__ = (
-    'NormalInitializer',
-    'UniformInitializer',
-    'zeros',
-    'ones',
-    'he_normal',
-    'he_uniform',
-    'random_normal',
-    'random_uniform',
-    'xavier_normal',
-    'xavier_uniform',
-    'lecun_normal',
-    'lecun_uniform'
+    "NormalInitializer",
+    "UniformInitializer",
+    "zeros",
+    "ones",
+    "he_normal",
+    "he_uniform",
+    "random_normal",
+    "random_uniform",
+    "xavier_normal",
+    "xavier_uniform",
+    "lecun_normal",
+    "lecun_uniform",
 )
 
 
@@ -46,6 +47,7 @@ class NormalInitializer(BaseInitializer):
     :param sigma: standard deviation of the normal distribution, defaults to 0
     :param mu: float, mean of the normal distribution, defaults to 0
     """
+
     def __init__(self, mu=0, sigma=0, seed=None):
         """Constructor method."""
         super().__init__(seed)
@@ -62,8 +64,7 @@ class NormalInitializer(BaseInitializer):
         ndist = self.__worker(*size)
 
         return convert_to_node(
-            value=self.sigma*ndist + self.mu,
-            *args, **kwargs
+            value=self.sigma * ndist + self.mu, *args, **kwargs
         )
 
 
@@ -77,6 +78,7 @@ class UniformInitializer(BaseInitializer):
     :param low: lower boundary of the output interval, defaults to 0
     :param high: upper boundary of the output interval, defaults to 0
     """
+
     def __init__(self, low=0, high=0, seed=None):
         """Constructor method."""
         super().__init__(seed)
@@ -93,64 +95,51 @@ class UniformInitializer(BaseInitializer):
 
         ndist = self.__worker(*self.bounds, size=size)
 
-        return convert_to_node(
-            value=ndist,
-            *args, **kwargs
-        )
+        return convert_to_node(value=ndist, *args, **kwargs)
 
 
 def zeros(size, *args, **kwargs):
     """Get array of zeros."""
-    seed = kwargs.pop('seed', None)
+    seed = kwargs.pop("seed", None)
     return NormalInitializer(seed=seed)(size, *args, **kwargs)
 
 
 def ones(size, *args, **kwargs):
     """Get array of ones."""
-    return NormalInitializer(
-        mu=1,
-        sigma=0,
-        seed=kwargs.pop('seed', None)
-    )(size, *args, **kwargs)
+    return NormalInitializer(mu=1, sigma=0, seed=kwargs.pop("seed", None))(
+        size, *args, **kwargs
+    )
 
 
 def random_normal(size, *args, **kwargs):
     """Get random array from the standard normal distribution."""
-    return NormalInitializer(
-        mu=0,
-        sigma=1,
-        seed=kwargs.pop('seed', None)
-    )(size, *args, **kwargs)
+    return NormalInitializer(mu=0, sigma=1, seed=kwargs.pop("seed", None))(
+        size, *args, **kwargs
+    )
 
 
 def random_uniform(size, *args, **kwargs):
     """Get random array from the uniform distribution in the range [-1, 1]."""
-    return UniformInitializer(
-        low=-1,
-        high=1,
-        seed=kwargs.pop('seed', None)
-    )(size, *args, **kwargs)
+    return UniformInitializer(low=-1, high=1, seed=kwargs.pop("seed", None))(
+        size, *args, **kwargs
+    )
 
 
 def xavier_normal(size, *args, **kwargs):
     """Xavier (or Glorot) normal initialization."""
     n_in, n_out = size[-2:]
-    distribution = np.sqrt(2 / (n_in+n_out))
+    distribution = np.sqrt(2 / (n_in + n_out))
     return NormalInitializer(
-        mu=0,
-        sigma=distribution,
-        seed=kwargs.pop('seed', None)
+        mu=0, sigma=distribution, seed=kwargs.pop("seed", None)
     )(size, *args, **kwargs)
 
 
 def xavier_uniform(size, *args, **kwargs):
     """Xavier (or Glorot) uniform initialization."""
     n_in, n_out = size[-2:]
-    limit = np.sqrt(6 / (n_in+n_out))
+    limit = np.sqrt(6 / (n_in + n_out))
     return UniformInitializer(
-        low=-limit,
-        high=limit,
-        seed=kwargs.pop('seed', None)
+        low=-limit, high=limit, seed=kwargs.pop("seed", None)
     )(size, *args, **kwargs)
 
 
@@ -159,9 +148,7 @@ def he_normal(size, *args, **kwargs):
     n_in = size[-2]
     distribution = np.sqrt(2 / n_in)
     return NormalInitializer(
-        mu=0,
-        sigma=distribution,
-        seed=kwargs.pop('seed', None)
+        mu=0, sigma=distribution, seed=kwargs.pop("seed", None)
     )(size, *args, **kwargs)
 
 
@@ -170,9 +157,7 @@ def he_uniform(size, *args, **kwargs):
     n_in = size[-2]
     limit = np.sqrt(6 / n_in)
     return UniformInitializer(
-        low=-limit,
-        high=limit,
-        seed=kwargs.pop('seed', None)
+        low=-limit, high=limit, seed=kwargs.pop("seed", None)
     )(size, *args, **kwargs)
 
 
@@ -181,9 +166,7 @@ def lecun_normal(size, *args, **kwargs):
     n_in = size[-2]
     distribution = np.sqrt(1 / n_in)
     return NormalInitializer(
-        mu=0,
-        sigma=distribution,
-        seed=kwargs.pop('seed', None)
+        mu=0, sigma=distribution, seed=kwargs.pop("seed", None)
     )(size, *args, **kwargs)
 
 
@@ -193,7 +176,5 @@ def lecun_uniform(size, *args, **kwargs):
     limit = np.sqrt(3 / n_in)
 
     return UniformInitializer(
-        low=-limit,
-        high=limit,
-        seed=kwargs.pop('seed', None)
+        low=-limit, high=limit, seed=kwargs.pop("seed", None)
     )(size, *args, **kwargs)

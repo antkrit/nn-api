@@ -6,7 +6,6 @@ to such graph, it becomes possible to apply Automatic Differentiation(AD).
 """
 import itertools
 
-
 # disabled W0603(global-statement) until stack will be implemented
 # pylint: disable=W0603
 # TODO: graph thread-safe stack to keep multiple graphs
@@ -19,9 +18,8 @@ class Graph:
     count = itertools.count().__next__
 
     def __init__(self):
-        """Constructor method
-        """
-        self.name = f'graph-{Graph.count()}'
+        """Constructor method"""
+        self.name = f"graph-{Graph.count()}"
         self.nodes = []
         self.head_node = None
 

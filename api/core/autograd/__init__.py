@@ -22,8 +22,11 @@ Contains following modules:
 - `node`: contain definition of graph nodes, math operators and operations
 - `session`: contains classes and functions to work with graph
 """
-from api.core.autograd import utils, ops
+from api.core.autograd import ops, utils
+from api.core.autograd.graph import (
+    Graph,
+    get_current_graph,
+    reset_current_graph,
+)
 from api.core.autograd.node import *
-from api.core.autograd.graph import Graph
-from api.core.autograd.graph import get_current_graph, reset_current_graph
 from api.core.autograd.session import Session

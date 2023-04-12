@@ -14,13 +14,22 @@ Multinomial Classification:
 - Kullback-Leibler Divergence
 """
 import abc
+
 import numpy as np
+
 from api.core import autograd as ag
 
-
 __all__ = (
-    'BaseLoss', 'MSE', 'MAE', 'MBE', 'Huber', 'LHL',
-    'BCE', 'Hinge', 'CCE', 'KLD',
+    "BaseLoss",
+    "MSE",
+    "MAE",
+    "MBE",
+    "Huber",
+    "LHL",
+    "BCE",
+    "Hinge",
+    "CCE",
+    "KLD",
 )
 
 
@@ -33,7 +42,7 @@ class BaseLoss:
         div by 0 or log(0), defaults to 0
     """
 
-    def __init__(self, name='loss', session=None, threshold=0):
+    def __init__(self, name="loss", session=None, threshold=0):
         self.session = session or ag.Session()
         self.threshold = threshold
         self.name = name
@@ -43,7 +52,7 @@ class BaseLoss:
     @property
     def value(self):
         """Return loss value."""
-        if hasattr(self._value, 'value'):
+        if hasattr(self._value, "value"):
             # if loss value is Node return its value
             return self._value.value
         return self._value
@@ -55,14 +64,12 @@ class BaseLoss:
 
     def __call__(self, y_pred, y_true, *args, **kwargs):
         self._value = ag.utils.node_wrapper(
-            self.forward,
-            y_pred, y_true,
-            *args, **kwargs
+            self.forward, y_pred, y_true, *args, **kwargs
         )
         return self._value
 
     def __str__(self):
-        return f'{self.name}: {self.value}'
+        return f"{self.name}: {self.value}"
 
 
 class MSE(BaseLoss):
@@ -72,18 +79,14 @@ class MSE(BaseLoss):
     """
 
     def __init__(
-            self,
-            name='mean_squared_error',
-            session=None,
-            root=False,
-            threshold=0
+        self, name="mean_squared_error", session=None, root=False, threshold=0
     ):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
 
         self.root = root
         if root:
-            self.name = 'root_' + self.name
+            self.name = "root_" + self.name
 
     def forward(self, y_pred, y_true):
         """Calculate (R)MSE.
@@ -103,7 +106,7 @@ class MSE(BaseLoss):
 class MAE(BaseLoss):
     """Mean Absolute Error."""
 
-    def __init__(self, name='mean_absolute_error', session=None, threshold=0):
+    def __init__(self, name="mean_absolute_error", session=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
 
@@ -124,7 +127,7 @@ class MAE(BaseLoss):
 class MBE(BaseLoss):
     """Mean Bias Error."""
 
-    def __init__(self, name='mean_bias_error', session=None, threshold=0):
+    def __init__(self, name="mean_bias_error", session=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
 
@@ -152,7 +155,7 @@ class Huber(BaseLoss):
         defaults to 1
     """
 
-    def __init__(self, name='huber', delta=1, session=None, threshold=0):
+    def __init__(self, name="huber", delta=1, session=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
         self.delta = delta
@@ -178,9 +181,9 @@ class Huber(BaseLoss):
             value=np.asarray(np.invert(is_err_small), dtype=int)
         )
 
-        lss_cond_true = cond_true * 0.5 * err ** 2
+        lss_cond_true = cond_true * 0.5 * err**2
         lss_cond_false = cond_false * self.delta * (err - 0.5 * self.delta)
-        return ag.ops.mean(lss_cond_true+lss_cond_false)
+        return ag.ops.mean(lss_cond_true + lss_cond_false)
 
 
 class LHL(BaseLoss):
@@ -192,7 +195,7 @@ class LHL(BaseLoss):
     binary classification.
     """
 
-    def __init__(self, name='likelihood', session=None, threshold=0):
+    def __init__(self, name="likelihood", session=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
 
@@ -203,7 +206,7 @@ class LHL(BaseLoss):
         :param y_true: actual values
         :return: node that contains likelihood loss
         """
-        err = (y_true * y_pred + (1 - y_true) * (1 - y_pred))
+        err = y_true * y_pred + (1 - y_true) * (1 - y_pred)
         return ag.ops.mean(err)
 
 
@@ -215,10 +218,7 @@ class BCE(BaseLoss):
     """
 
     def __init__(
-            self,
-            name='binary_cross_entropy',
-            session=None,
-            threshold=1e-32
+        self, name="binary_cross_entropy", session=None, threshold=1e-32
     ):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
@@ -232,7 +232,7 @@ class BCE(BaseLoss):
         """
         err = y_true * ag.ops.log10(y_pred + self.threshold)
         err_1 = (1 - y_true) * ag.ops.log10(1 - y_pred + self.threshold)
-        return ag.ops.mean(-(err+err_1))
+        return ag.ops.mean(-(err + err_1))
 
 
 class Hinge(BaseLoss):
@@ -245,7 +245,7 @@ class Hinge(BaseLoss):
         To apply Hinge Loss, classes must be marked as 1 and -1 (not 0)
     """
 
-    def __init__(self, name='hinge', session=None, threshold=0):
+    def __init__(self, name="hinge", session=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
 
@@ -270,10 +270,7 @@ class CCE(BaseLoss):
     """
 
     def __init__(
-            self,
-            name='categorical_cross_entropy',
-            session=None,
-            threshold=1e-32
+        self, name="categorical_cross_entropy", session=None, threshold=1e-32
     ):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
@@ -297,10 +294,7 @@ class KLD(BaseLoss):
     """
 
     def __init__(
-            self,
-            name='kullback_leibler_divergence',
-            session=None,
-            threshold=1e-32
+        self, name="kullback_leibler_divergence", session=None, threshold=1e-32
     ):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)

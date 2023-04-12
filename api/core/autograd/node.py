@@ -15,10 +15,10 @@ Each graph consists of nodes. Nodes are divided into:
 - Operation - a node that performs computations
 """
 import itertools
+
 import numpy as np
 
 from api.core.autograd.graph import get_current_graph
-
 
 # this module is not logically separable
 # pylint: disable=too-many-lines
@@ -34,8 +34,43 @@ from api.core.autograd.graph import get_current_graph
 np.seterr(all="ignore")
 
 
+__all__ = (
+    "Node",
+    "Variable",
+    "Placeholder",
+    "Constant",
+    "Operation",
+    "UnaryOperation",
+    "BinaryOperation",
+    "Abs",
+    "Add",
+    "Assign",
+    "AssignAdd",
+    "AssignDivide",
+    "AssignMultiply",
+    "Cos",
+    "Divide",
+    "Einsum",
+    "Exp",
+    "Log",
+    "Log2",
+    "Log10",
+    "Matmul",
+    "Max",
+    "Mean",
+    "Min",
+    "Multiply",
+    "Node",
+    "Power",
+    "Sin",
+    "Sqrt",
+    "Sum",
+)
+
+
 class NodeMixin:
     """Contains different useful members for nodes."""
+
     count = itertools.count().__next__
 
     @staticmethod
@@ -62,6 +97,7 @@ class Node(NodeMixin):
     :raises ValueError: the data shape during initialization does not
         match the one set as an argument
     """
+
     def __init__(self, value, name, shape):
         """Constructor method."""
         self._value = value
@@ -69,13 +105,13 @@ class Node(NodeMixin):
         self.shape = None
 
         self.graph = self.current_graph()
-        self._prefix = name or 'node'
+        self._prefix = name or "node"
         self.name = f"{self.graph.name}/{self._prefix}-{self.count()}"
         self.prepare_graph(self.graph)
 
         value_not_none = self._value is not None
 
-        if value_not_none and not hasattr(self._value, 'shape'):
+        if value_not_none and not hasattr(self._value, "shape"):
             self._value = np.asarray(self._value)
 
         if shape is not None and not isinstance(shape, tuple):
@@ -97,7 +133,7 @@ class Node(NodeMixin):
             is different from the one set during placeholder initialization.
         """
         if value is not None:
-            if not hasattr(value, 'shape'):
+            if not hasattr(value, "shape"):
                 value = np.asarray(value, dtype=object)
 
             self._value = value
@@ -142,7 +178,7 @@ class Placeholder(Node):
 
     def __init__(self, name=None, shape=None):
         """Constructor method."""
-        name = name or 'placeholder'
+        name = name or "placeholder"
         super().__init__(value=None, name=name, shape=shape)
 
     def __str__(self):
@@ -161,7 +197,7 @@ class Constant(Node):
 
     def __init__(self, value, name=None, shape=None):
         """Constructor method."""
-        name = name or 'constant'
+        name = name or "constant"
         super().__init__(value=value, name=name, shape=shape)
 
     @property
@@ -186,7 +222,7 @@ class Variable(Node):
     """Represents a basic node with some changeable value."""
 
     def __init__(self, value, name=None, shape=None):
-        name = name or 'variable'
+        name = name or "variable"
         super().__init__(value=value, name=name, shape=shape)
 
     @property
@@ -202,7 +238,7 @@ class Variable(Node):
         :raises ValueError: if the user tries to set data, the form of which
             is different from the one set during variable initialization.
         """
-        if not hasattr(value, 'shape'):
+        if not hasattr(value, "shape"):
             value = np.asarray(value)
 
         self._value = value
@@ -226,7 +262,7 @@ class Operation(Node):
 
     def __init__(self, name=None, shape=None, threshold=0):
         """Constructor method."""
-        name = name or 'operator'
+        name = name or "operator"
         super().__init__(value=None, name=name, shape=shape)
         self.inputs = ()
         self.threshold = threshold
@@ -318,14 +354,14 @@ class Einsum(Operation):
     """
 
     def __init__(
-            self,
-            *arrays,
-            subscripts=None,
-            o_subscript=None,
-            delimiter='->',
-            name='einsum',
-            shape=None,
-            threshold=0
+        self,
+        *arrays,
+        subscripts=None,
+        o_subscript=None,
+        delimiter="->",
+        name="einsum",
+        shape=None,
+        threshold=0,
     ):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
@@ -349,9 +385,7 @@ class Einsum(Operation):
             out_subscript = subscripts[reverse]
             subscripts[reverse] = self._o_subscript
 
-        return ', '.join(subscripts) + \
-               self._delimiter + \
-               out_subscript
+        return ", ".join(subscripts) + self._delimiter + out_subscript
 
     def forward(self, *values):
         """Return output of the operation by given input.
@@ -393,17 +427,11 @@ class Sum(UnaryOperation):
     :param threshold: some minute float value to avoid problems like div by 0,
         defaults to 0
     """
-    def __init__(
-            self,
-            value,
-            axis=None,
-            name='sum',
-            shape=None,
-            threshold=0
-    ):
+
+    def __init__(self, value, axis=None, name="sum", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
         self.axis = axis
 
     def forward(self, value):
@@ -446,17 +474,11 @@ class Mean(UnaryOperation):
     :param threshold: some minute float value to avoid problems like div by 0,
         defaults to 0
     """
-    def __init__(
-            self,
-            value,
-            axis=None,
-            name='mean',
-            shape=None,
-            threshold=0
-    ):
+
+    def __init__(self, value, axis=None, name="mean", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
         self.axis = axis
 
     def forward(self, value):
@@ -490,14 +512,8 @@ class Mean(UnaryOperation):
 
 class Add(BinaryOperation):
     """Element-wise sum."""
-    def __init__(
-            self,
-            left,
-            right,
-            name='add',
-            shape=None,
-            threshold=0
-    ):
+
+    def __init__(self, left, right, name="add", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
@@ -519,6 +535,7 @@ class Add(BinaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation w.r.t both operands
         """
+
         def _get_sum_gradient(inp, dout_wrt_inp):
             """Get `add` gradient in the case of different operands shapes."""
             inp = np.asarray(inp)
@@ -533,9 +550,7 @@ class Add(BinaryOperation):
             for axis, size in enumerate(inp.shape):
                 if size == 1:
                     dout_wrt_inp = np.sum(
-                        dout_wrt_inp,
-                        axis=axis,
-                        keepdims=True
+                        dout_wrt_inp, axis=axis, keepdims=True
                     )
 
             return dout_wrt_inp
@@ -554,12 +569,15 @@ class AssignAdd(AssignOperation, Add):
     :param name: node name, defaults to 'assign_add'
     """
 
-    def __init__(self, ref, op, name='assign_add'):
+    def __init__(self, ref, op, name="assign_add"):
         """Constructor method."""
         super().__init__(
-            ref=ref, op=op,  # init AssignOperation
-            left=ref, right=op,  # init Add
-            name=name, threshold=0
+            ref=ref,
+            op=op,  # init AssignOperation
+            left=ref,
+            right=op,  # init Add
+            name=name,
+            threshold=0,
         )
 
     forward = Add.forward
@@ -574,12 +592,16 @@ class Assign(AssignOperation, Add):
     :param op: right operand of the operation
     :param name: node name, defaults to 'assign_add'
     """
-    def __init__(self, ref, op, name='assign'):
+
+    def __init__(self, ref, op, name="assign"):
         """Constructor method."""
         super().__init__(
-            ref=ref, op=op,  # init AssignOperation
-            left=op, right=Constant(0),  # init Add: ref = op + 0
-            name=name, threshold=0
+            ref=ref,
+            op=op,  # init AssignOperation
+            left=op,
+            right=Constant(0),  # init Add: ref = op + 0
+            name=name,
+            threshold=0,
         )
 
     forward = Add.forward
@@ -588,14 +610,8 @@ class Assign(AssignOperation, Add):
 
 class Multiply(BinaryOperation):
     """Element-wise multiply."""
-    def __init__(
-            self,
-            left,
-            right,
-            name='multiply',
-            shape=None,
-            threshold=0
-    ):
+
+    def __init__(self, left, right, name="multiply", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
@@ -631,12 +647,15 @@ class AssignMultiply(AssignOperation, Multiply):
         defaults to 0
     """
 
-    def __init__(self, ref, op, name='assign_mul', threshold=0):
+    def __init__(self, ref, op, name="assign_mul", threshold=0):
         """Constructor method."""
         super().__init__(
-            ref=ref, op=op,  # init AssignOperation
-            left=ref, right=op,  # init Multiply
-            name=name, threshold=threshold
+            ref=ref,
+            op=op,  # init AssignOperation
+            left=ref,
+            right=op,  # init Multiply
+            name=name,
+            threshold=threshold,
         )
 
     forward = Multiply.forward
@@ -645,14 +664,8 @@ class AssignMultiply(AssignOperation, Multiply):
 
 class Divide(BinaryOperation):
     """Element-wise divide."""
-    def __init__(
-            self,
-            left,
-            right,
-            name='divide',
-            shape=None,
-            threshold=1e-32
-    ):
+
+    def __init__(self, left, right, name="divide", shape=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
@@ -693,12 +706,15 @@ class AssignDivide(AssignOperation, Divide):
         defaults to 0
     """
 
-    def __init__(self, ref, op, name='assign_div', threshold=0):
+    def __init__(self, ref, op, name="assign_div", threshold=0):
         """Constructor method."""
         super().__init__(
-            ref=ref, op=op,  # init AssignOperation
-            left=ref, right=op,  # init Divide
-            name=name, threshold=threshold
+            ref=ref,
+            op=op,  # init AssignOperation
+            left=ref,
+            right=op,  # init Divide
+            name=name,
+            threshold=threshold,
         )
 
     forward = Divide.forward
@@ -707,14 +723,8 @@ class AssignDivide(AssignOperation, Divide):
 
 class Power(BinaryOperation):
     """Power operator."""
-    def __init__(
-            self,
-            left,
-            right,
-            name='power',
-            shape=None,
-            threshold=1e-32
-    ):
+
+    def __init__(self, left, right, name="power", shape=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
@@ -740,26 +750,19 @@ class Power(BinaryOperation):
         """
         left, right = np.asarray(left), np.asarray(right)
         d_wrt_left = np.multiply(
-            dout,
-            np.multiply(right, np.power(left, right - 1))
+            dout, np.multiply(right, np.power(left, right - 1))
         )
         d_wrt_right = np.multiply(
             dout,
-            np.multiply(np.log(left+self.threshold), np.power(left, right))
+            np.multiply(np.log(left + self.threshold), np.power(left, right)),
         )
         return d_wrt_left, d_wrt_right
 
 
 class Matmul(BinaryOperation):
     """Matrix multiplication."""
-    def __init__(
-            self,
-            left,
-            right,
-            name='matmul',
-            shape=None,
-            threshold=0
-    ):
+
+    def __init__(self, left, right, name="matmul", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
@@ -787,14 +790,8 @@ class Matmul(BinaryOperation):
 
 class Max(BinaryOperation):
     """Element-wise maximum."""
-    def __init__(
-            self,
-            left,
-            right,
-            name='max',
-            shape=None,
-            threshold=0
-    ):
+
+    def __init__(self, left, right, name="max", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
@@ -823,14 +820,8 @@ class Max(BinaryOperation):
 
 class Min(BinaryOperation):
     """Element-wise maximum."""
-    def __init__(
-            self,
-            left,
-            right,
-            name='min',
-            shape=None,
-            threshold=0
-    ):
+
+    def __init__(self, left, right, name="min", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
         self.inputs = (left, right)
@@ -859,10 +850,11 @@ class Min(BinaryOperation):
 
 class Sqrt(UnaryOperation):
     """Element-wise square root."""
-    def __init__(self, value, name='sqrt', shape=None, threshold=1e-32):
+
+    def __init__(self, value, name="sqrt", shape=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -879,15 +871,16 @@ class Sqrt(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.divide(dout, (2 * np.sqrt(value)+self.threshold)),
+        return (np.divide(dout, (2 * np.sqrt(value) + self.threshold)),)
 
 
 class Abs(UnaryOperation):
     """Take the number absolute (element-wise for arrays)."""
-    def __init__(self, value, name='abs', shape=None, threshold=1e-32):
+
+    def __init__(self, value, name="abs", shape=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -906,16 +899,17 @@ class Abs(UnaryOperation):
         """
         # implementation details: |x| can be written as sqrt(x**2),
         # so derivative of this function will be x/|x|
-        abs_ = (np.abs(value)+self.threshold)
-        return np.multiply(dout, (np.divide(value, abs_))),
+        abs_ = np.abs(value) + self.threshold
+        return (np.multiply(dout, (np.divide(value, abs_))),)
 
 
 class Exp(UnaryOperation):
     """Element-wise exponentiation."""
-    def __init__(self, value, name='exp', shape=None, threshold=0):
+
+    def __init__(self, value, name="exp", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -932,15 +926,16 @@ class Exp(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.multiply(dout, np.exp(value)),
+        return (np.multiply(dout, np.exp(value)),)
 
 
 class Log(UnaryOperation):
     """Element-wise natural logarithm."""
-    def __init__(self, value, name='log', shape=None, threshold=1e-32):
+
+    def __init__(self, value, name="log", shape=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -957,15 +952,16 @@ class Log(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.divide(dout, np.asarray(value)+self.threshold),
+        return (np.divide(dout, np.asarray(value) + self.threshold),)
 
 
 class Log2(UnaryOperation):
     """Element-wise natural logarithm."""
-    def __init__(self, value, name='log2', shape=None, threshold=1e-32):
+
+    def __init__(self, value, name="log2", shape=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -982,15 +978,18 @@ class Log2(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.divide(dout, np.multiply(value, np.log(2))+self.threshold),
+        return (
+            np.divide(dout, np.multiply(value, np.log(2)) + self.threshold),
+        )
 
 
 class Log10(UnaryOperation):
     """Element-wise natural logarithm."""
-    def __init__(self, value, name='log10', shape=None, threshold=1e-32):
+
+    def __init__(self, value, name="log10", shape=None, threshold=1e-32):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -1007,15 +1006,18 @@ class Log10(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.divide(dout, np.multiply(value, np.log(10))+self.threshold),
+        return (
+            np.divide(dout, np.multiply(value, np.log(10)) + self.threshold),
+        )
 
 
 class Sin(UnaryOperation):
     """Element-wise trigonometric sine"""
-    def __init__(self, value, name='sin', shape=None, threshold=0):
+
+    def __init__(self, value, name="sin", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -1032,15 +1034,16 @@ class Sin(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.multiply(dout, np.cos(value)),
+        return (np.multiply(dout, np.cos(value)),)
 
 
 class Cos(UnaryOperation):
     """Element-wise trigonometric cosine"""
-    def __init__(self, value, name='cos', shape=None, threshold=0):
+
+    def __init__(self, value, name="cos", shape=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, shape=shape, threshold=threshold)
-        self.inputs = value,
+        self.inputs = (value,)
 
     def forward(self, value):
         """Return output of the operation by given input.
@@ -1057,4 +1060,4 @@ class Cos(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return np.multiply(dout, (-np.sin(value))),
+        return (np.multiply(dout, (-np.sin(value))),)

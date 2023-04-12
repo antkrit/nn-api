@@ -14,7 +14,7 @@ def train_test_split(*arrays, split=0.7, shuffle=False, seed=None):
     :return: partitioned arrays
     """
     if len(arrays) == 0:
-        raise ValueError('Cannot split 0 arrays.')
+        raise ValueError("Cannot split 0 arrays.")
 
     size = len(arrays[0])
     idx = np.arange(size)
@@ -26,8 +26,4 @@ def train_test_split(*arrays, split=0.7, shuffle=False, seed=None):
 
     split_idx = int(size * split)
 
-    return [
-        b
-        for a in arrays
-        for b in (a[idx][:split_idx], a[idx][split_idx:])
-    ]
+    return [b for a in arrays for b in (a[idx][:split_idx], a[idx][split_idx:])]

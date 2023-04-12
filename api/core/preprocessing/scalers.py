@@ -1,5 +1,6 @@
 """Contains implementation for data scalers."""
 import abc
+
 import numpy as np
 
 
@@ -79,7 +80,7 @@ class MinMaxScaler(BaseScaler):
         return sample_std * (self.high - self.low) + self.low
 
     def __repr__(self):
-        return 'MinMaxScaler()'
+        return "MinMaxScaler()"
 
 
 class StandardScaler(BaseScaler):
@@ -130,4 +131,4 @@ class StandardScaler(BaseScaler):
         return (sample - self.mu) / self.sigma
 
     def __repr__(self):
-        return 'StandardScaler()'
+        return "StandardScaler()"

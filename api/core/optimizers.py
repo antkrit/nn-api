@@ -1,16 +1,20 @@
 """Contains implementation of Gradient Descent optimizers (GD, SGD)"""
 import abc
+
 import numpy as np
 
-from api.core.autograd import ops
-from api.core.autograd import Operation, Session, Constant, Variable
+from api.core.autograd import Constant, Operation, Session, Variable, ops
 from api.core.exception import NoGradientException
 from api.core.preprocessing.initializers import NormalInitializer
 
-
 __all__ = (
-    'BaseOptimizer', 'GradientDescent', 'Adagrad', 'Adadelta', 'RMSProp',
-    'Adam', 'Adamax',
+    "BaseOptimizer",
+    "GradientDescent",
+    "Adagrad",
+    "Adadelta",
+    "RMSProp",
+    "Adam",
+    "Adamax",
 )
 
 # optimizers have many abbreviations (such as lr=learning_rate) well known
@@ -85,10 +89,10 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
 
         This method should be implemented and called by subclasses.
         """
-        if hasattr(self, '_built') and self._built:
+        if hasattr(self, "_built") and self._built:
             return
 
-        self._iteration = self.add_variable(0, self.name + '/local-iteration')
+        self._iteration = self.add_variable(0, self.name + "/local-iteration")
         self._build_indexed_dict(var_list)
 
     def _build_indexed_dict(self, var_list):
@@ -113,7 +117,7 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
         return var
 
     def add_variable_from_reference(
-            self, model_var, var_name, init=None, shape=None
+        self, model_var, var_name, init=None, shape=None
     ):
         """Create an optimizer variable from model variable.
 
@@ -139,8 +143,8 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
             # which returns node
             init = init(shape).value
 
-        model_var_name = model_var.name.split('/')
-        var_name = f'{model_var_name[-1]}/{var_name}'
+        model_var_name = model_var.name.split("/")
+        var_name = f"{model_var_name[-1]}/{var_name}"
 
         var = Variable(value=init, name=var_name)
         self._variables.append(var)
@@ -180,9 +184,9 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
 
     def minimize(self, operation):
         """Set operation [to minimize] for the optimizer."""
-        name = self.name + '/target-wrapper'
+        name = self.name + "/target-wrapper"
         wrapped_operation = Constant(value=operation, name=name)
-        self.inputs = wrapped_operation,
+        self.inputs = (wrapped_operation,)
 
         return self
 
@@ -217,13 +221,13 @@ class GradientDescent(BaseOptimizer):
     """
 
     def __init__(
-            self,
-            learning_rate=0.001,
-            momentum=0,
-            nesterov=False,
-            trainable_variables=None,
-            session=None,
-            name='GradientDescent'
+        self,
+        learning_rate=0.001,
+        momentum=0,
+        nesterov=False,
+        trainable_variables=None,
+        session=None,
+        name="GradientDescent",
     ):
         """Constructor method."""
         super().__init__(trainable_variables, session, name=name)
@@ -248,15 +252,13 @@ class GradientDescent(BaseOptimizer):
         if self._built:
             return
 
-        self._lr = self.add_variable(self.learning_rate, 'learning_rate')
-        self._momentum = self.add_variable(self.momentum, 'momentum')
+        self._lr = self.add_variable(self.learning_rate, "learning_rate")
+        self._momentum = self.add_variable(self.momentum, "momentum")
 
         self._momentums = []
         for var in var_list:
             self._momentums.append(
-                self.add_variable_from_reference(
-                    model_var=var, var_name="m"
-                )
+                self.add_variable_from_reference(model_var=var, var_name="m")
             )
 
         self._built = True
@@ -300,20 +302,17 @@ class Adagrad(BaseOptimizer):
     """
 
     def __init__(
-            self,
-            learning_rate=0.1,
-            initial_accumulator_value=0.1,
-            epsilon=1e-16,
-            trainable_variables=None,
-            session=None,
-            name='Adagrad'
+        self,
+        learning_rate=0.1,
+        initial_accumulator_value=0.1,
+        epsilon=1e-16,
+        trainable_variables=None,
+        session=None,
+        name="Adagrad",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables,
-            session,
-            name=name,
-            threshold=epsilon
+            trainable_variables, session, name=name, threshold=epsilon
         )
         self.learning_rate = learning_rate
         self.initial_accumulator_value = initial_accumulator_value
@@ -329,18 +328,17 @@ class Adagrad(BaseOptimizer):
         if self._built:
             return
 
-        self._lr = self.add_variable(self.learning_rate, 'learning_rate')
+        self._lr = self.add_variable(self.learning_rate, "learning_rate")
 
         self._accumulators = []
         for var in var_list:
             self._accumulators.append(
                 self.add_variable_from_reference(
                     model_var=var,
-                    var_name='accumulator',
+                    var_name="accumulator",
                     init=NormalInitializer(
-                        mu=self.initial_accumulator_value,
-                        sigma=0
-                    )
+                        mu=self.initial_accumulator_value, sigma=0
+                    ),
                 )
             )
 
@@ -381,20 +379,17 @@ class Adadelta(BaseOptimizer):
     """
 
     def __init__(
-            self,
-            learning_rate=1,
-            rho=0.9,
-            epsilon=1e-16,
-            trainable_variables=None,
-            session=None,
-            name='Adadelta'
+        self,
+        learning_rate=1,
+        rho=0.9,
+        epsilon=1e-16,
+        trainable_variables=None,
+        session=None,
+        name="Adadelta",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables,
-            session,
-            name=name,
-            threshold=epsilon
+            trainable_variables, session, name=name, threshold=epsilon
         )
         self.learning_rate = learning_rate
         self.rho = rho
@@ -412,17 +407,17 @@ class Adadelta(BaseOptimizer):
         if self._built:
             return
 
-        self._lr = self.add_variable(self.learning_rate, 'learning_rate')
-        self._rho = self.add_variable(self.rho, 'rho')
+        self._lr = self.add_variable(self.learning_rate, "learning_rate")
+        self._rho = self.add_variable(self.rho, "rho")
 
         self._accumulated_grads = []
         self._accumulated_delta_vars = []
         for var in var_list:
             self._accumulated_grads.append(
-                self.add_variable_from_reference(var, 'accumulated_grad')
+                self.add_variable_from_reference(var, "accumulated_grad")
             )
             self._accumulated_delta_vars.append(
-                self.add_variable_from_reference(var, 'accumulated_delta_var')
+                self.add_variable_from_reference(var, "accumulated_delta_var")
             )
 
         self._built = True
@@ -446,17 +441,16 @@ class Adadelta(BaseOptimizer):
             return ops.sqrt(val + self.threshold)
 
         accumulated_grad = ops.assign(
-            accumulated_grad,
-            rho * accumulated_grad + (1 - rho) * grad * grad
+            accumulated_grad, rho * accumulated_grad + (1 - rho) * grad * grad
         )
         delta_var = -rms(accumulated_delta_var) * grad / rms(accumulated_grad)
         accumulated_delta_var = ops.assign(
             accumulated_delta_var,
-            rho * accumulated_delta_var + (1 - rho) * delta_var * delta_var
+            rho * accumulated_delta_var + (1 - rho) * delta_var * delta_var,
         )
 
         # required to run an assignment operation for accumulated_delta_var
-        zero_value = 0*accumulated_delta_var
+        zero_value = 0 * accumulated_delta_var
 
         return ops.assign_add(x, lr * delta_var + zero_value)
 
@@ -481,22 +475,19 @@ class RMSProp(BaseOptimizer):
     """
 
     def __init__(
-            self,
-            learning_rate=0.1,
-            momentum=0,
-            rho=0.95,
-            epsilon=1e-16,
-            centered=False,
-            trainable_variables=None,
-            session=None,
-            name='RMSProp'
+        self,
+        learning_rate=0.1,
+        momentum=0,
+        rho=0.95,
+        epsilon=1e-16,
+        centered=False,
+        trainable_variables=None,
+        session=None,
+        name="RMSProp",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables,
-            session,
-            name=name,
-            threshold=epsilon
+            trainable_variables, session, name=name, threshold=epsilon
         )
         self.learning_rate = learning_rate
         self.momentum = momentum
@@ -518,9 +509,9 @@ class RMSProp(BaseOptimizer):
         if self._built:
             return
 
-        self._lr = self.add_variable(self.learning_rate, 'learning_rate')
-        self._momentum = self.add_variable(self.momentum, 'momentum')
-        self._rho = self.add_variable(self.rho, 'rho')
+        self._lr = self.add_variable(self.learning_rate, "learning_rate")
+        self._momentum = self.add_variable(self.momentum, "momentum")
+        self._rho = self.add_variable(self.rho, "rho")
 
         self._velocities = []
         for var in var_list:
@@ -563,13 +554,11 @@ class RMSProp(BaseOptimizer):
             average_grad = self._average_gradients[self._index_dict[x]]
 
         velocity = ops.assign(
-            velocity,
-            rho * velocity + (1 - rho) * ops.pow(grad, 2)
+            velocity, rho * velocity + (1 - rho) * ops.pow(grad, 2)
         )
         if self.centered:
             average_grad = ops.assign(
-                average_grad,
-                rho * average_grad + (1 - rho) * grad
+                average_grad, rho * average_grad + (1 - rho) * grad
             )
             denominator = velocity - ops.pow(average_grad, 2) + self.threshold
         else:
@@ -578,8 +567,7 @@ class RMSProp(BaseOptimizer):
         increment = lr * grad * ops.rsqrt(denominator)
         if self.momentum:
             momentum = ops.assign(
-                momentum,
-                self.momentum * momentum + increment
+                momentum, self.momentum * momentum + increment
             )
             return ops.assign_add(x, -momentum)
 
@@ -604,22 +592,19 @@ class Adam(BaseOptimizer):
     """
 
     def __init__(
-            self,
-            learning_rate=0.1,
-            beta_1=0.9,
-            beta_2=0.999,
-            epsilon=1e-16,
-            amsgrad=False,
-            trainable_variables=None,
-            session=None,
-            name='Adam'
+        self,
+        learning_rate=0.1,
+        beta_1=0.9,
+        beta_2=0.999,
+        epsilon=1e-16,
+        amsgrad=False,
+        trainable_variables=None,
+        session=None,
+        name="Adam",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables,
-            session,
-            name=name,
-            threshold=epsilon
+            trainable_variables, session, name=name, threshold=epsilon
         )
         self.learning_rate = learning_rate
         self.beta_1 = beta_1
@@ -641,22 +626,18 @@ class Adam(BaseOptimizer):
         if self._built:
             return
 
-        self._lr = self.add_variable(self.learning_rate, 'learning_rate')
-        self._beta_1 = self.add_variable(self.beta_1, 'beta_1')
-        self._beta_2 = self.add_variable(self.beta_2, 'beta_2')
+        self._lr = self.add_variable(self.learning_rate, "learning_rate")
+        self._beta_1 = self.add_variable(self.beta_1, "beta_1")
+        self._beta_2 = self.add_variable(self.beta_2, "beta_2")
 
         self._momentums = []
         self._velocities = []
         for var in var_list:
             self._momentums.append(
-                self.add_variable_from_reference(
-                    model_var=var, var_name="m"
-                )
+                self.add_variable_from_reference(model_var=var, var_name="m")
             )
             self._velocities.append(
-                self.add_variable_from_reference(
-                    model_var=var, var_name="v"
-                )
+                self.add_variable_from_reference(model_var=var, var_name="v")
             )
         if self.amsgrad:
             self._velocity_hats = []
@@ -686,7 +667,7 @@ class Adam(BaseOptimizer):
         v = self._velocities[self._index_dict[x]]
 
         alpha = lr * ops.sqrt(1 - beta_2_power)
-        alpha /= (1 - beta_1_power + self.threshold)
+        alpha /= 1 - beta_1_power + self.threshold
 
         m = ops.assign_add(m, (grad - m) * (1 - beta_1))
         v = ops.assign_add(v, (ops.pow(grad, 2) - v) * (1 - beta_2))
@@ -713,21 +694,18 @@ class Adamax(BaseOptimizer):
     """
 
     def __init__(
-            self,
-            learning_rate=0.1,
-            beta_1=0.9,
-            beta_2=0.999,
-            epsilon=1e-16,
-            trainable_variables=None,
-            session=None,
-            name='Adamax'
+        self,
+        learning_rate=0.1,
+        beta_1=0.9,
+        beta_2=0.999,
+        epsilon=1e-16,
+        trainable_variables=None,
+        session=None,
+        name="Adamax",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables,
-            session,
-            name=name,
-            threshold=epsilon
+            trainable_variables, session, name=name, threshold=epsilon
         )
         self.learning_rate = learning_rate
         self.beta_1 = beta_1
@@ -747,22 +725,18 @@ class Adamax(BaseOptimizer):
         if self._built:
             return
 
-        self._lr = self.add_variable(self.learning_rate, 'learning_rate')
-        self._beta_1 = self.add_variable(self.beta_1, 'beta_1')
-        self._beta_2 = self.add_variable(self.beta_2, 'beta_2')
+        self._lr = self.add_variable(self.learning_rate, "learning_rate")
+        self._beta_1 = self.add_variable(self.beta_1, "beta_1")
+        self._beta_2 = self.add_variable(self.beta_2, "beta_2")
 
         self._momentums = []
         self._norm = []
         for var in var_list:
             self._momentums.append(
-                self.add_variable_from_reference(
-                    model_var=var, var_name="m"
-                )
+                self.add_variable_from_reference(model_var=var, var_name="m")
             )
             self._norm.append(
-                self.add_variable_from_reference(
-                    model_var=var, var_name="u"
-                )
+                self.add_variable_from_reference(model_var=var, var_name="u")
             )
 
         self._built = True
@@ -785,6 +759,5 @@ class Adamax(BaseOptimizer):
         m = ops.assign_add(m, (grad - m) * (1 - beta_1))
         u = ops.assign(u, ops.max(beta_2 * u, ops.abs(grad)))
         return ops.assign_add(
-            x,
-            -(lr * m) / ((1 - beta_1_power) * (u + self.threshold))
+            x, -(lr * m) / ((1 - beta_1_power) * (u + self.threshold))
         )

@@ -1,10 +1,11 @@
 """Contains implementation of commonly used activation functions."""
 import abc
+
 import numpy as np
+
 from api.core import autograd as ag
 
-
-__all__ = ('Sigmoid', 'Tanh', 'Swish', 'Softmax', 'Softplus', 'ReLU', 'ELU')
+__all__ = ("Sigmoid", "Tanh", "Swish", "Softmax", "Softplus", "ReLU", "ELU")
 
 
 class BaseActivation:
@@ -53,7 +54,7 @@ class Tanh(BaseActivation):
         This function is relatively similar to class:`Sigmoid`, but with one big
         advantage - function is 0-centric(output is in range (-1, 1)).
         """
-        return (2 / (1+ag.ops.exp(-2*x))) - 1
+        return (2 / (1 + ag.ops.exp(-2 * x))) - 1
 
     def __call__(self, x, *args, **kwargs):
         return ag.utils.node_wrapper(self.forward, x, *args, **kwargs)
@@ -77,7 +78,7 @@ class ReLU(BaseActivation):
         If the `a` parameter is 0, there is "dead ReLU" problem where the
         function is completely inactive with negative input values.
         """
-        return ag.ops.max(x, self.alpha*x)
+        return ag.ops.max(x, self.alpha * x)
 
     def __call__(self, x, *args, **kwargs):
         return ag.utils.node_wrapper(self.forward, x, *args, **kwargs)
@@ -108,7 +109,7 @@ class ELU(BaseActivation):
         cond_false = ag.utils.convert_to_node(
             value=np.asarray(np.invert(cond), dtype=int)
         )
-        return cond_true*x + cond_false*self.alpha*(ag.ops.exp(x)-1)
+        return cond_true * x + cond_false * self.alpha * (ag.ops.exp(x) - 1)
 
     def __call__(self, x, *args, **kwargs):
         return ag.utils.node_wrapper(self.forward, x, *args, **kwargs)
@@ -130,7 +131,7 @@ class Softmax(BaseActivation):
         """
         shiftx = x - np.max(self.session.run(x))
         exp = ag.ops.exp(shiftx)
-        return exp / (ag.ops.sum(exp)+self.threshold)
+        return exp / (ag.ops.sum(exp) + self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.utils.node_wrapper(self.forward, x, *args, **kwargs)
@@ -155,7 +156,7 @@ class Swish(BaseActivation):
 
         :param x: input value
         """
-        return x / (1 + ag.ops.exp(-self.beta*x)+self.threshold)
+        return x / (1 + ag.ops.exp(-self.beta * x) + self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.utils.node_wrapper(self.forward, x, *args, **kwargs)
@@ -175,7 +176,7 @@ class Softplus(BaseActivation):
 
         :param x: input value
         """
-        return ag.ops.log(1+ag.ops.exp(x)+self.threshold)
+        return ag.ops.log(1 + ag.ops.exp(x) + self.threshold)
 
     def __call__(self, x, *args, **kwargs):
         return ag.utils.node_wrapper(self.forward, x, *args, **kwargs)

@@ -1,5 +1,6 @@
 """Contains utility functions used for models."""
 from functools import wraps
+
 from api.core import namespace
 
 
@@ -9,6 +10,7 @@ def control_compile(func):
     :raises ModelIsNotCompiledException: if method was run,
         but model is not compiled
     """
+
     @wraps(func)
     def wrapper(self, *args, **kwargs):
         if not self.built:

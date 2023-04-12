@@ -1,6 +1,11 @@
 """Contains useful frequently used objects."""
-from api.core.autograd.node import Node
-from api.core.autograd.node import Variable, Placeholder, Constant, Operation
+from api.core.autograd.node import (
+    Constant,
+    Node,
+    Operation,
+    Placeholder,
+    Variable,
+)
 
 
 def form_feed_dict(data, *placeholders):
@@ -19,18 +24,15 @@ def form_feed_dict(data, *placeholders):
             f"Cannot match sizes: {len(data)} and {len(placeholders)}"
         )
 
-    return {
-        p.name: data[i]
-        for i, p in enumerate(placeholders)
-    }
+    return {p.name: data[i] for i, p in enumerate(placeholders)}
 
 
 def convert_to_node(
-        value=None,
-        to_constant=False,
-        to_variable=False,
-        to_placeholder=False,
-        **kwargs
+    value=None,
+    to_constant=False,
+    to_variable=False,
+    to_placeholder=False,
+    **kwargs,
 ):
     """Create node based on given input.
 

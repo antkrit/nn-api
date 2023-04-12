@@ -1,7 +1,7 @@
 """Contains classes and functions to work with graph."""
 import operator
 
-from api.core.autograd.node import Placeholder, Operation
+from api.core.autograd.node import Operation, Placeholder
 from api.core.autograd.utils import topological_sort
 
 
@@ -32,9 +32,10 @@ class Session:
     >>> session.run(c)
     30
     """
+
     def __init__(self):
         """Constructor method."""
-        self.ctx_global_token = 'globals'
+        self.ctx_global_token = "globals"
         self.__context = {self.ctx_global_token: []}
 
     def run(self, *target, feed_dict=None, returns=None):
@@ -68,7 +69,7 @@ class Session:
         :return: value or list of value specified in the `returns` argument
         """
         feed_dict = feed_dict or {}
-        run_output_token = 'FORWARD_OUTPUT'
+        run_output_token = "FORWARD_OUTPUT"
         output = {}
 
         for sorted_ in topological_sort(target):
@@ -85,10 +86,7 @@ class Session:
                 if head_node_entry is not None:
                     # if there is single node output in the
                     # output dict, create list with the new one
-                    output[head_node] = [
-                        output[head_node],
-                        head_node.value
-                    ]
+                    output[head_node] = [output[head_node], head_node.value]
                 else:
                     # if this node's output does not exist in the
                     # output dict, set it to a single value
@@ -140,8 +138,7 @@ class Session:
             if isinstance(node, Operation):
                 inputs = node.inputs
                 grads = node.backward(
-                    *[x.value for x in inputs],
-                    dout=node.gradient
+                    *[x.value for x in inputs], dout=node.gradient
                 )
 
                 for inp, grad in zip(inputs, grads):
@@ -152,7 +149,7 @@ class Session:
                     visited.add(inp)
 
         grads = {node: node.gradient for node in order}
-        self.ctx_add('gradients', grads)
+        self.ctx_add("gradients", grads)
 
         returns = returns or grads.keys()
         return operator.itemgetter(*returns)(grads)

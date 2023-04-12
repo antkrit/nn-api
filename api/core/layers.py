@@ -1,15 +1,15 @@
 """Contains layers implementations."""
 import abc
 import functools
+
 import numpy as np
 
 from api.core import namespace
-from api.core.autograd import Session, Node
-from api.core.autograd import ops, utils as ag_utils
+from api.core.autograd import Node, Session, ops
+from api.core.autograd import utils as ag_utils
 from api.core.preprocessing import initializers
 
-
-__all__ = ('BaseLayer', 'Dense', 'Input', 'InputShape')
+__all__ = ("BaseLayer", "Dense", "Input", "InputShape")
 
 
 class BaseLayer(metaclass=abc.ABCMeta):
@@ -62,7 +62,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
     # shape of the layer could be None
     # pylint: disable=inconsistent-return-statements
 
-    def __init__(self, session=None, name='Layer'):
+    def __init__(self, session=None, name="Layer"):
         """Constructor method."""
         self.session = session or Session()
         self.name = name
@@ -115,11 +115,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
         self._built = True
 
     def add_variable(
-            self,
-            name=None,
-            shape=None,
-            initializer=None,
-            trainable=False
+        self, name=None, shape=None, initializer=None, trainable=False
     ):
         """Add new layer value.
 
@@ -128,14 +124,10 @@ class BaseLayer(metaclass=abc.ABCMeta):
 
         New variables will be initialized with the name: layer.name/var_name.
         """
-        var_name = name or 'unknown-variable'
+        var_name = name or "unknown-variable"
         initializer = initializer or initializers.xavier_uniform
 
-        var = initializer(
-            shape,
-            name=self.name + '/' + var_name,
-            shape=shape
-        )
+        var = initializer(shape, name=self.name + "/" + var_name, shape=shape)
         if not trainable:
             self._non_trainable.append(var)
         else:
@@ -169,15 +161,15 @@ class BaseLayer(metaclass=abc.ABCMeta):
         # but it has the lowest priority and may be not used, if
         # none of the options are true, then input_shape will be
         # set to None
-        input_shape = kwargs.pop('input_shape', None)
+        input_shape = kwargs.pop("input_shape", None)
 
         # the first set input can be cached, but this
         # argument is ignored if `self.input` is None
         # or x is not None
-        input_cache = kwargs.pop('input_cache', False)
+        input_cache = kwargs.pop("input_cache", False)
         input_cache = (
             input_cache
-            and hasattr(self, 'input')
+            and hasattr(self, "input")
             and self.input is not None
             and x is None
         )
@@ -188,7 +180,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
             # implementation (e.g. Input layer)
             if self.shape:
                 input_shape = self.batch_shape
-            elif x is not None and hasattr(x, 'shape') and x.shape:
+            elif x is not None and hasattr(x, "shape") and x.shape:
                 input_shape = x.shape
 
             # if x is None, a placeholder will be created
@@ -225,16 +217,17 @@ class Dense(BaseLayer):
         `zeros` will be used as default, defaults to None
     :param use_bias: whether to use a bias when the forward pass
     """
+
     def __init__(
-            self,
-            units=1,
-            activation=None,
-            weight_initializer=None,
-            bias_initializer=None,
-            use_bias=True,
-            session=None,
-            name='Dense',
-            **kwargs
+        self,
+        units=1,
+        activation=None,
+        weight_initializer=None,
+        bias_initializer=None,
+        use_bias=True,
+        session=None,
+        name="Dense",
+        **kwargs,
     ):
         """Constructor method."""
         super().__init__(session=session, name=name)
@@ -244,19 +237,15 @@ class Dense(BaseLayer):
             self.activation = activation
         else:
             self.activation = namespace.activations(
-                activation,
-                compiled=True,
-                session=session,
-                **kwargs
+                activation, compiled=True, session=session, **kwargs
             )
 
         self.weight_initializer = namespace.initializers(
             weight_initializer or namespace.initializers.xavier_uniform,
-            compiled=False
+            compiled=False,
         )
         self.bias_initializer = namespace.initializers(
-            bias_initializer or namespace.initializers.zeros,
-            compiled=False
+            bias_initializer or namespace.initializers.zeros, compiled=False
         )
 
         self.use_bias = use_bias
@@ -288,7 +277,7 @@ class Dense(BaseLayer):
             "weight",
             shape=(last_dim, self.units),
             initializer=self.weight_initializer,
-            trainable=True
+            trainable=True,
         )
 
         if self.use_bias:
@@ -296,13 +285,13 @@ class Dense(BaseLayer):
                 "bias",
                 shape=(self.units,),
                 initializer=self.bias_initializer,
-                trainable=True
+                trainable=True,
             )
 
         self._built = True
 
     def forward(self, value, *args, **kwargs):
-        output = ops.einsum('bhw, wk -> bhk', value, self.weight, **kwargs)
+        output = ops.einsum("bhw, wk -> bhk", value, self.weight, **kwargs)
 
         if self.use_bias:
             output = ops.add(output, self.bias, **kwargs)
@@ -328,11 +317,7 @@ class Input(BaseLayer):
     """
 
     def __init__(
-            self,
-            input_shape,
-            batch_size=None,
-            session=None,
-            name='Input'
+        self, input_shape, batch_size=None, session=None, name="Input"
     ):
         """Constructor method."""
         super().__init__(session=session, name=name)
@@ -354,9 +339,7 @@ class Input(BaseLayer):
     # this behavior can be changed manually by passing x argument
     # in this case, Variable will be created instead of Placeholder
     __call__ = functools.partialmethod(
-        BaseLayer.__call__,
-        x=None,
-        input_cache=True
+        BaseLayer.__call__, x=None, input_cache=True
     )
 
 

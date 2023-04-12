@@ -1,16 +1,55 @@
 """Contains math operations definition."""
 from api.core.autograd.node import (
-    Add, AssignAdd, Assign, Multiply, AssignMultiply, Divide, AssignDivide,
-    Matmul, Max, Min, Power, Sqrt, Sum, Sin, Cos, Mean, Abs, Exp, Einsum,
-    Log, Log2, Log10, Node
+    Abs,
+    Add,
+    Assign,
+    AssignAdd,
+    AssignDivide,
+    AssignMultiply,
+    Cos,
+    Divide,
+    Einsum,
+    Exp,
+    Log,
+    Log2,
+    Log10,
+    Matmul,
+    Max,
+    Mean,
+    Min,
+    Multiply,
+    Node,
+    Power,
+    Sin,
+    Sqrt,
+    Sum,
 )
 from api.core.autograd.utils import node_wrapper
 
 __all__ = (
-    'add', 'mul', 'div', 'pow', 'dot', 'max', 'min', 'sin', 'cos',
-    'sum', 'mean', 'sqrt', 'rsqrt', 'abs', 'exp', 'log', 'log2',
-    'log10', 'assign', 'assign_add', 'assign_mul', 'assign_div',
-    'einsum'
+    "add",
+    "mul",
+    "div",
+    "pow",
+    "dot",
+    "max",
+    "min",
+    "sin",
+    "cos",
+    "sum",
+    "mean",
+    "sqrt",
+    "rsqrt",
+    "abs",
+    "exp",
+    "log",
+    "log2",
+    "log10",
+    "assign",
+    "assign_add",
+    "assign_mul",
+    "assign_div",
+    "einsum",
 )
 
 
@@ -54,7 +93,7 @@ def assign_div(ref, operation, **kwargs):
 
 def einsum(subscripts, *arrays, **kwargs):
     """Evaluates the Einstein summation convention on the operands."""
-    delimiter = kwargs.pop('delimiter', '->')
+    delimiter = kwargs.pop("delimiter", "->")
     subscripts, o_subscript = _parse_subscripts(subscripts, delim=delimiter)
 
     return node_wrapper(
@@ -67,7 +106,7 @@ def einsum(subscripts, *arrays, **kwargs):
     )
 
 
-def _parse_subscripts(string, delim='->'):
+def _parse_subscripts(string, delim="->"):
     """Parse subscripts for einsum.
 
     :param string: subscripts to parse
@@ -75,7 +114,7 @@ def _parse_subscripts(string, delim='->'):
         from output subscript, defaults to '->'
     :return: tuple, array of input subscripts and the output subscript
     """
-    string = string.replace(',', '')
+    string = string.replace(",", "")
     inp, out = string.split(delim)
     return inp.split(), out
 
@@ -114,10 +153,12 @@ def sqrt(this, **kwargs):
     """Return the square-root of an array(element-wise) or a number."""
     return node_wrapper(Sqrt, this, **kwargs)
 
+
 def rsqrt(this, **kwargs):
     """Return reciprocal square root of an array(element-wise) or a number."""
     sqrt_op = node_wrapper(Sqrt, this)
     return node_wrapper(Divide, 1, sqrt_op, **kwargs)
+
 
 def abs(this, **kwargs):
     """Return absolute value of an array(element-wise) or a number."""

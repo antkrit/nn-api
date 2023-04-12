@@ -1,28 +1,50 @@
 """Defines containers with available names that are used to identify and refer
 to objects of various kinds.
 """
-from api.core.data import Container
-from api.core.autograd import (
-    Node, Constant, Variable, Placeholder, Operation,
-    UnaryOperation, BinaryOperation
-)
 from api.core.activation import (
-    Sigmoid, Tanh, Swish, Softmax, Softplus, ReLU, ELU
+    ELU,
+    ReLU,
+    Sigmoid,
+    Softmax,
+    Softplus,
+    Swish,
+    Tanh,
 )
+from api.core.autograd import (
+    BinaryOperation,
+    Constant,
+    Node,
+    Operation,
+    Placeholder,
+    UnaryOperation,
+    Variable,
+)
+from api.core.data import Container
 from api.core.exception import ModelIsNotCompiledException, NoGradientException
-from api.core.loss import MSE, MAE, MBE, BCE, Huber, Hinge, LHL, CCE, KLD
+from api.core.loss import BCE, CCE, KLD, LHL, MAE, MBE, MSE, Hinge, Huber
 from api.core.optimizers import (
-    GradientDescent, Adagrad, Adadelta, Adam, Adamax, RMSProp
+    Adadelta,
+    Adagrad,
+    Adam,
+    Adamax,
+    GradientDescent,
+    RMSProp,
 )
 from api.core.preprocessing.initializers import (
-    zeros, ones, random_normal, random_uniform, he_normal, he_uniform,
-    xavier_normal, xavier_uniform, lecun_normal, lecun_uniform
+    he_normal,
+    he_uniform,
+    lecun_normal,
+    lecun_uniform,
+    ones,
+    random_normal,
+    random_uniform,
+    xavier_normal,
+    xavier_uniform,
+    zeros,
 )
 
-
 activations = Container(
-    name='activations',
-
+    name="activations",
     sigmoid=Sigmoid,
     tanh=Tanh,
     swish=Swish,
@@ -32,8 +54,7 @@ activations = Container(
     elu=ELU,
 )
 losses = Container(
-    name='losses',
-
+    name="losses",
     mean_squared_error=MSE,
     mean_absolute_error=MAE,
     mean_bias_error=MBE,
@@ -45,8 +66,7 @@ losses = Container(
     kullback_leibler_divergence=KLD,
 )
 initializers = Container(
-    name='initializers',
-
+    name="initializers",
     zeros=zeros,
     ones=ones,
     random_normal=random_normal,
@@ -59,8 +79,7 @@ initializers = Container(
     lecun_uniform=lecun_uniform,
 )
 optimizers = Container(
-    name='optimizers',
-
+    name="optimizers",
     gradient_descent=GradientDescent,
     adagrad=Adagrad,
     adadelta=Adadelta,
@@ -69,19 +88,17 @@ optimizers = Container(
     adamax=Adamax,
 )
 exceptions = Container(
-    name='exceptions',
-
+    name="exceptions",
     ModelIsNotCompiled=ModelIsNotCompiledException,
-    NoGradient=NoGradientException
+    NoGradient=NoGradientException,
 )
 nodes = Container(
-    name='nodes',
-
+    name="nodes",
     node=Node,
     constant=Constant,
     variable=Variable,
     placeholder=Placeholder,
     operation=Operation,
     unary_operation=UnaryOperation,
-    binary_operation=BinaryOperation
+    binary_operation=BinaryOperation,
 )
