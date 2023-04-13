@@ -1,18 +1,18 @@
 from api.core.autograd import ops
-from api.core.autograd.node import Constant, Add, Node
-from api.core.autograd.utils import topological_sort, node_wrapper
+from api.core.autograd.node import Add, Constant, Node
+from api.core.autograd.utils import node_wrapper, topological_sort
 
 
 def test_topological_sort():
-    a = Constant(1, name='node1')
-    b = Constant(2, name='node2')
-    w = Constant(3, name='node3')
+    a = Constant(1, name="node1")
+    b = Constant(2, name="node2")
+    w = Constant(3, name="node3")
 
     assert next(topological_sort(a))[0] is a
 
-    c = ops.add(a, b, name='sum')
-    x = ops.mul(c, b, name='mul')
-    y = ops.add(x, w, name='sum1')
+    c = ops.add(a, b, name="sum")
+    x = ops.mul(c, b, name="mul")
+    y = ops.add(x, w, name="sum1")
 
     def check_order(rcv, exp):
         return all([n == exp[i] for i, n in enumerate(rcv)])
@@ -24,8 +24,8 @@ def test_topological_sort():
     received = next(topological_sort(y))
     assert check_order(received, expected_order)
 
-    s = ops.add(a, b, name='sum2')
-    s1 = ops.add(s, w, name='sum3')
+    s = ops.add(a, b, name="sum2")
+    s1 = ops.add(s, w, name="sum3")
 
     sorted_ = topological_sort([s, s1])
 

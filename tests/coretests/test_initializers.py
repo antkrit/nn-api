@@ -3,14 +3,12 @@ import pytest
 
 from api.core.preprocessing.initializers import *
 
-
 NUMPY_SEED = np.random.randint(0, 100)
 
 
 class TestBase:
-
-    @pytest.mark.parametrize('si', [0, 0.01, 5])
-    @pytest.mark.parametrize('mu', [0, 1])
+    @pytest.mark.parametrize("si", [0, 0.01, 5])
+    @pytest.mark.parametrize("mu", [0, 1])
     def test_normal_initializer(self, session, test_case_unary, si, mu):
         x = np.atleast_2d(test_case_unary)
         size = x.shape
@@ -23,7 +21,7 @@ class TestBase:
         assert not np.array_equal(session.run(init_diff(size)), sample)
 
         np.random.seed(NUMPY_SEED)
-        ndist = si*np.random.randn(*size) + mu
+        ndist = si * np.random.randn(*size) + mu
 
         init = NormalInitializer(mu=mu, sigma=si, seed=NUMPY_SEED)(size)
         assert np.array_equal(session.run(init), ndist)
@@ -44,16 +42,13 @@ class TestBase:
         np.random.seed(NUMPY_SEED)
         ndist = np.random.uniform(low_bnd, high_bnd, size=size)
 
-        init = UniformInitializer(
-            low=low_bnd,
-            high=high_bnd,
-            seed=NUMPY_SEED
-        )(size)
+        init = UniformInitializer(low=low_bnd, high=high_bnd, seed=NUMPY_SEED)(
+            size
+        )
         assert np.array_equal(session.run(init), ndist)
 
 
 class TestNormalDistribution:
-
     def test_zeros(self, session, test_case_unary):
         x = np.atleast_2d(test_case_unary)
         size = x.shape
@@ -84,7 +79,7 @@ class TestNormalDistribution:
 
         np.random.seed(NUMPY_SEED)
         ndist = np.random.randn(*size)
-        expected = np.sqrt(2/(np.sum(size))) * ndist
+        expected = np.sqrt(2 / (np.sum(size))) * ndist
 
         init = xavier_normal(size, seed=NUMPY_SEED)
         assert np.array_equal(session.run(init), expected)
@@ -113,7 +108,6 @@ class TestNormalDistribution:
 
 
 class TestUniformDistribution:
-
     def test_random_uniform(self, session, test_case_unary):
         x = np.atleast_2d(test_case_unary)
         size = x.shape
@@ -129,7 +123,7 @@ class TestUniformDistribution:
         size = x.shape
 
         np.random.seed(NUMPY_SEED)
-        bound = np.sqrt(6/np.sum(size))
+        bound = np.sqrt(6 / np.sum(size))
         udist = np.random.uniform(-bound, bound, size=size)
 
         init = xavier_uniform(size, seed=NUMPY_SEED)

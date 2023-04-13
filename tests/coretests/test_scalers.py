@@ -6,11 +6,7 @@ from api.core.preprocessing import scalers
 
 def test_standard_scaler():
     sc = scalers.StandardScaler()
-    x = np.array([
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9]
-    ])
+    x = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
     sc.fit(x)
     assert sc.mu is not None and sc.sigma is not None
@@ -30,11 +26,7 @@ def test_standard_scaler():
 
 def test_minmax_scaler():
     sc = scalers.MinMaxScaler()
-    x = np.array([
-        [1, 2, 3],
-        [4, 5, 6],
-        [7, 8, 9]
-    ])
+    x = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
 
     sc.fit(x)
     assert sc.min_ is not None and sc.max_ is not None
@@ -53,8 +45,6 @@ def test_minmax_scaler():
     transformed = sc.fit_transform(x)
     assert np.all(
         np.logical_and(
-            (transformed >= fr_range[0]),
-            (transformed <= fr_range[1])
+            (transformed >= fr_range[0]), (transformed <= fr_range[1])
         )
     )
-

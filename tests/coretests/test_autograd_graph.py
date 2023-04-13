@@ -1,4 +1,8 @@
-from api.core.autograd.graph import Graph, get_current_graph, reset_current_graph
+from api.core.autograd.graph import (
+    Graph,
+    get_current_graph,
+    reset_current_graph,
+)
 
 
 def test_graph():

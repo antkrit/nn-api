@@ -1,8 +1,8 @@
-import pytest
 import numpy as np
+import pytest
 
 from api.core import activation as actv
-from api.core.autograd import Variable, Placeholder
+from api.core.autograd import Placeholder, Variable
 from api.core.layers import *
 from api.core.preprocessing import initializers as init
 
@@ -28,9 +28,7 @@ def test_base_layer(mocker, test_case_unary):
     assert var in bl.variables()
 
     mocker.patch.object(
-        BaseLayer,
-        'forward',
-        side_effect=lambda x, *args, **kwargs: x
+        BaseLayer, "forward", side_effect=lambda x, *args, **kwargs: x
     )
 
     size = (1, 1)
@@ -42,8 +40,7 @@ def test_base_layer(mocker, test_case_unary):
 
 def test_base_layer_docstring_example(session, test_case_unary):
     class Linear(BaseLayer):
-
-        def __init__(self, units=10, name='Linear'):
+        def __init__(self, units=10, name="Linear"):
             super().__init__(session=None, name=name)
             self.units = units
 
@@ -54,9 +51,7 @@ def test_base_layer_docstring_example(session, test_case_unary):
             self.weights = init.random_normal(
                 size=[input_shape[-1], self.units]
             )
-            self.bias = init.ones(
-                size=[1, self.units]
-            )
+            self.bias = init.ones(size=[1, self.units])
             self._built = True
 
         def forward(self, value, *args, **kwargs):
@@ -69,29 +64,27 @@ def test_base_layer_docstring_example(session, test_case_unary):
 
 
 @pytest.mark.parametrize(
-    'x',
+    "x",
     [np.ones(()), np.ones((3,)), np.ones((3, 3)), np.ones((4, 3, 3))],
-    ids=['scalar', 'vector', 'matrix', 'tensor']
+    ids=["scalar", "vector", "matrix", "tensor"],
 )
 @pytest.mark.parametrize(
-    'activation',
-    ['swish', actv.ReLU(alpha=0.01), 'tanh', None],
+    "activation",
+    ["swish", actv.ReLU(alpha=0.01), "tanh", None],
     ids=[
-        '_activation=swish',
-        '_activation=relu(callable)',
-        '_activation=tanh',
-        '_activation=None'
-    ]
+        "_activation=swish",
+        "_activation=relu(callable)",
+        "_activation=tanh",
+        "_activation=None",
+    ],
 )
 @pytest.mark.parametrize(
-    'weight_init',
-    ['random_normal', init.random_uniform, None],
-    ids=['_w_init=random_n', '_w_init=random_u(callable)', '_w_init=None']
+    "weight_init",
+    ["random_normal", init.random_uniform, None],
+    ids=["_w_init=random_n", "_w_init=random_u(callable)", "_w_init=None"],
 )
 @pytest.mark.parametrize(
-    'use_bias',
-    [True, False],
-    ids=['with bias', 'without bias']
+    "use_bias", [True, False], ids=["with bias", "without bias"]
 )
 def test_dense_layer(session, x, activation, weight_init, use_bias):
     batch_test_case = np.atleast_3d(x)
@@ -103,7 +96,7 @@ def test_dense_layer(session, x, activation, weight_init, use_bias):
         activation=activation,
         weight_initializer=weight_init,
         bias_initializer=weight_init,
-        use_bias=use_bias
+        use_bias=use_bias,
     )
 
     layer_output = session.run(layer(x))
@@ -113,7 +106,7 @@ def test_dense_layer(session, x, activation, weight_init, use_bias):
     assert layer_output.shape == expected_output_shape
 
 
-@pytest.mark.parametrize('shape', [(1,), (1, 1)], ids=['shape-1d', 'shape-2d'])
+@pytest.mark.parametrize("shape", [(1,), (1, 1)], ids=["shape-1d", "shape-2d"])
 def test_input_layer(session, shape):
     with pytest.raises(ValueError):
         _ = Input(input_shape=())
@@ -145,9 +138,9 @@ def test_input_layer(session, shape):
 
 
 @pytest.mark.parametrize(
-    'x',
+    "x",
     [np.ones(()), np.ones((3,)), np.ones((3, 3)), np.ones((4, 3, 3))],
-    ids=['scalar', 'vector', 'matrix', 'tensor']
+    ids=["scalar", "vector", "matrix", "tensor"],
 )
 def test_multiple_layers(session, x):
     test_case = np.atleast_3d(x)
@@ -183,4 +176,3 @@ def test_input_shape():
     assert input_shape.shape == shape[1:]
     assert input_shape.batch == 1
     assert input_shape.batch_input_shape == shape
-

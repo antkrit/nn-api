@@ -1,4 +1,5 @@
 import numpy as np
+
 from api.core import namespace
 from api.core.autograd import ops
 
@@ -62,7 +63,7 @@ def test_other_ops(session):
     a, b = np.ones((3, 1, 1, 2)), np.ones((2, 3))
     a_var = namespace.nodes.variable(a)
 
-    subscr = 'ijhw, wk -> ijhk'
+    subscr = "ijhw, wk -> ijhk"
     expected = np.einsum(subscr, a, b)
     assert np.array_equal(session.run(ops.einsum(subscr, a_var, b)), expected)
     assert session.run(ops.einsum(subscr, a_var, b)).shape == (3, 1, 1, 3)

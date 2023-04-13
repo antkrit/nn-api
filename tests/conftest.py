@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 import api.core.autograd as ag
 
 
@@ -24,9 +25,18 @@ BINARY_TEST_CASES = [
     (np.random.randint(1, 10), np.random.randint(1, 10, size=(3,))),
     (np.random.randint(1, 10), np.random.randint(1, 10, size=(3, 3))),
     (np.random.randint(1, 10, size=(3,)), np.random.randint(1, 10, size=(3,))),
-    (np.random.randint(1, 10, size=(3, 3)), np.random.randint(1, 10, size=(3, 3))),
-    (np.random.randint(1, 10, size=(4, 1, 2)), np.random.randint(1, 10, size=(2, 2))),
-    (np.random.randint(1, 10, size=(1, 2)), np.random.randint(1, 10, size=(5, 2, 2)))
+    (
+        np.random.randint(1, 10, size=(3, 3)),
+        np.random.randint(1, 10, size=(3, 3)),
+    ),
+    (
+        np.random.randint(1, 10, size=(4, 1, 2)),
+        np.random.randint(1, 10, size=(2, 2)),
+    ),
+    (
+        np.random.randint(1, 10, size=(1, 2)),
+        np.random.randint(1, 10, size=(5, 2, 2)),
+    ),
 ]
 
 
