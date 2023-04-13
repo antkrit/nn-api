@@ -13,8 +13,9 @@ class Dataset:
     :param x_data: input data
     :param y_data: input data
     :param batch_size: number of samples per one batch, defaults to 1
-    :param dim: x_data shape, while y_data shape will be equal to
-        np.ones_like(dim), defaults to (1, 1)
+    :param x_dim: x_data shape, defaults to (1, 1)
+    :param y_dim: y_data shape, if None - will be equal to np.ones_like(dim),
+        defaults to None
     :param shuffle: whether to shuffle data on epoch end
     """
 
@@ -23,7 +24,8 @@ class Dataset:
         x_data,
         y_data,
         batch_size=1,
-        dim=(1, 1),
+        x_dim=(1, 1),
+        y_dim=None,
         shuffle=True,
     ):
         """Constructor method."""
@@ -41,7 +43,11 @@ class Dataset:
             np.random.shuffle(self.indexes)
 
         self.batch_size = min(batch_size, self.indexes.size)
-        self.dim = dim
+        self.x_dim = np.atleast_1d(x_dim)
+        self.y_dim = None
+
+        if y_dim is not None:
+            self.y_dim = np.atleast_1d(y_dim)
 
         self.__max = self.__len__()
         self.__inner_state = 0
@@ -84,8 +90,13 @@ class Dataset:
 
     def __generate_data(self, ids):
         """Generate data containing batch_size samples."""
-        x = np.empty((self.batch_size, *self.dim))
-        y = np.empty((self.batch_size, *np.ones_like(self.dim)))
+        if self.y_dim is None:
+            y_dim = np.ones_like(self.x_dim)
+        else:
+            y_dim = self.y_dim
+
+        x = np.empty((self.batch_size, *self.x_dim))
+        y = np.empty((self.batch_size, *y_dim))
 
         # TODO: instead of getting data by index, load it with some method
         # this works only for arrays of data. Need to make this procedure lazy

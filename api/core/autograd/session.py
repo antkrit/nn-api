@@ -69,7 +69,6 @@ class Session:
         :return: value or list of value specified in the `returns` argument
         """
         feed_dict = feed_dict or {}
-        run_output_token = "FORWARD_OUTPUT"
         output = {}
 
         for sorted_ in topological_sort(target):
@@ -91,8 +90,6 @@ class Session:
                     # if this node's output does not exist in the
                     # output dict, set it to a single value
                     output[head_node] = head_node.value
-
-        self.ctx_add(run_output_token, output)
 
         returns = returns or output.keys()
         return operator.itemgetter(*returns)(output)
@@ -149,7 +146,6 @@ class Session:
                     visited.add(inp)
 
         grads = {node: node.gradient for node in order}
-        self.ctx_add("gradients", grads)
 
         returns = returns or grads.keys()
         return operator.itemgetter(*returns)(grads)

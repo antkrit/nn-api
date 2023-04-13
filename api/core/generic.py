@@ -174,15 +174,14 @@ class Model(Input):
         else:
             x_val, y_val = validation_data
 
-        dataset_train = data_adapter.Dataset(
+        dataset_train = self.dataset(
             x_train,
             y_train,
-            dim=self.shape,
             batch_size=batch_size,
             shuffle=shuffle,
         )
-        dataset_validation = data_adapter.Dataset(
-            x_val, y_val, dim=self.shape, batch_size=len(x_val), shuffle=shuffle
+        dataset_validation = self.dataset(
+            x_val, y_val, batch_size=len(x_val), shuffle=shuffle
         )
 
         epochs = self.__progress_bar(epochs) if verbosity else range(epochs)
@@ -218,10 +217,9 @@ class Model(Input):
             first compiling the model
         :return: predicted output
         """
-        dataset_test = data_adapter.Dataset(
+        dataset = self.dataset(
             x_test,
             np.empty((len(x_test),)) if y_test is None else y_test,
-            dim=self.shape,
             batch_size=len(x_test),
             shuffle=False,
         )
@@ -230,11 +228,21 @@ class Model(Input):
         epochs = self.__progress_bar(1)
 
         for _ in epochs:
-            output = self.predict_step(next(dataset_test))
+            output = self.predict_step(next(dataset))
             if y_test is not None:
-                epochs.set_postfix(self.compute_metrics(next(dataset_test)))
+                epochs.set_postfix(self.compute_metrics(next(dataset)))
 
         return output
+
+    def dataset(self, x, y, **kwargs):
+        """Create a dataset for the given data."""
+        x_shape = self.shape
+        y_shape = np.ones_like(self.output_shape)
+        y_shape[-1] = self.output_shape[-1]
+
+        return data_adapter.Dataset(
+            x, y, x_dim=x_shape, y_dim=y_shape, **kwargs
+        )
 
     def compile(self, optimizer=None, loss=None, metrics=None):
         """Compile model using given parameters.
