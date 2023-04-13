@@ -1,7 +1,0 @@
-NN-API
-==============
-
-.. toctree::
-   :maxdepth: 4
-
-   _templates/lib

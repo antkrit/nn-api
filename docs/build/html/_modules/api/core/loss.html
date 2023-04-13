@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.loss &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../../../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">api.core.loss</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for api.core.loss</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains implementation of commonly used loss functions.</span>
+
+<span class="sd">Regression:</span>
+
+<span class="sd">- (Root) Mean Squared Error</span>
+<span class="sd">- Mean Absolute Error</span>
+<span class="sd">- Mean Bias Error</span>
+<span class="sd">- Huber Loss</span>
+
+<span class="sd">Binary Classification:</span>
+
+<span class="sd">- Likelihood Loss</span>
+<span class="sd">- Binary Cross Entropy</span>
+<span class="sd">- (Squared) Hinge Loss</span>
+
+<span class="sd">Multinomial Classification:</span>
+
+<span class="sd">- Categorical Cross Entropy</span>
+<span class="sd">- Kullback-Leibler Divergence</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">api.core</span> <span class="kn">import</span> <span class="n">autograd</span> <span class="k">as</span> <span class="n">ag</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;BaseLoss&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MSE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MAE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;MBE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Huber&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;LHL&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BCE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Hinge&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;CCE&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;KLD&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseLoss"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.BaseLoss">[docs]</a><span class="k">class</span> <span class="nc">BaseLoss</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base loss class.</span>
+
+<span class="sd">    :param name: name of the loss, defaults to loss</span>
+<span class="sd">    :param session: current session, if None - creates new, defaults to None</span>
+<span class="sd">    :param threshold: some minute value to avoid problems like</span>
+<span class="sd">        div by 0 or log(0), defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;loss&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">ag</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return loss value.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span><span class="p">):</span>
+            <span class="c1"># if loss value is Node return its value</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">value</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+
+<div class="viewcode-block" id="BaseLoss.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.BaseLoss.forward">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate loss.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">node_wrapper</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span></div>
+
+
+<div class="viewcode-block" id="MSE"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.MSE">[docs]</a><span class="k">class</span> <span class="nc">MSE</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;(Root) Mean Squared Error.</span>
+
+<span class="sd">    Finds the averaged squared difference between predicted and</span>
+<span class="sd">    actual values. Mostly used for regression problems.</span>
+
+<span class="sd">    :param root: set to True when RMSE loss is required, defaults to False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mean_squared_error&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">root</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span>
+        <span class="k">if</span> <span class="n">root</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;root_&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+
+<div class="viewcode-block" id="MSE.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.MSE.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate (R)MSE.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">total</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">total</span><span class="p">)</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">root</span> <span class="k">else</span> <span class="n">total</span></div></div>
+
+
+<div class="viewcode-block" id="MAE"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.MAE">[docs]</a><span class="k">class</span> <span class="nc">MAE</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mean Absolute Error.</span>
+
+<span class="sd">    Finds the averaged absolute difference between predicted and</span>
+<span class="sd">    actual values. Mostly used for regression problems.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mean_absolute_error&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MAE.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.MAE.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate MAE.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="MBE"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.MBE">[docs]</a><span class="k">class</span> <span class="nc">MBE</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mean Bias Error.</span>
+
+<span class="sd">    Finds the averaged difference between predicted and actual values.</span>
+<span class="sd">    Mostly used for regression problems.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mean_bias_error&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+<div class="viewcode-block" id="MBE.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.MBE.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate MBE.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Huber"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.Huber">[docs]</a><span class="k">class</span> <span class="nc">Huber</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Huber Loss.</span>
+
+<span class="sd">    Combination of :class:`MAE` and :class:`MSE`. This loss applies MAE for</span>
+<span class="sd">    values that fits under the expected values, and MSE is applied to outliers.</span>
+
+<span class="sd">    :param delta: a number, point where two functions are connected,</span>
+<span class="sd">        defaults to 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;huber&quot;</span><span class="p">,</span> <span class="n">delta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">=</span> <span class="n">delta</span>
+
+<div class="viewcode-block" id="Huber.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.Huber.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate Huber loss.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span>
+
+        <span class="n">is_err_small</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">err</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span>
+        <span class="c1"># implementation details: initially, the Huber loss is a system with</span>
+        <span class="c1"># 2 equations, so it&#39;s possible to calculate all &#39;if&#39; conditions in</span>
+        <span class="c1"># advance, multiply it and its inverted version by the system</span>
+        <span class="c1"># inequalities and then just add them</span>
+        <span class="n">cond_true</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">convert_to_node</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">is_err_small</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">cond_false</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">convert_to_node</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">is_err_small</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">lss_cond_true</span> <span class="o">=</span> <span class="n">cond_true</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">err</span><span class="o">**</span><span class="mi">2</span>
+        <span class="n">lss_cond_false</span> <span class="o">=</span> <span class="n">cond_false</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span> <span class="o">*</span> <span class="p">(</span><span class="n">err</span> <span class="o">-</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">delta</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">lss_cond_true</span> <span class="o">+</span> <span class="n">lss_cond_false</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="LHL"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.LHL">[docs]</a><span class="k">class</span> <span class="nc">LHL</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Likelihood Loss.</span>
+
+<span class="sd">    Multiplication of the probability for the ground truth labels. If the</span>
+<span class="sd">    true class is [1], we use the output probability, otherwise if the</span>
+<span class="sd">    true class is [0], we use 1-output probability. Mostly used for</span>
+<span class="sd">    binary classification.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;likelihood&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+<div class="viewcode-block" id="LHL.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.LHL.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate LHL.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">*</span> <span class="n">y_pred</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BCE"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.BCE">[docs]</a><span class="k">class</span> <span class="nc">BCE</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Binary Cross Entropy.</span>
+
+<span class="sd">    Modification of the :class:`LHL` using logarithms. This allows for</span>
+<span class="sd">    more severe penalties for large errors.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;binary_cross_entropy&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BCE.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.BCE.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate BCE.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">*</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="n">err_1</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)</span> <span class="o">*</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">y_pred</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="p">(</span><span class="n">err</span> <span class="o">+</span> <span class="n">err_1</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Hinge"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.Hinge">[docs]</a><span class="k">class</span> <span class="nc">Hinge</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Hinge Loss.</span>
+
+<span class="sd">    Primarily was developed to evaluate SVM models. Incorrect or less</span>
+<span class="sd">    confident right predictions are more penalized with Hinge Loss</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        To apply Hinge Loss, classes must be marked as 1 and -1 (not 0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;hinge&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Hinge.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.Hinge.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate HL.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">*</span> <span class="n">y_true</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="CCE"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.CCE">[docs]</a><span class="k">class</span> <span class="nc">CCE</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Categorical Cross Entropy.</span>
+
+<span class="sd">    Used for multinomial classification. Similar formula as in the :class:`BCE`,</span>
+<span class="sd">    but with one extra step. The output label is assigned one-hot category</span>
+<span class="sd">    encoding value in form of 0s and 1. Calculate the loss for every pair</span>
+<span class="sd">    of targets and predictions and return the mean</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;categorical_cross_entropy&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+<div class="viewcode-block" id="CCE.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.CCE.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate CCE.&quot;&quot;&quot;</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">*</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="o">-</span><span class="n">err</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="KLD"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.KLD">[docs]</a><span class="k">class</span> <span class="nc">KLD</span><span class="p">(</span><span class="n">BaseLoss</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Kullback-Leibler Divergence.</span>
+
+<span class="sd">    Similar to :class:`CCE`, but considers the probability of occurrence</span>
+<span class="sd">    of observations. Useful when classes are not balanced.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;kullback_leibler_divergence&quot;</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+
+<div class="viewcode-block" id="KLD.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.loss.KLD.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">y_true</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate KLD.&quot;&quot;&quot;</span>
+        <span class="n">prob</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_true</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="n">err</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">*</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">prob</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">err</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

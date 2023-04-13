@@ -3,15 +3,18 @@ repos:
     rev: v3.3.0
     hooks:
     - id: end-of-file-fixer
+      exclude: ^docs/
     - id: check-yaml
     - id: check-added-large-files
     - id: trailing-whitespace
+      exclude: ^docs/
     - id: check-docstring-first
     - id: check-json
     - id: check-merge-conflict
     - id: check-xml
     - id: detect-private-key
     - id: mixed-line-ending
+      exclude: ^docs/
     - id: pretty-format-json
       args:
         - --autofix
@@ -51,7 +54,7 @@ repos:
       entry: pylint
       language: system
       types: [python]
-      exclude: ^tests/
+      exclude: '^(docs|tests)/.*$'
       args:
         - -rn
         - -sn

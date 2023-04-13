@@ -100,18 +100,24 @@ class Container(MutableMapping):
     """Base dict-like container class.
 
     To get an object use any of the three options
-    >>> container = Container(name=..., obj=3)
-    >>> container['obj']
-    3
-    >>> container.obj
-    3
-    >>> container('obj')
-    3
+
+    .. code::
+
+        >>> container = Container(name=..., obj=3)
+        >>> container['obj']
+        3
+        >>> container.obj
+        3
+        >>> container('obj')
+        3
 
     To get the compiled instance - use __call__ method
-    >>> container = Container(name=..., obj=lambda x: x)
-    >>> container('obj', compiled=True, x=3)
-    3
+
+    .. code-block:: python
+
+        >>> container = Container(name=..., obj=lambda x: x)
+        >>> container('obj', compiled=True, x=3)
+        3
 
     .. note::
         if in `__call__()` the first argument is not str, then this

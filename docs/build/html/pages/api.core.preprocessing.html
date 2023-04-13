@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.preprocessing package &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Readme" href="README.html" />
+    <link rel="prev" title="api.core.model package" href="api.core.model.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Api</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="api.html">api package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="api.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="api.core.html">api.core package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Api</a></li>
+          <li class="breadcrumb-item"><a href="api.html">api package</a></li>
+          <li class="breadcrumb-item"><a href="api.core.html">api.core package</a></li>
+      <li class="breadcrumb-item active">api.core.preprocessing package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/api.core.preprocessing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <section id="api-core-preprocessing-package">
+<h1>api.core.preprocessing package<a class="headerlink" href="#api-core-preprocessing-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-api.core.preprocessing.initializers">
+<span id="api-core-preprocessing-initializers-module"></span><h2>api.core.preprocessing.initializers module<a class="headerlink" href="#module-api.core.preprocessing.initializers" title="Permalink to this heading"></a></h2>
+<p>Contains simple functions for generating arrays with numbers.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.NormalInitializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">NormalInitializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#NormalInitializer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.NormalInitializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInitializer</span></code></p>
+<p>Normal distribution initializer class N(m,σ).</p>
+<p>Generates random samples from the normal distribution with mean <cite>mu</cite>
+and standard deviation <cite>sigma</cite>, using sigma*randn(in, out) + mu formula.
+Specific implementations of this initializer can change these two
+parameters. Default configuration will generate simple zeros vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sigma</strong> – standard deviation of the normal distribution, defaults to 0</p></li>
+<li><p><strong>mu</strong> – float, mean of the normal distribution, defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.UniformInitializer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">UniformInitializer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#UniformInitializer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.UniformInitializer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseInitializer</span></code></p>
+<p>Uniform distribution initializer class U(low, high).</p>
+<p>Generates random samples from the uniform distribution in the range
+[low, high]. Specific implementations of this initializer can change these
+two parameters. Default configuration will generate simple zeros vector.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>low</strong> – lower boundary of the output interval, defaults to 0</p></li>
+<li><p><strong>high</strong> – upper boundary of the output interval, defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.he_normal">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">he_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#he_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.he_normal" title="Permalink to this definition"></a></dt>
+<dd><p>Kaiming(or He) normal initialization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.he_uniform">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">he_uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#he_uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.he_uniform" title="Permalink to this definition"></a></dt>
+<dd><p>Kaiming(or He) uniform initialization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.lecun_normal">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">lecun_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#lecun_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.lecun_normal" title="Permalink to this definition"></a></dt>
+<dd><p>LeCun normal initialization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.lecun_uniform">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">lecun_uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#lecun_uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.lecun_uniform" title="Permalink to this definition"></a></dt>
+<dd><p>LeCun uniform initialization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.ones">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">ones</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#ones"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.ones" title="Permalink to this definition"></a></dt>
+<dd><p>Get array of ones.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.random_normal">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">random_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#random_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.random_normal" title="Permalink to this definition"></a></dt>
+<dd><p>Get random array from the standard normal distribution.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.random_uniform">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">random_uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#random_uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.random_uniform" title="Permalink to this definition"></a></dt>
+<dd><p>Get random array from the uniform distribution in the range [-1, 1].</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.xavier_normal">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">xavier_normal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#xavier_normal"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.xavier_normal" title="Permalink to this definition"></a></dt>
+<dd><p>Xavier (or Glorot) normal initialization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.xavier_uniform">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">xavier_uniform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#xavier_uniform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.xavier_uniform" title="Permalink to this definition"></a></dt>
+<dd><p>Xavier (or Glorot) uniform initialization.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.initializers.zeros">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.initializers.</span></span><span class="sig-name descname"><span class="pre">zeros</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">size</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/initializers.html#zeros"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.initializers.zeros" title="Permalink to this definition"></a></dt>
+<dd><p>Get array of zeros.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.core.preprocessing.samplers">
+<span id="api-core-preprocessing-samplers-module"></span><h2>api.core.preprocessing.samplers module<a class="headerlink" href="#module-api.core.preprocessing.samplers" title="Permalink to this heading"></a></h2>
+<p>Contains objects for data sampling.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.preprocessing.samplers.train_test_split">
+<span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.samplers.</span></span><span class="sig-name descname"><span class="pre">train_test_split</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/samplers.html#train_test_split"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.samplers.train_test_split" title="Permalink to this definition"></a></dt>
+<dd><p>Split data set into random train and test subset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arrays</strong> – arrays to split</p></li>
+<li><p><strong>split</strong> – number between 0 and 1, proportion between train and test
+subsets, defaults to 0.7</p></li>
+<li><p><strong>shuffle</strong> – specifies whether to shuffle the data, defaults to False</p></li>
+<li><p><strong>seed</strong> – random seed to reproduce random results, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if less than one array is passed to the function</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>partitioned arrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-api.core.preprocessing.scalers">
+<span id="api-core-preprocessing-scalers-module"></span><h2>api.core.preprocessing.scalers module<a class="headerlink" href="#module-api.core.preprocessing.scalers" title="Permalink to this heading"></a></h2>
+<p>Contains implementation for data scalers.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.BaseScaler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.scalers.</span></span><span class="sig-name descname"><span class="pre">BaseScaler</span></span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#BaseScaler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.BaseScaler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base scaler class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.BaseScaler.fit">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#BaseScaler.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.BaseScaler.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Get scaler parameters from data sample.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.BaseScaler.fit_transform">
+<span class="sig-name descname"><span class="pre">fit_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#BaseScaler.fit_transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.BaseScaler.fit_transform" title="Permalink to this definition"></a></dt>
+<dd><p>Combine fit and transform methods.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.BaseScaler.transform">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#BaseScaler.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.BaseScaler.transform" title="Permalink to this definition"></a></dt>
+<dd><p>Transform data using scaler parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.MinMaxScaler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.scalers.</span></span><span class="sig-name descname"><span class="pre">MinMaxScaler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">feature_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(0,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_min</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#MinMaxScaler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.MinMaxScaler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.preprocessing.scalers.BaseScaler" title="api.core.preprocessing.scalers.BaseScaler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseScaler</span></code></a></p>
+<p>Transform features by scaling each feature to a given range.</p>
+<p>The scaled x is given by (high and low values are taken from the
+feature range):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">std</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="nb">max</span> <span class="o">-</span> <span class="nb">min</span><span class="p">)</span>
+<span class="n">x_</span> <span class="o">=</span> <span class="n">std</span> <span class="o">*</span> <span class="p">(</span><span class="n">high</span> <span class="o">-</span> <span class="n">low</span><span class="p">)</span> <span class="o">+</span> <span class="n">low</span>
+</pre></div>
+</div>
+<p>The min and max parameters can be specified manually or using the
+<code class="docutils literal notranslate"><span class="pre">MinMaxScaler.fit()</span></code> method. It is also possible to fit and transform
+at the same time (see <code class="docutils literal notranslate"><span class="pre">BaseScaler.fit_transform()</span></code> implementation). After
+the <cite>fit</cite> method has been explicitly or implicitly called, the sample info
+(min and max) are saved and can be applied to another sample (using bare
+<code class="docutils literal notranslate"><span class="pre">transform()</span></code> method).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mms</span> <span class="o">=</span> <span class="n">MinMaxScaler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mms</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">MinMaxScaler()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mms</span><span class="o">.</span><span class="n">min_</span><span class="p">)</span>
+<span class="go">[0 0]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">mms</span><span class="o">.</span><span class="n">max_</span><span class="p">)</span>
+<span class="go">[1 1]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">mms</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">array([[0., 1.],</span>
+<span class="go">       [1., 0.],</span>
+<span class="go">       [1., 1.],</span>
+<span class="go">       [0., 0.]])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>feature_range</strong> – the range to which the data is to be scaled,
+defaults to (0, 1)</p></li>
+<li><p><strong>sample_min</strong> – sample minimum (axis=0)</p></li>
+<li><p><strong>sample_max</strong> – sample maximum (axis=0)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.MinMaxScaler.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#MinMaxScaler.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.MinMaxScaler.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Get scaler parameters from data sample.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.MinMaxScaler.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#MinMaxScaler.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.MinMaxScaler.transform" title="Permalink to this definition"></a></dt>
+<dd><p>Transform data using scaler parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.StandardScaler">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.preprocessing.scalers.</span></span><span class="sig-name descname"><span class="pre">StandardScaler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#StandardScaler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.StandardScaler" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.preprocessing.scalers.BaseScaler" title="api.core.preprocessing.scalers.BaseScaler"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseScaler</span></code></a></p>
+<p>Standardize data by removing the mean and scaling to unit variance.</p>
+<p>The standard x* is calculated as (x - mu) / sigma</p>
+<p>The mu and sigma parameters can be specified manually or using the
+<cite>StandardScaler.fit()</cite> method. It is also possible to fit and transform
+at the same time (see <cite>BaseScaler.fit_transform()</cite> implementation). After
+the <cite>fit</cite> method has been explicitly or implicitly called, the sample info
+(mu and sigma) are saved and can be applied to another sample (using
+bare <cite>transform()</cite> method).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">StandardScaler()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">mu</span><span class="p">)</span>
+<span class="go">[0.5 0.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">sc</span><span class="o">.</span><span class="n">sigma</span><span class="p">)</span>
+<span class="go">[0.5 0.5]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">sc</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="go">array([[-1.,  1.],</span>
+<span class="go">       [ 1., -1.],</span>
+<span class="go">       [ 1.,  1.],</span>
+<span class="go">       [-1., -1.]])</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mu</strong> – mean of the sample</p></li>
+<li><p><strong>sigma</strong> – standard deviation of the sample</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.StandardScaler.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#StandardScaler.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.StandardScaler.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Get scaler parameters from data sample.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.preprocessing.scalers.StandardScaler.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/preprocessing/scalers.html#StandardScaler.transform"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.preprocessing.scalers.StandardScaler.transform" title="Permalink to this definition"></a></dt>
+<dd><p>Transform data using scaler parameters.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.core.preprocessing">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api.core.preprocessing" title="Permalink to this heading"></a></h2>
+<p>Preprocessing root package.</p>
+<p>Contains following modules:</p>
+<ul class="simple">
+<li><p><cite>initializers</cite>: contains implementations of array generators</p></li>
+<li><p><cite>samplers</cite>: contains functions for sampling data</p></li>
+<li><p><cite>scalers</cite>: contains functions for data standardization</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.core.model.html" class="btn btn-neutral float-left" title="api.core.model package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="README.html" class="btn btn-neutral float-right" title="Readme" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

@@ -25,7 +25,7 @@ class BaseScaler:
 class MinMaxScaler(BaseScaler):
     """Transform features by scaling each feature to a given range.
 
-    The scaled x_ is given by (high and low values are taken from the
+    The scaled x is given by (high and low values are taken from the
     feature range):
 
     .. code-block:: python
@@ -34,11 +34,11 @@ class MinMaxScaler(BaseScaler):
         x_ = std * (high - low) + low
 
     The min and max parameters can be specified manually or using the
-    `MinMaxScaler.fit()` method. It is also possible to fit and transform
-    at the same time (see `BaseScaler.fit_transform()` implementation). After
+    ``MinMaxScaler.fit()`` method. It is also possible to fit and transform
+    at the same time (see ``BaseScaler.fit_transform()`` implementation). After
     the `fit` method has been explicitly or implicitly called, the sample info
     (min and max) are saved and can be applied to another sample (using bare
-    `transform()` method).
+    ``transform()`` method).
 
     .. code-block::
 

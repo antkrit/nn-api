@@ -17,10 +17,11 @@ from api.core.preprocessing.samplers import train_test_split
 class Model(Input):
     """Neural network model.
 
-    At its core, the model is an `Input` layer with train/predict features
-    and some modifications (see `Model.forward()` implementation).
+    At its core, the model is an :class:`Input` layer with train/predict
+    features and some modifications (see ``Model.forward()`` implementation).
 
     The model creation procedure always looks the same:
+
     1. Initialize model with the expected shape of the input data
 
     .. code-block:: python
@@ -49,10 +50,11 @@ class Model(Input):
 
     Now, the model is ready for training and prediction. For training,
     two options for printing results are possible (see the `verbosity`
-    parameter of the `Model.fit()` function). In most cases, your code
+    parameter of the ``Model.fit()`` function). In most cases, your code
     will look something like this:
 
     .. code-block:: python
+
         model = Model(input_shape=(1, 2))
 
         model.add(Dense(3, activation='sigmoid'))
@@ -76,15 +78,16 @@ class Model(Input):
         )
 
     For prediction, two options are possible:
+
     - Pass only the input data (x_test) to the function. In this case,
-    the function will return only the predicted data.
+      the function will return only the predicted data.
 
     .. code-block:: python
 
         model.predict(x_test)
 
     - Pass both x_test and y_test data. In this case, the function will return
-    the predicted data and print the estimated metrics for that data
+      the predicted data and print the estimated metrics for that data
 
     .. code-block:: python
 

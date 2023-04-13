@@ -1,0 +1,1749 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.autograd package &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="api.core.model package" href="api.core.model.html" />
+    <link rel="prev" title="api.core package" href="api.core.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Api</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="api.html">api package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="api.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="api.core.html">api.core package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Api</a></li>
+          <li class="breadcrumb-item"><a href="api.html">api package</a></li>
+          <li class="breadcrumb-item"><a href="api.core.html">api.core package</a></li>
+      <li class="breadcrumb-item active">api.core.autograd package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/api.core.autograd.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <section id="api-core-autograd-package">
+<h1>api.core.autograd package<a class="headerlink" href="#api-core-autograd-package" title="Permalink to this heading"></a></h1>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-api.core.autograd.graph">
+<span id="api-core-autograd-graph-module"></span><h2>api.core.autograd.graph module<a class="headerlink" href="#module-api.core.autograd.graph" title="Permalink to this heading"></a></h2>
+<p>Contains definition of graph.</p>
+<p>Computational graph is a form of directed acyclic graph that represents a
+mathematical expression. In other words - tracker of simple operations. Thanks
+to such graph, it becomes possible to apply Automatic Differentiation(AD).</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.graph.Graph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.graph.</span></span><span class="sig-name descname"><span class="pre">Graph</span></span><a class="reference internal" href="../_modules/api/core/autograd/graph.html#Graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.graph.Graph" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Computational graph class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.graph.Graph.as_default">
+<span class="sig-name descname"><span class="pre">as_default</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/graph.html#Graph.as_default"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.graph.Graph.as_default" title="Permalink to this definition"></a></dt>
+<dd><p>Set global graph to self.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="api.core.autograd.graph.Graph.count">
+<span class="sig-name descname"><span class="pre">count</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;method-wrapper</span> <span class="pre">'__next__'</span> <span class="pre">of</span> <span class="pre">itertools.count</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#api.core.autograd.graph.Graph.count" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.graph.get_current_graph">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.graph.</span></span><span class="sig-name descname"><span class="pre">get_current_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/graph.html#get_current_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.graph.get_current_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Return current graph. If it is <cite>None</cite> than create a new one.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.graph.reset_current_graph">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.graph.</span></span><span class="sig-name descname"><span class="pre">reset_current_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/graph.html#reset_current_graph"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.graph.reset_current_graph" title="Permalink to this definition"></a></dt>
+<dd><p>Set current graph to None</p>
+</dd></dl>
+
+</section>
+<section id="module-api.core.autograd.node">
+<span id="api-core-autograd-node-module"></span><h2>api.core.autograd.node module<a class="headerlink" href="#module-api.core.autograd.node" title="Permalink to this heading"></a></h2>
+<p>Contains implementation of graph nodes for Automatic Differentiation(AD).</p>
+<p>AD - a technique to calculate the derivative of a function given by
+an algorithm. AD takes advantage of the fact that an arbitrary function in
+a computer program will still be calculated using arithmetic operations
+(+, -, <a href="#id1"><span class="problematic" id="id2">*</span></a>, /) and elementary functions of standard libraries
+(exp, log, sin, etc.). By applying the chain rule, the derivative of any order
+can be calculated for a number of operations that is proportional to the number
+of operations to calculate the function itself.</p>
+<p>Each graph consists of nodes. Nodes are divided into:</p>
+<ul class="simple">
+<li><p>Variable - a basic node with some changeable value</p></li>
+<li><p>Constant - a node with a fixed value</p></li>
+<li><p>Placeholder - a node with no value, so the value can be set later</p></li>
+<li><p>Operation - a node that performs computations</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Abs">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'abs'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Abs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Abs" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Take the number absolute (element-wise for arrays).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Abs.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Abs.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Abs.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Abs.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Abs.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Abs.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>square root of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Add">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'add'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Add" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.BinaryOperation" title="api.core.autograd.node.BinaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p>
+<p>Element-wise sum.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Add.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Add.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Add.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand input</p></li>
+<li><p><strong>right</strong> – right operand input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Add.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Add.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Add.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise sum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Assign">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assign'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Assign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Assign" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AssignOperation</span></code>, <a class="reference internal" href="#api.core.autograd.node.Add" title="api.core.autograd.node.Add"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add</span></code></a></p>
+<p>Update ref by assigning value to it.</p>
+<p>Partial case of the addition operation (x = x* + 0).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref</strong> – left operand of the operation, result of the
+operation will be assigned to this node</p></li>
+<li><p><strong>op</strong> – right operand of the operation</p></li>
+<li><p><strong>name</strong> – node name, defaults to ‘assign_add’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Assign.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.Assign.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand input</p></li>
+<li><p><strong>right</strong> – right operand input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Assign.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.Assign.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise sum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignAdd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">AssignAdd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assign_add'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#AssignAdd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.AssignAdd" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AssignOperation</span></code>, <a class="reference internal" href="#api.core.autograd.node.Add" title="api.core.autograd.node.Add"><code class="xref py py-class docutils literal notranslate"><span class="pre">Add</span></code></a></p>
+<p>Element-wise sum with value assignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref</strong> – left operand of the operation, result of the
+operation will be assigned to this node</p></li>
+<li><p><strong>op</strong> – right operand of the operation</p></li>
+<li><p><strong>name</strong> – node name, defaults to ‘assign_add’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignAdd.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.AssignAdd.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand input</p></li>
+<li><p><strong>right</strong> – right operand input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignAdd.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.AssignAdd.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise sum</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignDivide">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">AssignDivide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assign_div'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#AssignDivide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.AssignDivide" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AssignOperation</span></code>, <a class="reference internal" href="#api.core.autograd.node.Divide" title="api.core.autograd.node.Divide"><code class="xref py py-class docutils literal notranslate"><span class="pre">Divide</span></code></a></p>
+<p>Element-wise divide with value assignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref</strong> – left operand of the operation, result of the
+operation will be assigned to this node</p></li>
+<li><p><strong>op</strong> – right operand of the operation</p></li>
+<li><p><strong>name</strong> – node name, defaults to ‘assign_div’</p></li>
+<li><p><strong>threshold</strong> – some minute float value to avoid problems like div by 0,
+defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignDivide.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.AssignDivide.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand input</p></li>
+<li><p><strong>right</strong> – right operand input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignDivide.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.AssignDivide.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise divide</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignMultiply">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">AssignMultiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">op</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'assign_mul'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#AssignMultiply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.AssignMultiply" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">AssignOperation</span></code>, <a class="reference internal" href="#api.core.autograd.node.Multiply" title="api.core.autograd.node.Multiply"><code class="xref py py-class docutils literal notranslate"><span class="pre">Multiply</span></code></a></p>
+<p>Element-wise multiply with value assignment.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ref</strong> – left operand of the operation, result of the
+operation will be assigned to this node</p></li>
+<li><p><strong>op</strong> – right operand of the operation</p></li>
+<li><p><strong>name</strong> – node name, defaults to ‘assign_mul’</p></li>
+<li><p><strong>threshold</strong> – some minute float value to avoid problems like div by 0,
+defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignMultiply.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.AssignMultiply.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand input</p></li>
+<li><p><strong>right</strong> – right operand input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.AssignMultiply.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#api.core.autograd.node.AssignMultiply.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise multiply</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.BinaryOperation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">BinaryOperation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#BinaryOperation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.BinaryOperation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.Operation" title="api.core.autograd.node.Operation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></a></p>
+<p>Operation subclass that defines the base class for binary operations.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.BinaryOperation.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#BinaryOperation.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.BinaryOperation.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given inputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.BinaryOperation.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#BinaryOperation.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.BinaryOperation.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given inputs.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Constant">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Constant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Constant"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Constant" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.Node" title="api.core.autograd.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<p>Represents a node with a fixed value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – value to set</p></li>
+<li><p><strong>name</strong> – name of the node, if none than name will be
+created automatically, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – when trying to change the value or the data shape
+during initialization does not match the one set as an argument</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.autograd.node.Constant.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#api.core.autograd.node.Constant.value" title="Permalink to this definition"></a></dt>
+<dd><p>Get value of a node.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Cos">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Cos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cos'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Cos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Cos" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Element-wise trigonometric cosine</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Cos.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Cos.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Cos.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Cos.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Cos.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Cos.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>cos of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Divide">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Divide</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'divide'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Divide"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Divide" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.BinaryOperation" title="api.core.autograd.node.BinaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p>
+<p>Element-wise divide.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Divide.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Divide.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Divide.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand input</p></li>
+<li><p><strong>right</strong> – right operand input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Divide.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Divide.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Divide.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise divide</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Einsum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Einsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subscripts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">o_subscript</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delimiter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'-&gt;'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'einsum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Einsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Einsum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.Operation" title="api.core.autograd.node.Operation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></a></p>
+<p>Evaluates the Einstein summation convention on the operands.</p>
+<p>For details see:
+<a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.einsum.html">https://numpy.org/doc/stable/reference/generated/numpy.einsum.html</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>arrays</strong> – arrays for the operation</p></li>
+<li><p><strong>subscripts</strong> – array of labels of forms for summation</p></li>
+<li><p><strong>o_subscript</strong> – label, output form</p></li>
+<li><p><strong>delimiter</strong> – separates labels for summation and output form</p></li>
+<li><p><strong>name</strong> – node name, defaults to ‘mean’</p></li>
+<li><p><strong>threshold</strong> – some minute float value to avoid problems like div by 0,
+defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Einsum.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Einsum.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Einsum.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>values</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Einsum.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">values</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Einsum.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Einsum.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>values</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sum of array over a given axis</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Einsum.subscripts">
+<span class="sig-name descname"><span class="pre">subscripts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Einsum.subscripts"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Einsum.subscripts" title="Permalink to this definition"></a></dt>
+<dd><p>Return subscripts string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>reverse</strong> – int, the index for which is needed
+to replace the value with the output form. This
+argument is used to implement the gradient.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>subscripts string</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Exp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'exp'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Exp" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Element-wise exponentiation.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Exp.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Exp.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Exp.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Exp.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Exp.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Exp.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>value exponent</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Element-wise natural logarithm.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>natural logarithm of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log10">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Log10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log10'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log10" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Element-wise natural logarithm.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log10.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log10.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log10.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log10.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log10.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log10.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>natural logarithm of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Log2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'log2'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log2" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Element-wise natural logarithm.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log2.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log2.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log2.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Log2.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Log2.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Log2.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>natural logarithm of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Matmul">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Matmul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'matmul'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Matmul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Matmul" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.BinaryOperation" title="api.core.autograd.node.BinaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p>
+<p>Matrix multiplication.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Matmul.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Matmul.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Matmul.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Matmul.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Matmul.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Matmul.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dot product of two arrays</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Max">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'max'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Max" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.BinaryOperation" title="api.core.autograd.node.BinaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p>
+<p>Element-wise maximum.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Max.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Max.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Max.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Max.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Max.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Max.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise maximum of array elements</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Mean">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Mean" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Mean value of array over a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – array to get the mean from</p></li>
+<li><p><strong>axis</strong> – axis along which to get mean, if None - get mean
+of the whole array, defaults to None</p></li>
+<li><p><strong>name</strong> – node name, defaults to ‘mean’</p></li>
+<li><p><strong>threshold</strong> – some minute float value to avoid problems like div by 0,
+defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Mean.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Mean.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Mean.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Mean.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Mean.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Mean.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>mean of array over a given axis</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Min">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'min'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Min" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.BinaryOperation" title="api.core.autograd.node.BinaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p>
+<p>Element-wise maximum.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Min.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Min.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Min.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Min.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Min.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Min.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise minimum of array elements</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Multiply">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Multiply</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'multiply'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Multiply"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Multiply" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.BinaryOperation" title="api.core.autograd.node.BinaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p>
+<p>Element-wise multiply.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Multiply.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Multiply.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Multiply.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand input</p></li>
+<li><p><strong>right</strong> – right operand input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Multiply.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Multiply.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Multiply.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – left operand</p></li>
+<li><p><strong>right</strong> – right operand</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>element-wise multiply</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Node" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">NodeMixin</span></code></p>
+<p>Base node class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – value to set</p></li>
+<li><p><strong>name</strong> – name of the node, if None than name will be
+created automatically, defaults to None</p></li>
+<li><p><strong>shape</strong> – static shape of the data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – the data shape during initialization does not
+match the one set as an argument</p>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.autograd.node.Node.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#api.core.autograd.node.Node.value" title="Permalink to this definition"></a></dt>
+<dd><p>Get value of a node.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Operation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Operation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Operation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Operation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.Node" title="api.core.autograd.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<p>Base operation class. Represents a node that performs computations.</p>
+<p>Basically, all operations are divided by the number of operands into
+unary (1 operand), binary (2 operands) and default (depends on
+implementation). This is a base class, so it cannot be used for
+graph computations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>threshold</strong> – small floating point value used to maintain numerical
+stability, defaults to 0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Operation.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Operation.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Operation.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given inputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Operation.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Operation.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Operation.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given inputs.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Placeholder">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Placeholder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Placeholder"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Placeholder" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.Node" title="api.core.autograd.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<p>Represents a node with no value, so the value can be set later.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The node name is crucial here, it can be used later by
+<code class="xref py py-class docutils literal notranslate"><span class="pre">Session</span></code> to fill this node with a value.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">Session</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">Session</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="c1"># will raise KeyError</span>
+<span class="n">Session</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;a&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="c1"># is OK</span>
+</pre></div>
+</div>
+<p>In particular, you can fill it manually, but before computing
+the graph output.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">Session</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+<span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">Session</span><span class="p">()</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;x&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span> <span class="c1"># is OK</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if Placeholder is initialized with name None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Power">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Power</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'power'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Power"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Power" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.BinaryOperation" title="api.core.autograd.node.BinaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a></p>
+<p>Power operator.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Power.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Power.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Power.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – base</p></li>
+<li><p><strong>right</strong> – power</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation w.r.t both operands</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Power.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">left</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">right</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Power.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Power.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>left</strong> – base</p></li>
+<li><p><strong>right</strong> – power</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – integers to negative integer powers are not
+allowed (specific behavior of numpy)</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>left to the power of right</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sin">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Sin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sin'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sin" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Element-wise trigonometric sine</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sin.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sin.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sin.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sin.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sin.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sin.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sin of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sqrt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Sqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sqrt'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sqrt" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Element-wise square root.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sqrt.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sqrt.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sqrt.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sqrt.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sqrt.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sqrt.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>square root of the value</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sum">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axis</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sum" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.UnaryOperation" title="api.core.autograd.node.UnaryOperation"><code class="xref py py-class docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a></p>
+<p>Sum of array elements over a given axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – array to sum</p></li>
+<li><p><strong>axis</strong> – axis along which to sum, if None - sum all elements of array,
+defaults to None</p></li>
+<li><p><strong>name</strong> – node name, defaults to ‘sum’</p></li>
+<li><p><strong>threshold</strong> – some minute float value to avoid problems like div by 0,
+defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sum.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sum.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sum.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – input</p></li>
+<li><p><strong>dout</strong> – gradient of the path to this node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>gradient of the operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.Sum.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Sum.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Sum.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>value</strong> – input</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>sum of array over a given axis</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.UnaryOperation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">UnaryOperation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#UnaryOperation"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.UnaryOperation" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.Operation" title="api.core.autograd.node.Operation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></a></p>
+<p>Operation subclass that defines the base class for unary operators.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.UnaryOperation.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dout</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#UnaryOperation.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.UnaryOperation.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given input.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.node.UnaryOperation.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#UnaryOperation.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.UnaryOperation.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Return output of the operation by given input.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.node.Variable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.node.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/node.html#Variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.node.Variable" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.autograd.node.Node" title="api.core.autograd.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<p>Represents a basic node with some changeable value.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.autograd.node.Variable.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#api.core.autograd.node.Variable.value" title="Permalink to this definition"></a></dt>
+<dd><p>Get value of a node.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.core.autograd.ops">
+<span id="api-core-autograd-ops-module"></span><h2>api.core.autograd.ops module<a class="headerlink" href="#module-api.core.autograd.ops" title="Permalink to this heading"></a></h2>
+<p>Contains math operations definition.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.abs">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">abs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#abs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.abs" title="Permalink to this definition"></a></dt>
+<dd><p>Return absolute value of an array(element-wise) or a number.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.add">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.add" title="Permalink to this definition"></a></dt>
+<dd><p>Add two operands.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.assign">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">assign</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#assign"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.assign" title="Permalink to this definition"></a></dt>
+<dd><p>Assign operation to reference.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.assign_add">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">assign_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#assign_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.assign_add" title="Permalink to this definition"></a></dt>
+<dd><p>Add operation with reference assignment.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.assign_div">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">assign_div</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#assign_div"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.assign_div" title="Permalink to this definition"></a></dt>
+<dd><p>Divide two operands with reference assignment..</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.assign_mul">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">assign_mul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">operation</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#assign_mul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.assign_mul" title="Permalink to this definition"></a></dt>
+<dd><p>Multiply two operands with reference assignment..</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.cos">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">cos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#cos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.cos" title="Permalink to this definition"></a></dt>
+<dd><p>Trigonometric cosine (element-wise for arrays).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.div">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">div</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#div"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.div" title="Permalink to this definition"></a></dt>
+<dd><p>Divide two operands.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.dot">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">dot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#dot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.dot" title="Permalink to this definition"></a></dt>
+<dd><p>Multiply two matrices.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.einsum">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">einsum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subscripts</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">arrays</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#einsum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.einsum" title="Permalink to this definition"></a></dt>
+<dd><p>Evaluates the Einstein summation convention on the operands.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.exp">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#exp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.exp" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate the exponential of an array(element-wise) or a number.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.log">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">log</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#log"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.log" title="Permalink to this definition"></a></dt>
+<dd><p>Natural logarithm (element-wise for arrays).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.log10">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">log10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#log10"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.log10" title="Permalink to this definition"></a></dt>
+<dd><p>Logarithm with base 10 (element-wise for arrays).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.log2">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">log2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#log2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.log2" title="Permalink to this definition"></a></dt>
+<dd><p>Logarithm with base 2 (element-wise for arrays).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.max">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">max</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#max"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.max" title="Permalink to this definition"></a></dt>
+<dd><p>Check if ‘this’ is greater than ‘other’.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.mean">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#mean"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.mean" title="Permalink to this definition"></a></dt>
+<dd><p>Compute the arithmetic mean along the specified axis.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.min">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">min</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#min"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.min" title="Permalink to this definition"></a></dt>
+<dd><p>Check if ‘this’ is less than ‘other’.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.mul">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">mul</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#mul"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.mul" title="Permalink to this definition"></a></dt>
+<dd><p>Multiply two operands.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.pow">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">pow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">other</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#pow"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.pow" title="Permalink to this definition"></a></dt>
+<dd><p>Raise the first operand to the power of the second.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.rsqrt">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">rsqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#rsqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.rsqrt" title="Permalink to this definition"></a></dt>
+<dd><p>Return reciprocal square root of an array(element-wise) or a number.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.sin">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">sin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#sin"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.sin" title="Permalink to this definition"></a></dt>
+<dd><p>Trigonometric sine (element-wise for arrays).</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.sqrt">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">sqrt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#sqrt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.sqrt" title="Permalink to this definition"></a></dt>
+<dd><p>Return the square-root of an array(element-wise) or a number.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.ops.sum">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.ops.</span></span><span class="sig-name descname"><span class="pre">sum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">this</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/ops.html#sum"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.ops.sum" title="Permalink to this definition"></a></dt>
+<dd><p>Sum of array elements over a given axis.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.core.autograd.session">
+<span id="api-core-autograd-session-module"></span><h2>api.core.autograd.session module<a class="headerlink" href="#module-api.core.autograd.session" title="Permalink to this heading"></a></h2>
+<p>Contains classes and functions to work with graph.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.autograd.session.Session">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.autograd.session.</span></span><span class="sig-name descname"><span class="pre">Session</span></span><a class="reference internal" href="../_modules/api/core/autograd/session.html#Session"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.session.Session" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A class for running graph operations.</p>
+<p>Basically graph is a parsed mathematical expression
+consisting of a list of nodes. To get the result of such
+expression, it is necessary to create a Session and call the
+<a class="reference internal" href="#api.core.autograd.session.Session.run" title="api.core.autograd.session.Session.run"><code class="xref py py-func docutils literal notranslate"><span class="pre">run()</span></code></a> method.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Until the step forward is taken, Operation nodes have no own value,
+only operands. So, gradients should only be calculated after all the
+class:<cite>Operation</cite> nodes have their own value</p>
+</div>
+<p>Every session has its own context. There is at least one field in each
+context: ‘globals’ consisting of a list of context variables (keys). Any
+other fields can be added manually using the <a class="reference internal" href="#api.core.autograd.session.Session.ctx_add" title="api.core.autograd.session.Session.ctx_add"><code class="xref py py-func docutils literal notranslate"><span class="pre">ctx_add()</span></code></a> method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Example<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">Variable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>  <span class="c1"># Node.__add__(a, b)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="go">30</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.session.Session.ctx_add">
+<span class="sig-name descname"><span class="pre">ctx_add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/session.html#Session.ctx_add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.session.Session.ctx_add" title="Permalink to this definition"></a></dt>
+<dd><p>Add a variable to the session context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>v_name</strong> – variable name</p></li>
+<li><p><strong>v_value</strong> – value of the variable</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.session.Session.ctx_get">
+<span class="sig-name descname"><span class="pre">ctx_get</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">v_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/session.html#Session.ctx_get"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.session.Session.ctx_get" title="Permalink to this definition"></a></dt>
+<dd><p>Get a variable from the session context.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>v_name</strong> – variable name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>value of the variable or None if there is no such value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.session.Session.gradients">
+<span class="sig-name descname"><span class="pre">gradients</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/session.html#Session.gradients"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.session.Session.gradients" title="Permalink to this definition"></a></dt>
+<dd><p>Compute gradients for the given graph.</p>
+<p>Function performs topological sort for the target node, then sets
+its gradient to 1.0 and recursively computes all other gradients.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">Variable</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span> <span class="o">=</span> <span class="n">w</span> <span class="o">*</span> <span class="n">x</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">op</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;op&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">op</span><span class="p">)</span>  <span class="c1"># fill ops with value</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_grd</span><span class="p">,</span> <span class="n">w_grd</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">gradients</span><span class="p">(</span><span class="n">op</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">w</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">w_grd</span>
+<span class="go">2.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x_grd</span>
+<span class="go">1.0</span>
+</pre></div>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To calculate the gradient, it is important to run forward
+step first so that all class:<cite>Operation</cite> nodes have their
+own value. If there are placeholders, it is necessary run
+forward propagation first or manually fill them with data.
+Otherwise, TypeError error will be raised.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – head nodes of the graph</p></li>
+<li><p><strong>returns</strong> – list of nodes whose gradient should be returned,
+if None - returns all targets resutls, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a list of gradients</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.autograd.session.Session.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">target</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feed_dict</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">returns</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/session.html#Session.run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.session.Session.run" title="Permalink to this definition"></a></dt>
+<dd><p>Forward propagation aver a graph.</p>
+<p>Computes the output of a target operation(s). If target is a list
+of operations then they will be performed in the specified order.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>feed_dict values is supposed to be an iterator. Otherwise,
+TypeError will be raised. To avoid such errors - use
+<code class="xref py py-func docutils literal notranslate"><span class="pre">form_feed_dict()</span></code> utility.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If there are placeholders in the graph you need to fill them
+with data. Otherwise, TypeError will be raised. Pass that data
+to the feed_dict as the node_name:data entry.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">Placeholder</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">b</span> <span class="o">=</span> <span class="n">Placeholder</span><span class="p">(</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">b</span>  <span class="c1"># Node.__mul__(a, b)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">session</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="p">{</span><span class="n">b</span><span class="o">.</span><span class="n">name</span><span class="p">:</span> <span class="mi">15</span><span class="p">})</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<span class="go">array(30)</span>
+</pre></div>
+</div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – node or list of nodes to perform the forward step for</p></li>
+<li><p><strong>feed_dict</strong> – data for placeholders</p></li>
+<li><p><strong>returns</strong> – list of target resutls that need to be returned,
+if None - returns all targets resutls, defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>value or list of value specified in the <cite>returns</cite> argument</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.core.autograd.utils">
+<span id="api-core-autograd-utils-module"></span><h2>api.core.autograd.utils module<a class="headerlink" href="#module-api.core.autograd.utils" title="Permalink to this heading"></a></h2>
+<p>Contains useful frequently used objects.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.utils.convert_to_node">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.utils.</span></span><span class="sig-name descname"><span class="pre">convert_to_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_constant</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">to_placeholder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/utils.html#convert_to_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.utils.convert_to_node" title="Permalink to this definition"></a></dt>
+<dd><p>Create node based on given input.</p>
+<p>If the value is of Node instance, return this node,
+If the value is None, create placeholder. In any other case,
+a variable will be created.</p>
+<p>To make sure that the desired type will be created,
+you need to set the corresponding argument to True.
+These arguments take precedence during creation.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Operation node cannot be created in this way.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If <cite>to_placeholder</cite> argument is True, a placeholder
+with the given value will be created.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>value</strong> – value of the Node to be created</p></li>
+<li><p><strong>to_constant</strong> – create Constant node</p></li>
+<li><p><strong>to_variable</strong> – create Variable node</p></li>
+<li><p><strong>to_placeholder</strong> – create Placeholder node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>created node</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.utils.fill_placeholders">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.utils.</span></span><span class="sig-name descname"><span class="pre">fill_placeholders</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">placeholders</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">feed_dict</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/utils.html#fill_placeholders"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.utils.fill_placeholders" title="Permalink to this definition"></a></dt>
+<dd><p>Fill placeholders with value from feed_dict without running session.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.utils.form_feed_dict">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.utils.</span></span><span class="sig-name descname"><span class="pre">form_feed_dict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">placeholders</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/utils.html#form_feed_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.utils.form_feed_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Generate suitable feed dict for session.</p>
+<p>Each feed dict should contain pairs placeholder_name:iterable,
+where iterable is batch of data for each placeholder.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – list of data for each placeholder</p></li>
+<li><p><strong>placeholders</strong> – placeholders to fill</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if not enough or too much data.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>feed dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.utils.node_wrapper">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.utils.</span></span><span class="sig-name descname"><span class="pre">node_wrapper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/utils.html#node_wrapper"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.utils.node_wrapper" title="Permalink to this definition"></a></dt>
+<dd><p>Automatically convert non-Node types to <cite>Constant</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>TypeError</strong> – in case some operands are not Node</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.autograd.utils.topological_sort">
+<span class="sig-prename descclassname"><span class="pre">api.core.autograd.utils.</span></span><span class="sig-name descname"><span class="pre">topological_sort</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nodes</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/autograd/utils.html#topological_sort"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.autograd.utils.topological_sort" title="Permalink to this definition"></a></dt>
+<dd><p>Generates topological sort for a given graph using DFS algorithm.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>nodes</strong> – node to start sorting from</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list  of sorted nodes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-api.core.autograd">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api.core.autograd" title="Permalink to this heading"></a></h2>
+<p>Automatic differentiation root package.</p>
+<p>Function differentiation is carried out automatically, using
+tensorflow-like computational graphs. Computational graph is a
+directed acyclic graph (DAG), which consists of Variables, Constants,
+Placeholders and Operations. They are all used to track and remember
+simple operations (add, multiply and so on) of complex functions
+(mse, sigmoid, …) so that Automatic Differentiation can be applied.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="n">Graph</span><span class="p">()</span> <span class="k">as</span> <span class="n">g</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">x</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">y</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">out</span> <span class="o">=</span> <span class="mi">4</span><span class="o">*</span><span class="n">x</span> <span class="o">+</span> <span class="n">y</span>
+<span class="gp">... </span>    <span class="n">sess</span> <span class="o">=</span> <span class="n">Session</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">sess</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>  <span class="c1"># forward pass 4 * 0.5 + 1 = 3.0</span>
+<span class="gp">... </span>    <span class="n">sess</span><span class="o">.</span><span class="n">gradients</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>  <span class="c1"># backward pass d(out)/dx = 4.0</span>
+<span class="go">3.0</span>
+<span class="go">4.0</span>
+</pre></div>
+</div>
+<p>Contains following modules:</p>
+<ul class="simple">
+<li><p><cite>graph</cite>: contains definition of graph</p></li>
+<li><p><cite>node</cite>: contain definition of graph nodes, math operators and operations</p></li>
+<li><p><cite>session</cite>: contains classes and functions to work with graph</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.core.html" class="btn btn-neutral float-left" title="api.core package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.core.model.html" class="btn btn-neutral float-right" title="api.core.model package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

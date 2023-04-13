@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.activation &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../../../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">api.core.activation</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for api.core.activation</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains implementation of commonly used activation functions.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">api.core</span> <span class="kn">import</span> <span class="n">autograd</span> <span class="k">as</span> <span class="n">ag</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;Sigmoid&quot;</span><span class="p">,</span> <span class="s2">&quot;Tanh&quot;</span><span class="p">,</span> <span class="s2">&quot;Swish&quot;</span><span class="p">,</span> <span class="s2">&quot;Softmax&quot;</span><span class="p">,</span> <span class="s2">&quot;Softplus&quot;</span><span class="p">,</span> <span class="s2">&quot;ReLU&quot;</span><span class="p">,</span> <span class="s2">&quot;ELU&quot;</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">BaseActivation</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Base activation class.</span>
+
+<span class="sd">    Calling an activation function returns an operation by</span>
+<span class="sd">    default, not a value.</span>
+
+<span class="sd">    To create a custom layer, it is enough to override the</span>
+<span class="sd">    ``__init__()`` and ``forward()`` methods. ``forward()`` should</span>
+<span class="sd">    be used to implement activation logic, an algorithm that</span>
+<span class="sd">    will calculate the &quot;activated&quot; output.</span>
+
+<span class="sd">    So, a simple activation can be implemented as this:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class Linear(BaseActivation):</span>
+
+<span class="sd">            def forward(self, x):</span>
+<span class="sd">                return x</span>
+
+<span class="sd">    :param threshold: some minute value to avoid problems like</span>
+<span class="sd">        div by 0 or log(0), defaults to 0</span>
+<span class="sd">    :param session: current session, if None - creates new, defaults to None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">ag</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate function.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in subclasses.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">node_wrapper</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Sigmoid"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Sigmoid">[docs]</a><span class="k">class</span> <span class="nc">Sigmoid</span><span class="p">(</span><span class="n">BaseActivation</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Sigmoid activation function.</span>
+
+<span class="sd">    The output of a sigmoid function ranges between 0 and 1. Mostly used for</span>
+<span class="sd">    models where we have to predict the &quot;probability&quot;.</span>
+
+<span class="sd">    Activation rule: :math:`\dfrac{1}{1 + e^{-x}}`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Sigmoid.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Sigmoid.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate sigmoid.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">x</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Tanh"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Tanh">[docs]</a><span class="k">class</span> <span class="nc">Tanh</span><span class="p">(</span><span class="n">BaseActivation</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Hyperbolic Tangent activation function.</span>
+
+<span class="sd">    This function is relatively similar to :class:`Sigmoid`, but with one big</span>
+<span class="sd">    advantage - function is 0-centric(output is in range (-1, 1)).</span>
+
+<span class="sd">    Activation rule: :math:`\dfrac{e^{x} - e^{-x}}{e^{x} + e^{-x}}`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Tanh.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Tanh.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate tanh.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="n">x</span><span class="p">)))</span> <span class="o">-</span> <span class="mi">1</span></div></div>
+
+
+<div class="viewcode-block" id="ReLU"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.ReLU">[docs]</a><span class="k">class</span> <span class="nc">ReLU</span><span class="p">(</span><span class="n">BaseActivation</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;(Leaky) Rectified Linear Unit activation function.</span>
+
+<span class="sd">    Solve gradient saturation problem, because output range is (-inf, inf).</span>
+<span class="sd">    If the :math:`\alpha` parameter is 0, there is &quot;dead ReLU&quot; problem where the</span>
+<span class="sd">    function is completely inactive with negative input values.</span>
+
+<span class="sd">    Activation rule: :math:`max(\alpha x, x)`</span>
+
+<span class="sd">    :param alpha: leaky coefficient, defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+<div class="viewcode-block" id="ReLU.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.ReLU.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate (l)relu.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="ELU"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.ELU">[docs]</a><span class="k">class</span> <span class="nc">ELU</span><span class="p">(</span><span class="n">BaseActivation</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Exponential Linear Unit activation function.</span>
+
+<span class="sd">    Fixes some :class:`ReLU` issues, allows to learn faster.</span>
+
+<span class="sd">    :param alpha: leaky coefficient, defaults to 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+<div class="viewcode-block" id="ELU.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.ELU.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate elu.&quot;&quot;&quot;</span>
+        <span class="n">cond</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x</span><span class="p">))</span> <span class="o">&gt;</span> <span class="mi">0</span>
+
+        <span class="n">cond_true</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">convert_to_node</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">cond</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">))</span>
+        <span class="n">cond_false</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">convert_to_node</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">invert</span><span class="p">(</span><span class="n">cond</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">cond_true</span> <span class="o">*</span> <span class="n">x</span> <span class="o">+</span> <span class="n">cond_false</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="p">(</span><span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Softmax"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Softmax">[docs]</a><span class="k">class</span> <span class="nc">Softmax</span><span class="p">(</span><span class="n">BaseActivation</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Softmax activation function.</span>
+
+<span class="sd">    Mostly used for multi-class classification problems.</span>
+
+<span class="sd">    The activation rule is equivalent to:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        exp / (ag.ops.sum(exp) + self.threshold)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Softmax.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Softmax.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate softmax.&quot;&quot;&quot;</span>
+        <span class="n">shiftx</span> <span class="o">=</span> <span class="n">x</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+        <span class="n">exp</span> <span class="o">=</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">shiftx</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">exp</span> <span class="o">/</span> <span class="p">(</span><span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Swish"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Swish">[docs]</a><span class="k">class</span> <span class="nc">Swish</span><span class="p">(</span><span class="n">BaseActivation</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Self-Gated activation function.</span>
+
+<span class="sd">    Swish is unbounded above and bounded below. Unlike :class:`ReLU`,</span>
+<span class="sd">    the function is smooth and non-monotonic.</span>
+
+<span class="sd">    Activation rule: :math:`x*sigmoid(\beta x)`</span>
+
+<span class="sd">    :param beta: either constant or trainable parameter, defaults to 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+
+<div class="viewcode-block" id="Swish.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Swish.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate self-gated function.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Softplus"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Softplus">[docs]</a><span class="k">class</span> <span class="nc">Softplus</span><span class="p">(</span><span class="n">BaseActivation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Softplus activation function.</span>
+
+<span class="sd">    Relatively smoother version of the :class:`ReLU`.</span>
+
+<span class="sd">    Activation rule: :math:`ln(1 + e^x)`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Softplus.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.activation.Softplus.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate softplus.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

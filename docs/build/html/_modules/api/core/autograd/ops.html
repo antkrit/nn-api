@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.autograd.ops &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../../../../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">api.core.autograd.ops</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for api.core.autograd.ops</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains math operations definition.&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">api.core.autograd.node</span> <span class="kn">import</span> <span class="p">(</span>
+    <span class="n">Abs</span><span class="p">,</span>
+    <span class="n">Add</span><span class="p">,</span>
+    <span class="n">Assign</span><span class="p">,</span>
+    <span class="n">AssignAdd</span><span class="p">,</span>
+    <span class="n">AssignDivide</span><span class="p">,</span>
+    <span class="n">AssignMultiply</span><span class="p">,</span>
+    <span class="n">Cos</span><span class="p">,</span>
+    <span class="n">Divide</span><span class="p">,</span>
+    <span class="n">Einsum</span><span class="p">,</span>
+    <span class="n">Exp</span><span class="p">,</span>
+    <span class="n">Log</span><span class="p">,</span>
+    <span class="n">Log2</span><span class="p">,</span>
+    <span class="n">Log10</span><span class="p">,</span>
+    <span class="n">Matmul</span><span class="p">,</span>
+    <span class="n">Max</span><span class="p">,</span>
+    <span class="n">Mean</span><span class="p">,</span>
+    <span class="n">Min</span><span class="p">,</span>
+    <span class="n">Multiply</span><span class="p">,</span>
+    <span class="n">Node</span><span class="p">,</span>
+    <span class="n">Power</span><span class="p">,</span>
+    <span class="n">Sin</span><span class="p">,</span>
+    <span class="n">Sqrt</span><span class="p">,</span>
+    <span class="n">Sum</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="kn">from</span> <span class="nn">api.core.autograd.utils</span> <span class="kn">import</span> <span class="n">node_wrapper</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;add&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mul&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;div&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;pow&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;dot&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;max&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;min&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;cos&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sqrt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;rsqrt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;abs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;exp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;log&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;log2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;log10&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;assign&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;assign_add&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;assign_mul&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;assign_div&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;einsum&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># disabled W0622 (redefined-builtin)</span>
+<span class="c1"># max, min, pow, sum, etc. redefining built-ins for aesthetic purposes</span>
+<span class="c1"># pylint: disable=W0622</span>
+<div class="viewcode-block" id="add"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.add">[docs]</a><span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add two operands.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Add</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="assign_add"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.assign_add">[docs]</a><span class="k">def</span> <span class="nf">assign_add</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Add operation with reference assignment.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">AssignAdd</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="assign"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.assign">[docs]</a><span class="k">def</span> <span class="nf">assign</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assign operation to reference.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Assign</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mul"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.mul">[docs]</a><span class="k">def</span> <span class="nf">mul</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multiply two operands.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Multiply</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="assign_mul"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.assign_mul">[docs]</a><span class="k">def</span> <span class="nf">assign_mul</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multiply two operands with reference assignment..&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">AssignMultiply</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="div"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.div">[docs]</a><span class="k">def</span> <span class="nf">div</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Divide two operands.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Divide</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="assign_div"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.assign_div">[docs]</a><span class="k">def</span> <span class="nf">assign_div</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Divide two operands with reference assignment..&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">AssignDivide</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">operation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="einsum"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.einsum">[docs]</a><span class="k">def</span> <span class="nf">einsum</span><span class="p">(</span><span class="n">subscripts</span><span class="p">,</span> <span class="o">*</span><span class="n">arrays</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Evaluates the Einstein summation convention on the operands.&quot;&quot;&quot;</span>
+    <span class="n">delimiter</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;delimiter&quot;</span><span class="p">,</span> <span class="s2">&quot;-&gt;&quot;</span><span class="p">)</span>
+    <span class="n">subscripts</span><span class="p">,</span> <span class="n">o_subscript</span> <span class="o">=</span> <span class="n">_parse_subscripts</span><span class="p">(</span><span class="n">subscripts</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="n">delimiter</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span>
+        <span class="n">Einsum</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">arrays</span><span class="p">,</span>
+        <span class="n">subscripts</span><span class="o">=</span><span class="n">subscripts</span><span class="p">,</span>
+        <span class="n">o_subscript</span><span class="o">=</span><span class="n">o_subscript</span><span class="p">,</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="n">delimiter</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">_parse_subscripts</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="n">delim</span><span class="o">=</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Parse subscripts for einsum.</span>
+
+<span class="sd">    :param string: subscripts to parse</span>
+<span class="sd">    :param delim: str operator that separates input subscripts</span>
+<span class="sd">        from output subscript, defaults to &#39;-&gt;&#39;</span>
+<span class="sd">    :return: tuple, array of input subscripts and the output subscript</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">string</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">inp</span><span class="p">,</span> <span class="n">out</span> <span class="o">=</span> <span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">delim</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">inp</span><span class="o">.</span><span class="n">split</span><span class="p">(),</span> <span class="n">out</span>
+
+
+<div class="viewcode-block" id="pow"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.pow">[docs]</a><span class="k">def</span> <span class="nf">pow</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Raise the first operand to the power of the second.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Power</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="dot"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.dot">[docs]</a><span class="k">def</span> <span class="nf">dot</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Multiply two matrices.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Matmul</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="max"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.max">[docs]</a><span class="k">def</span> <span class="nf">max</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if &#39;this&#39; is greater than &#39;other&#39;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Max</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="min"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.min">[docs]</a><span class="k">def</span> <span class="nf">min</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Check if &#39;this&#39; is less than &#39;other&#39;.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Min</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sum"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.sum">[docs]</a><span class="k">def</span> <span class="nf">sum</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sum of array elements over a given axis.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Sum</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="mean"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.mean">[docs]</a><span class="k">def</span> <span class="nf">mean</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Compute the arithmetic mean along the specified axis.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Mean</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sqrt"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.sqrt">[docs]</a><span class="k">def</span> <span class="nf">sqrt</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return the square-root of an array(element-wise) or a number.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Sqrt</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="rsqrt"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.rsqrt">[docs]</a><span class="k">def</span> <span class="nf">rsqrt</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return reciprocal square root of an array(element-wise) or a number.&quot;&quot;&quot;</span>
+    <span class="n">sqrt_op</span> <span class="o">=</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Sqrt</span><span class="p">,</span> <span class="n">this</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Divide</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sqrt_op</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="abs"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.abs">[docs]</a><span class="k">def</span> <span class="nf">abs</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return absolute value of an array(element-wise) or a number.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Abs</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="exp"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.exp">[docs]</a><span class="k">def</span> <span class="nf">exp</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate the exponential of an array(element-wise) or a number.&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Exp</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="log"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.log">[docs]</a><span class="k">def</span> <span class="nf">log</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Natural logarithm (element-wise for arrays).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Log</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="log2"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.log2">[docs]</a><span class="k">def</span> <span class="nf">log2</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Logarithm with base 2 (element-wise for arrays).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Log2</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="log10"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.log10">[docs]</a><span class="k">def</span> <span class="nf">log10</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Logarithm with base 10 (element-wise for arrays).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Log10</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sin"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.sin">[docs]</a><span class="k">def</span> <span class="nf">sin</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Trigonometric sine (element-wise for arrays).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Sin</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="cos"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.ops.cos">[docs]</a><span class="k">def</span> <span class="nf">cos</span><span class="p">(</span><span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Trigonometric cosine (element-wise for arrays).&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Cos</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<span class="n">Node</span><span class="o">.</span><span class="fm">__add__</span> <span class="o">=</span> <span class="n">add</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__mul__</span> <span class="o">=</span> <span class="n">mul</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__truediv__</span> <span class="o">=</span> <span class="n">div</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__pow__</span> <span class="o">=</span> <span class="nb">pow</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__matmul__</span> <span class="o">=</span> <span class="n">dot</span>
+
+<span class="c1"># Make sure that all lambda functions have the relevant docstring</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__radd__</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="fm">__add__</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__rmul__</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="fm">__mul__</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__sub__</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Add</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">-</span><span class="n">other</span><span class="p">)</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__rsub__</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Add</span><span class="p">,</span> <span class="o">-</span><span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">)</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__rtruediv__</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Divide</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">this</span><span class="p">)</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__neg__</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">this</span><span class="p">:</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Multiply</span><span class="p">,</span> <span class="n">this</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__rpow__</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">this</span><span class="p">,</span> <span class="n">other</span><span class="p">:</span> <span class="n">node_wrapper</span><span class="p">(</span><span class="n">Power</span><span class="p">,</span> <span class="n">other</span><span class="p">,</span> <span class="n">this</span><span class="p">)</span>
+
+<span class="n">Node</span><span class="o">.</span><span class="fm">__sub__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Subtract the first operand from the second.&quot;</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__rsub__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="fm">__sub__</span><span class="o">.</span><span class="vm">__doc__</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__rtruediv__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="fm">__truediv__</span><span class="o">.</span><span class="vm">__doc__</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__neg__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="s2">&quot;Multiply operand by -1.&quot;</span>
+<span class="n">Node</span><span class="o">.</span><span class="fm">__rpow__</span><span class="o">.</span><span class="vm">__doc__</span> <span class="o">=</span> <span class="n">Node</span><span class="o">.</span><span class="fm">__pow__</span><span class="o">.</span><span class="vm">__doc__</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

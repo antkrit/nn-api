@@ -1,4 +1,4 @@
-"""Contains implementation of Gradient Descent optimizers (GD, SGD)"""
+"""Contains implementation of optimizers."""
 import abc
 
 import numpy as np
@@ -26,15 +26,16 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
     """Base optimizer class.
 
     Basically, every optimizer is an Operation. So, in most cases,
-    to create a custom optimizer, it is enough to override the `__init__()`,
-    `build()` and `apply_gradient()` methods:
-    - `build()` should be used to add new optimizer variables and will be
-        called inside the `self.forward()` method (in general, this method was
-        created to add some inner context to each optimizer, e.g. momentums).
-        Each child implementation should call the parent's `build()` method
-        at the beginning.
-    - `apply_gradient()` should be used to implement optimizer logic, an
-        algorithm that will be used to update a variable.
+    to create a custom optimizer, it is enough to override the ``__init__()``,
+    ``build()`` and ``apply_gradient()`` methods:
+
+    - ``build()`` should be used to add new optimizer variables and will be
+      called inside the ``self.forward()`` method (in general, this method was
+      created to add some inner context to each optimizer, e.g. momentums).
+      Each child implementation should call the parent's ``build()`` method
+      at the beginning.
+    - ``apply_gradient()`` should be used to implement optimizer logic, an
+      algorithm that will be used to update a variable.
 
     .. warning::
         Any other methods are not recommended to be overridden.

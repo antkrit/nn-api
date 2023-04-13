@@ -16,16 +16,17 @@ class BaseLayer(metaclass=abc.ABCMeta):
     """Base layer class.
 
     In most cases, to create a custom layer, it is enough to
-    override the `__init__()`, `build()` and `forward()` methods:
-    - `build()` should be used to lazily add new layer variables
-        and will be called before the first call of `self.forward()`
-        method by `__call__()` method, in other words, this method was
-        created to automatically calculate input shapes for new layer
-        variables.
-    - `forward()` should be used to implement layer logic, an algorithm
-        that will calculate the layer's output.
+    override the ``__init__()``, ``build()`` and ``forward()`` methods:
 
-    It is possible to override the `__call__()` method, but this is
+    - ``build()`` should be used to lazily add new layer variables
+      and will be called before the first call of ``self.forward()``
+      method by ``__call__()`` method, in other words, this method was
+      created to automatically calculate input shapes for new layer
+      variables.
+    - ``forward()`` should be used to implement layer logic, an algorithm
+      that will calculate the layer's output.
+
+    It is possible to override the ``__call__()`` method, but this is
     not recommended.
 
     So, a simple layer can be implemented as this:
@@ -101,14 +102,14 @@ class BaseLayer(metaclass=abc.ABCMeta):
 
     @built.setter
     def built(self, _):
-        msg = "Cannot be built manually. Instead, run the `build()` method."
+        msg = "Cannot be built manually. Instead, run the ``build()`` method."
         raise ValueError(msg)
 
     def build(self, *args, **kwargs):
         """Initialize layer variables.
 
         This method may be implemented by subclasses. It will be called
-        before execution of `forward()`. Typically used to automatically
+        before execution of ``forward()``. Typically used to automatically
         define and validate I/O shapes.
         """
         del args, kwargs  # are used in subclasses
@@ -119,8 +120,9 @@ class BaseLayer(metaclass=abc.ABCMeta):
     ):
         """Add new layer value.
 
-        An initializer is expected to be of type class:`BaseInitializer`,
-        which returns a variable. If None, use func:`xavier_uniform` as default
+        An initializer is expected to be of type ``BaseInitializer``,
+        which returns a variable. If None, use ``xavier_uniform``
+        as default.
 
         New variables will be initialized with the name: layer.name/var_name.
         """
@@ -152,7 +154,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
             special purposes, see the function implementation for details.
 
         :param x: input data
-        :return: layer output operation(result of `self.forward` function call)
+        :return: layer output operation(result of ``self.forward`` function)
         """
         if x is not None and not isinstance(x, Node):
             x = np.atleast_1d(x)
@@ -201,7 +203,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
 class Dense(BaseLayer):
     """Dense (or Fully Connected) layer.
 
-    The output of this layer is computed as *activate*(X @ W + b), where
+    The output of this layer is computed as activate(X @ W + b), where
     X is layer input, W - layer weights, b - layer bias, activate -
     some activation function. Bias and activate are optional and can
     be disabled when creating the layer.
@@ -211,10 +213,10 @@ class Dense(BaseLayer):
         will not be applied to the resulting formula, defaults to None
     :param weight_initializer: str or callable, name of the function
         (or function itself) used to initialize the weights, if None -
-        `xavier_uniform` will be used as default, defaults to None
+        ```xavier_uniform`` will be used as default, defaults to None
     :param bias_initializer: str or callable, name of the function
         (or function itself) used to initialize the biases, if None -
-        `zeros` will be used as default, defaults to None
+        ``zeros`` will be used as default, defaults to None
     :param use_bias: whether to use a bias when the forward pass
     """
 

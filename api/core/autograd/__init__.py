@@ -18,6 +18,7 @@ simple operations (add, multiply and so on) of complex functions
 4.0
 
 Contains following modules:
+
 - `graph`: contains definition of graph
 - `node`: contain definition of graph nodes, math operators and operations
 - `session`: contains classes and functions to work with graph

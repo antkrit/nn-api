@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.layers &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../../../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">api.core.layers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for api.core.layers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains layers implementations.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+<span class="kn">import</span> <span class="nn">functools</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">api.core</span> <span class="kn">import</span> <span class="n">namespace</span>
+<span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">Node</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">ops</span>
+<span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">utils</span> <span class="k">as</span> <span class="n">ag_utils</span>
+<span class="kn">from</span> <span class="nn">api.core.preprocessing</span> <span class="kn">import</span> <span class="n">initializers</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s2">&quot;BaseLayer&quot;</span><span class="p">,</span> <span class="s2">&quot;Dense&quot;</span><span class="p">,</span> <span class="s2">&quot;Input&quot;</span><span class="p">,</span> <span class="s2">&quot;InputShape&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="BaseLayer"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.BaseLayer">[docs]</a><span class="k">class</span> <span class="nc">BaseLayer</span><span class="p">(</span><span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base layer class.</span>
+
+<span class="sd">    In most cases, to create a custom layer, it is enough to</span>
+<span class="sd">    override the ``__init__()``, ``build()`` and ``forward()`` methods:</span>
+
+<span class="sd">    - ``build()`` should be used to lazily add new layer variables</span>
+<span class="sd">      and will be called before the first call of ``self.forward()``</span>
+<span class="sd">      method by ``__call__()`` method, in other words, this method was</span>
+<span class="sd">      created to automatically calculate input shapes for new layer</span>
+<span class="sd">      variables.</span>
+<span class="sd">    - ``forward()`` should be used to implement layer logic, an algorithm</span>
+<span class="sd">      that will calculate the layer&#39;s output.</span>
+
+<span class="sd">    It is possible to override the ``__call__()`` method, but this is</span>
+<span class="sd">    not recommended.</span>
+
+<span class="sd">    So, a simple layer can be implemented as this:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class Linear(BaseLayer):</span>
+
+<span class="sd">            def __init__(self, units=10, name=&#39;Linear&#39;):</span>
+<span class="sd">                super().__init__(session=None, name=name)</span>
+<span class="sd">                self.units = units</span>
+
+<span class="sd">                self.weights = None</span>
+<span class="sd">                self.bias = None</span>
+
+<span class="sd">            def build(self, input_shape):</span>
+<span class="sd">                self.weights = initializers.random_normal(</span>
+<span class="sd">                    size=[input_shape[-1], self.units]</span>
+<span class="sd">                )</span>
+<span class="sd">                self.bias = initializers.ones(</span>
+<span class="sd">                    size=[1, self.units]</span>
+<span class="sd">                )</span>
+<span class="sd">                self._built = True</span>
+<span class="sd">                return input_shape[-2], self.units</span>
+
+<span class="sd">            def forward(self, value, *args, **kwargs):</span>
+<span class="sd">                return value @ self.weights + self.bias</span>
+
+<span class="sd">    :param session: current session, if None, create a new one,</span>
+<span class="sd">        defaults to None</span>
+<span class="sd">    :param name: name of the layer, defaults to &#39;Layer&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># shape of the layer could be None</span>
+    <span class="c1"># pylint: disable=inconsistent-return-statements</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Layer&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_trainable</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_non_trainable</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return shape of the layer (without batch size).&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">batch</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return batch size.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="o">.</span><span class="n">batch</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">batch_shape</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return full shape of the data.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="p">:</span>
+            <span class="n">bshape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span><span class="o">.</span><span class="n">batch_input_shape</span>
+            <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bshape</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">built</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Access protected built argument.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span>
+
+    <span class="nd">@built</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">built</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;Cannot be built manually. Instead, run the ``build()`` method.&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+<div class="viewcode-block" id="BaseLayer.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.BaseLayer.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize layer variables.</span>
+
+<span class="sd">        This method may be implemented by subclasses. It will be called</span>
+<span class="sd">        before execution of ``forward()``. Typically used to automatically</span>
+<span class="sd">        define and validate I/O shapes.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">del</span> <span class="n">args</span><span class="p">,</span> <span class="n">kwargs</span>  <span class="c1"># are used in subclasses</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="BaseLayer.add_variable"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.BaseLayer.add_variable">[docs]</a>    <span class="k">def</span> <span class="nf">add_variable</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">initializer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add new layer value.</span>
+
+<span class="sd">        An initializer is expected to be of type ``BaseInitializer``,</span>
+<span class="sd">        which returns a variable. If None, use ``xavier_uniform``</span>
+<span class="sd">        as default.</span>
+
+<span class="sd">        New variables will be initialized with the name: layer.name/var_name.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">var_name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;unknown-variable&quot;</span>
+        <span class="n">initializer</span> <span class="o">=</span> <span class="n">initializer</span> <span class="ow">or</span> <span class="n">initializers</span><span class="o">.</span><span class="n">xavier_uniform</span>
+
+        <span class="n">var</span> <span class="o">=</span> <span class="n">initializer</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">trainable</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_non_trainable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_trainable</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">var</span></div>
+
+<div class="viewcode-block" id="BaseLayer.variables"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.BaseLayer.variables">[docs]</a>    <span class="k">def</span> <span class="nf">variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return trainable variables.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_trainable</span></div>
+
+<div class="viewcode-block" id="BaseLayer.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.BaseLayer.forward">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate output of the layer.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in subclasses.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Perform forward step with some preprocessing.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            `input_shape` and `input_cache` keyword arguments is reserved for</span>
+<span class="sd">            special purposes, see the function implementation for details.</span>
+
+<span class="sd">        :param x: input data</span>
+<span class="sd">        :return: layer output operation(result of ``self.forward`` function call)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">atleast_1d</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="c1"># it is possible to pass input shape as keyword argument,</span>
+        <span class="c1"># but it has the lowest priority and may be not used, if</span>
+        <span class="c1"># none of the options are true, then input_shape will be</span>
+        <span class="c1"># set to None</span>
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;input_shape&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="c1"># the first set input can be cached, but this</span>
+        <span class="c1"># argument is ignored if `self.input` is None</span>
+        <span class="c1"># or x is not None</span>
+        <span class="n">input_cache</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;input_cache&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">input_cache</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">input_cache</span>
+            <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;input&quot;</span><span class="p">)</span>
+            <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+            <span class="ow">and</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">input_cache</span><span class="p">:</span>
+            <span class="c1"># input shape will be set during first function call,</span>
+            <span class="c1"># or it can be set in a different way in custom layer</span>
+            <span class="c1"># implementation (e.g. Input layer)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="n">input_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">batch_shape</span>
+            <span class="k">elif</span> <span class="n">x</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="n">input_shape</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="c1"># if x is None, a placeholder will be created</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">ag_utils</span><span class="o">.</span><span class="n">convert_to_node</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">)</span>
+
+            <span class="n">input_shape</span> <span class="o">=</span> <span class="n">InputShape</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input</span> <span class="o">=</span> <span class="n">x</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input</span>
+            <span class="n">input_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">input_shape</span><span class="o">.</span><span class="n">batch_input_shape</span><span class="p">)</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div>
+
+
+<div class="viewcode-block" id="Dense"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.Dense">[docs]</a><span class="k">class</span> <span class="nc">Dense</span><span class="p">(</span><span class="n">BaseLayer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Dense (or Fully Connected) layer.</span>
+
+<span class="sd">    The output of this layer is computed as activate(X @ W + b), where</span>
+<span class="sd">    X is layer input, W - layer weights, b - layer bias, activate -</span>
+<span class="sd">    some activation function. Bias and activate are optional and can</span>
+<span class="sd">    be disabled when creating the layer.</span>
+
+<span class="sd">    :param units: number of layer units, defaults to 1</span>
+<span class="sd">    :param activation: activation function, if None - the activation function</span>
+<span class="sd">        will not be applied to the resulting formula, defaults to None</span>
+<span class="sd">    :param weight_initializer: str or callable, name of the function</span>
+<span class="sd">        (or function itself) used to initialize the weights, if None -</span>
+<span class="sd">        ```xavier_uniform`` will be used as default, defaults to None</span>
+<span class="sd">    :param bias_initializer: str or callable, name of the function</span>
+<span class="sd">        (or function itself) used to initialize the biases, if None -</span>
+<span class="sd">        ``zeros`` will be used as default, defaults to None</span>
+<span class="sd">    :param use_bias: whether to use a bias when the forward pass</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">units</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">activation</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">weight_initializer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">bias_initializer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">use_bias</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Dense&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">activation</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">or</span> <span class="n">activation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">activation</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">activation</span> <span class="o">=</span> <span class="n">namespace</span><span class="o">.</span><span class="n">activations</span><span class="p">(</span>
+                <span class="n">activation</span><span class="p">,</span> <span class="n">compiled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_initializer</span> <span class="o">=</span> <span class="n">namespace</span><span class="o">.</span><span class="n">initializers</span><span class="p">(</span>
+            <span class="n">weight_initializer</span> <span class="ow">or</span> <span class="n">namespace</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">xavier_uniform</span><span class="p">,</span>
+            <span class="n">compiled</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span> <span class="o">=</span> <span class="n">namespace</span><span class="o">.</span><span class="n">initializers</span><span class="p">(</span>
+            <span class="n">bias_initializer</span> <span class="ow">or</span> <span class="n">namespace</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">zeros</span><span class="p">,</span> <span class="n">compiled</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span> <span class="o">=</span> <span class="n">use_bias</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="Dense.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.Dense.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="k">if</span> <span class="n">input_shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;`input_shape` cannot be None.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Dense layer input must have at least 1 dimension.&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;Full input shape received: </span><span class="si">{</span><span class="n">input_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">last_dim</span> <span class="o">=</span> <span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+        <span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">:]</span> <span class="o">=</span> <span class="p">(</span><span class="n">last_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="n">InputShape</span><span class="p">(</span><span class="n">input_shape</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span>
+            <span class="s2">&quot;weight&quot;</span><span class="p">,</span>
+            <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="n">last_dim</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">),</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_initializer</span><span class="p">,</span>
+            <span class="n">trainable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span>
+                <span class="s2">&quot;bias&quot;</span><span class="p">,</span>
+                <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">,),</span>
+                <span class="n">initializer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_initializer</span><span class="p">,</span>
+                <span class="n">trainable</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Dense.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.Dense.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="s2">&quot;bhw, wk -&gt; bhk&quot;</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_bias</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">activation</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="Input"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.Input">[docs]</a><span class="k">class</span> <span class="nc">Input</span><span class="p">(</span><span class="n">BaseLayer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Input layer.</span>
+
+<span class="sd">    By default, the input layer is required to know the size of the input</span>
+<span class="sd">    data. When calling a layer without arguments, a Placeholder with the</span>
+<span class="sd">    input_shape mentioned above will be created.</span>
+
+<span class="sd">    If the Input layer was called with some argument x (in other words, the</span>
+<span class="sd">    input data was passed directly) - it will return a Variable with that data</span>
+
+<span class="sd">    :param input_shape: fixed shape of future data, at least 1d</span>
+<span class="sd">    :raises ValueError: if input_shape dimension &lt; 1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Input&quot;</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">input_shape</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Input shape must be at least 1d, received: </span><span class="si">{</span><span class="n">input_shape</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">batch_input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">*</span><span class="n">input_shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_shape</span> <span class="o">=</span> <span class="n">InputShape</span><span class="p">(</span><span class="n">batch_input_shape</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Input.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.Input.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculate output of the Input layer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">x</span></div>
+
+    <span class="c1"># by default for the Input layer, this method should receive</span>
+    <span class="c1"># x == None as input, this is necessary so that the Placeholder</span>
+    <span class="c1"># is automatically created during function call</span>
+    <span class="c1"># this behavior can be changed manually by passing x argument</span>
+    <span class="c1"># in this case, Variable will be created instead of Placeholder</span>
+    <span class="fm">__call__</span> <span class="o">=</span> <span class="n">functools</span><span class="o">.</span><span class="n">partialmethod</span><span class="p">(</span>
+        <span class="n">BaseLayer</span><span class="o">.</span><span class="fm">__call__</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">input_cache</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="InputShape"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.layers.InputShape">[docs]</a><span class="k">class</span> <span class="nc">InputShape</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Contains information about the shape of the input data.</span>
+
+<span class="sd">    If the length of the batch_input_shape is less than 2, then</span>
+<span class="sd">    batch will be set to None. Otherwise, the first element of</span>
+<span class="sd">    the batch_input_shape will be the batch size. The rest of</span>
+<span class="sd">    the batch_input_shape elements are considered input_shape.</span>
+
+<span class="sd">    :param batch_input_shape: array that contains at least 2 elements,</span>
+<span class="sd">        the first element is batch size and all the rest are input shape.</span>
+<span class="sd">    :raises ValueError: array length is less than 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch_input_shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">batch_input_shape</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="n">batch_input_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">batch_input_shape</span><span class="p">)</span>
+
+        <span class="c1"># if batch_input_shape length is greater than or equal to 2,</span>
+        <span class="c1"># then batch_idx will be equal to 1 and 0 otherwise</span>
+        <span class="n">batch_idx</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">batch_input_shape</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">batch_input_shape</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">batch_idx</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch</span> <span class="o">=</span> <span class="n">batch_size</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">batch_size</span> <span class="k">else</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">batch_input_shape</span><span class="p">[</span><span class="n">batch_idx</span><span class="p">:]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">batch_input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">batch</span><span class="p">,</span> <span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

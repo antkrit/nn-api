@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.autograd.node &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../../../../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">api.core.autograd.node</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for api.core.autograd.node</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains implementation of graph nodes for Automatic Differentiation(AD).</span>
+
+<span class="sd">AD - a technique to calculate the derivative of a function given by</span>
+<span class="sd">an algorithm. AD takes advantage of the fact that an arbitrary function in</span>
+<span class="sd">a computer program will still be calculated using arithmetic operations</span>
+<span class="sd">(+, -, *, /) and elementary functions of standard libraries</span>
+<span class="sd">(exp, log, sin, etc.). By applying the chain rule, the derivative of any order</span>
+<span class="sd">can be calculated for a number of operations that is proportional to the number</span>
+<span class="sd">of operations to calculate the function itself.</span>
+
+<span class="sd">Each graph consists of nodes. Nodes are divided into:</span>
+
+<span class="sd">- Variable - a basic node with some changeable value</span>
+<span class="sd">- Constant - a node with a fixed value</span>
+<span class="sd">- Placeholder - a node with no value, so the value can be set later</span>
+<span class="sd">- Operation - a node that performs computations</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">api.core.autograd.graph</span> <span class="kn">import</span> <span class="n">get_current_graph</span>
+
+<span class="c1"># this module is not logically separable</span>
+<span class="c1"># pylint: disable=too-many-lines</span>
+
+<span class="c1"># some classes have 5 or more arguments (which cannot be logically combined)</span>
+<span class="c1"># due to a large number of parent classes</span>
+<span class="c1"># e.g. `Add` -&gt; `BinaryOperation` -&gt; `Operation` -&gt; `Node`</span>
+<span class="c1"># pylint: disable=too-many-arguments</span>
+
+<span class="c1"># disable numpy warnings due to some cases where a negative value</span>
+<span class="c1"># is given to the input of the log function, causing a RuntimeWarning</span>
+<span class="c1"># (although this does not affect the solution)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="nb">all</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
+
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;Node&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Variable&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Placeholder&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Constant&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Operation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;UnaryOperation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;BinaryOperation&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Abs&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Add&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Assign&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AssignAdd&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AssignDivide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;AssignMultiply&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Cos&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Divide&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Einsum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Exp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Log&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Log2&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Log10&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Matmul&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Max&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Mean&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Min&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Multiply&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Node&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Power&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Sin&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Sqrt&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Sum&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">NodeMixin</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Contains different useful members for nodes.&quot;&quot;&quot;</span>
+
+    <span class="n">count</span> <span class="o">=</span> <span class="n">itertools</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="fm">__next__</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">current_graph</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;Return current graph.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">get_current_graph</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">prepare_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Do some graph post-processing.&quot;&quot;&quot;</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">graph</span><span class="o">.</span><span class="n">head_node</span> <span class="o">=</span> <span class="bp">self</span>
+
+
+<span class="c1"># E1101(no-member) is disabled because this class should only</span>
+<span class="c1"># be used to detect Node objects (isinstance)</span>
+<span class="c1"># pylint: disable=E1101</span>
+<div class="viewcode-block" id="Node"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Node">[docs]</a><span class="k">class</span> <span class="nc">Node</span><span class="p">(</span><span class="n">NodeMixin</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base node class.</span>
+
+<span class="sd">    :param value: value to set</span>
+<span class="sd">    :param name: name of the node, if None than name will be</span>
+<span class="sd">        created automatically, defaults to None</span>
+<span class="sd">    :param shape: static shape of the data</span>
+<span class="sd">    :raises ValueError: the data shape during initialization does not</span>
+<span class="sd">        match the one set as an argument</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_graph</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;node&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prepare_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
+
+        <span class="n">value_not_none</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">value_not_none</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">shape</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span><span class="o">.</span><span class="n">shape</span> <span class="k">if</span> <span class="n">value_not_none</span> <span class="k">else</span> <span class="n">shape</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get value of a node.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of a node.</span>
+
+<span class="sd">        :param value: value to set</span>
+<span class="sd">        :raises ValueError: if the user tries to set data, the form of which</span>
+<span class="sd">            is different from the one set during placeholder initialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">):</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">object</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Cannot match shapes </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2"> and None&quot;</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="Placeholder"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Placeholder">[docs]</a><span class="k">class</span> <span class="nc">Placeholder</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a node with no value, so the value can be set later.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        The node name is crucial here, it can be used later by</span>
+<span class="sd">        :class:`Session` to fill this node with a value.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from api.core.autograd import Session</span>
+
+<span class="sd">            x = Placeholder(&#39;a&#39;)</span>
+<span class="sd">            Session().run(x, feed_dict={&#39;x&#39;: 1}) # will raise KeyError</span>
+<span class="sd">            Session().run(x, feed_dict={&#39;a&#39;: 1}) # is OK</span>
+
+<span class="sd">        In particular, you can fill it manually, but before computing</span>
+<span class="sd">        the graph output.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            from api.core.autograd import Session</span>
+
+<span class="sd">            x = Placeholder(&#39;a&#39;)</span>
+<span class="sd">            x.value = 1</span>
+<span class="sd">            Session().run(x, feed_dict={&#39;x&#39;: 1}) # is OK</span>
+
+<span class="sd">    :raises ValueError: if Placeholder is initialized with name None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;placeholder&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="Constant"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Constant">[docs]</a><span class="k">class</span> <span class="nc">Constant</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a node with a fixed value.</span>
+
+<span class="sd">    :param value: value to set</span>
+<span class="sd">    :param name: name of the node, if none than name will be</span>
+<span class="sd">        created automatically, defaults to None</span>
+<span class="sd">    :raises ValueError: when trying to change the value or the data shape</span>
+<span class="sd">        during initialization does not match the one set as an argument</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;constant&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get value of a node.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of a node.</span>
+
+<span class="sd">        Constant value cannot be changed, so ValueError will be</span>
+<span class="sd">        raised when trying.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot reassign constant </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Variable">[docs]</a><span class="k">class</span> <span class="nc">Variable</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Represents a basic node with some changeable value.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;variable&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get value of a node.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span>
+
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set value of a node.</span>
+
+<span class="sd">        :param value: value to set</span>
+<span class="sd">        :raises ValueError: if the user tries to set data, the form of which</span>
+<span class="sd">            is different from the one set during variable initialization.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="s2">&quot;shape&quot;</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="o">=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="Operation"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Operation">[docs]</a><span class="k">class</span> <span class="nc">Operation</span><span class="p">(</span><span class="n">Node</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base operation class. Represents a node that performs computations.</span>
+
+<span class="sd">    Basically, all operations are divided by the number of operands into</span>
+<span class="sd">    unary (1 operand), binary (2 operands) and default (depends on</span>
+<span class="sd">    implementation). This is a base class, so it cannot be used for</span>
+<span class="sd">    graph computations.</span>
+
+<span class="sd">    :param threshold: small floating point value used to maintain numerical</span>
+<span class="sd">        stability, defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;operator&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span> <span class="o">=</span> <span class="n">threshold</span>
+
+<div class="viewcode-block" id="Operation.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Operation.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given inputs.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Operation.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Operation.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given inputs.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span></div>
+
+
+<div class="viewcode-block" id="UnaryOperation"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.UnaryOperation">[docs]</a><span class="k">class</span> <span class="nc">UnaryOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Operation subclass that defines the base class for unary operators.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="UnaryOperation.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.UnaryOperation.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="UnaryOperation.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.UnaryOperation.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="BinaryOperation"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.BinaryOperation">[docs]</a><span class="k">class</span> <span class="nc">BinaryOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Operation subclass that defines the base class for binary operations.&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="BinaryOperation.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.BinaryOperation.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given inputs.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BinaryOperation.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.BinaryOperation.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given inputs.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">AssignOperation</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Assign operations superclass.</span>
+
+<span class="sd">    :param ref: left operand of the operation, result of the</span>
+<span class="sd">    operation will be assigned to this node</span>
+<span class="sd">    :param op: right operand of the operation</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">Node</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Reference object must be of the Node class&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span> <span class="o">=</span> <span class="n">ref</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="p">,</span> <span class="n">op</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="o">.</span><span class="n">value</span>
+
+    <span class="nd">@value</span><span class="o">.</span><span class="n">setter</span>
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ref</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">op</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="Einsum"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Einsum">[docs]</a><span class="k">class</span> <span class="nc">Einsum</span><span class="p">(</span><span class="n">Operation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Evaluates the Einstein summation convention on the operands.</span>
+
+<span class="sd">    For details see:</span>
+<span class="sd">    https://numpy.org/doc/stable/reference/generated/numpy.einsum.html</span>
+
+<span class="sd">    :param arrays: arrays for the operation</span>
+<span class="sd">    :param subscripts: array of labels of forms for summation</span>
+<span class="sd">    :param o_subscript: label, output form</span>
+<span class="sd">    :param delimiter: separates labels for summation and output form</span>
+<span class="sd">    :param name: node name, defaults to &#39;mean&#39;</span>
+<span class="sd">    :param threshold: some minute float value to avoid problems like div by 0,</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">arrays</span><span class="p">,</span>
+        <span class="n">subscripts</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">o_subscript</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot;-&gt;&quot;</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;einsum&quot;</span><span class="p">,</span>
+        <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">arrays</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_subscripts</span> <span class="o">=</span> <span class="n">subscripts</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_o_subscript</span> <span class="o">=</span> <span class="n">o_subscript</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_delimiter</span> <span class="o">=</span> <span class="n">delimiter</span>
+
+<div class="viewcode-block" id="Einsum.subscripts"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Einsum.subscripts">[docs]</a>    <span class="k">def</span> <span class="nf">subscripts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return subscripts string.</span>
+
+<span class="sd">        :param reverse: int, the index for which is needed</span>
+<span class="sd">            to replace the value with the output form. This</span>
+<span class="sd">            argument is used to implement the gradient.</span>
+<span class="sd">        :return: subscripts string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">subscripts</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subscripts</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out_subscript</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_o_subscript</span>
+
+        <span class="k">if</span> <span class="n">reverse</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">out_subscript</span> <span class="o">=</span> <span class="n">subscripts</span><span class="p">[</span><span class="n">reverse</span><span class="p">]</span>
+            <span class="n">subscripts</span><span class="p">[</span><span class="n">reverse</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_o_subscript</span>
+
+        <span class="k">return</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">subscripts</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_delimiter</span> <span class="o">+</span> <span class="n">out_subscript</span></div>
+
+<div class="viewcode-block" id="Einsum.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Einsum.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">values</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param values: input</span>
+<span class="sd">        :return: sum of array over a given axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscripts</span><span class="p">(),</span> <span class="o">*</span><span class="n">values</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Einsum.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Einsum.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">values</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param values: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">values</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="ow">or</span> <span class="p">[]</span>
+
+        <span class="k">def</span> <span class="nf">_subroutine</span><span class="p">(</span><span class="n">array</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+            <span class="k">nonlocal</span> <span class="n">dout</span>
+            <span class="n">_values</span> <span class="o">=</span> <span class="n">array</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">_values</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">dout</span>
+
+            <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">einsum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">subscripts</span><span class="p">(</span><span class="n">reverse</span><span class="o">=</span><span class="n">i</span><span class="p">),</span> <span class="o">*</span><span class="n">_values</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[</span><span class="n">_subroutine</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">values</span><span class="p">)]</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
+
+        <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="Sum"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sum">[docs]</a><span class="k">class</span> <span class="nc">Sum</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sum of array elements over a given axis.</span>
+
+<span class="sd">    :param value: array to sum</span>
+<span class="sd">    :param axis: axis along which to sum, if None - sum all elements of array,</span>
+<span class="sd">        defaults to None</span>
+<span class="sd">    :param name: node name, defaults to &#39;sum&#39;</span>
+<span class="sd">    :param threshold: some minute float value to avoid problems like div by 0,</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sum&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
+
+<div class="viewcode-block" id="Sum.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sum.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: sum of array over a given axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Sum.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sum.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># implementation details: any simple sum gradient is a vector</span>
+        <span class="c1"># or matrix of ones. So, it is enough to reshape gradient of</span>
+        <span class="c1"># the path to this node into shape of this Operation result</span>
+        <span class="c1"># and repeat it along Operation axis</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">output_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">output_shape</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">tile_scaling</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">//</span> <span class="n">output_shape</span>
+        <span class="n">dout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">output_shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">tile_scaling</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Mean"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Mean">[docs]</a><span class="k">class</span> <span class="nc">Mean</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Mean value of array over a given axis.</span>
+
+<span class="sd">    :param value: array to get the mean from</span>
+<span class="sd">    :param axis: axis along which to get mean, if None - get mean</span>
+<span class="sd">        of the whole array, defaults to None</span>
+<span class="sd">    :param name: node name, defaults to &#39;mean&#39;</span>
+<span class="sd">    :param threshold: some minute float value to avoid problems like div by 0,</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;mean&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
+
+<div class="viewcode-block" id="Mean.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Mean.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: mean of array over a given axis</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Mean.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Mean.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># see the `Sum` backward implementation</span>
+        <span class="c1"># the only difference between these two gradients is a constant,</span>
+        <span class="c1"># but it doesn&#39;t change anything - d(c*x) = c*dx</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="n">output_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">output_shape</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">axis</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">tile_scaling</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span> <span class="o">//</span> <span class="n">output_shape</span>
+        <span class="n">dout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">output_shape</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">tile_scaling</span><span class="p">),</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Add"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Add">[docs]</a><span class="k">class</span> <span class="nc">Add</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise sum.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;add&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Add.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Add.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :return: element-wise sum</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Add.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Add.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand input</span>
+<span class="sd">        :param right: right operand input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation w.r.t both operands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span> <span class="nf">_get_sum_gradient</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">dout_wrt_inp</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Get `add` gradient in the case of different operands shapes.&quot;&quot;&quot;</span>
+            <span class="n">inp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+            <span class="n">dout_wrt_inp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">dout_wrt_inp</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">dout_wrt_inp</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">dout_wrt_inp</span>
+
+            <span class="k">while</span> <span class="n">np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">dout_wrt_inp</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+                <span class="n">dout_wrt_inp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dout_wrt_inp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">axis</span><span class="p">,</span> <span class="n">size</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">inp</span><span class="o">.</span><span class="n">shape</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">size</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">dout_wrt_inp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span>
+                        <span class="n">dout_wrt_inp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">axis</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span>
+                    <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">dout_wrt_inp</span>
+
+        <span class="n">dout_wrt_left</span> <span class="o">=</span> <span class="n">_get_sum_gradient</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">dout</span><span class="p">)</span>
+        <span class="n">dout_wrt_right</span> <span class="o">=</span> <span class="n">_get_sum_gradient</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">dout_wrt_left</span><span class="p">,</span> <span class="n">dout_wrt_right</span></div></div>
+
+
+<div class="viewcode-block" id="AssignAdd"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.AssignAdd">[docs]</a><span class="k">class</span> <span class="nc">AssignAdd</span><span class="p">(</span><span class="n">AssignOperation</span><span class="p">,</span> <span class="n">Add</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise sum with value assignment.</span>
+
+<span class="sd">    :param ref: left operand of the operation, result of the</span>
+<span class="sd">        operation will be assigned to this node</span>
+<span class="sd">    :param op: right operand of the operation</span>
+<span class="sd">    :param name: node name, defaults to &#39;assign_add&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assign_add&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">op</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>  <span class="c1"># init AssignOperation</span>
+            <span class="n">left</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>  <span class="c1"># init Add</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">forward</span> <span class="o">=</span> <span class="n">Add</span><span class="o">.</span><span class="n">forward</span>
+    <span class="n">backward</span> <span class="o">=</span> <span class="n">Add</span><span class="o">.</span><span class="n">backward</span></div>
+
+
+<div class="viewcode-block" id="Assign"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Assign">[docs]</a><span class="k">class</span> <span class="nc">Assign</span><span class="p">(</span><span class="n">AssignOperation</span><span class="p">,</span> <span class="n">Add</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Update ref by assigning value to it.</span>
+
+<span class="sd">    Partial case of the addition operation (x = x* + 0).</span>
+
+<span class="sd">    :param ref: left operand of the operation, result of the</span>
+<span class="sd">        operation will be assigned to this node</span>
+<span class="sd">    :param op: right operand of the operation</span>
+<span class="sd">    :param name: node name, defaults to &#39;assign_add&#39;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assign&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">op</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>  <span class="c1"># init AssignOperation</span>
+            <span class="n">left</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="n">Constant</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>  <span class="c1"># init Add: ref = op + 0</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">forward</span> <span class="o">=</span> <span class="n">Add</span><span class="o">.</span><span class="n">forward</span>
+    <span class="n">backward</span> <span class="o">=</span> <span class="n">Add</span><span class="o">.</span><span class="n">backward</span></div>
+
+
+<div class="viewcode-block" id="Multiply"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Multiply">[docs]</a><span class="k">class</span> <span class="nc">Multiply</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise multiply.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;multiply&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Multiply.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Multiply.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :return: element-wise multiply</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Multiply.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Multiply.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand input</span>
+<span class="sd">        :param right: right operand input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation w.r.t both operands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">right</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">left</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AssignMultiply"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.AssignMultiply">[docs]</a><span class="k">class</span> <span class="nc">AssignMultiply</span><span class="p">(</span><span class="n">AssignOperation</span><span class="p">,</span> <span class="n">Multiply</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise multiply with value assignment.</span>
+
+<span class="sd">    :param ref: left operand of the operation, result of the</span>
+<span class="sd">        operation will be assigned to this node</span>
+<span class="sd">    :param op: right operand of the operation</span>
+<span class="sd">    :param name: node name, defaults to &#39;assign_mul&#39;</span>
+<span class="sd">    :param threshold: some minute float value to avoid problems like div by 0,</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assign_mul&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">op</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>  <span class="c1"># init AssignOperation</span>
+            <span class="n">left</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>  <span class="c1"># init Multiply</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">forward</span> <span class="o">=</span> <span class="n">Multiply</span><span class="o">.</span><span class="n">forward</span>
+    <span class="n">backward</span> <span class="o">=</span> <span class="n">Multiply</span><span class="o">.</span><span class="n">backward</span></div>
+
+
+<div class="viewcode-block" id="Divide"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Divide">[docs]</a><span class="k">class</span> <span class="nc">Divide</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise divide.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;divide&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Divide.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Divide.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :return: element-wise divide</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Divide.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Divide.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand input</span>
+<span class="sd">        :param right: right operand input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation w.r.t both operands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">left</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+
+        <span class="n">_dout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">negative</span><span class="p">(</span><span class="n">dout</span><span class="p">)</span>
+        <span class="n">d_wrt_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">right</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">_dout</span><span class="p">,</span> <span class="n">d_wrt_right</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="AssignDivide"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.AssignDivide">[docs]</a><span class="k">class</span> <span class="nc">AssignDivide</span><span class="p">(</span><span class="n">AssignOperation</span><span class="p">,</span> <span class="n">Divide</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise divide with value assignment.</span>
+
+<span class="sd">    :param ref: left operand of the operation, result of the</span>
+<span class="sd">        operation will be assigned to this node</span>
+<span class="sd">    :param op: right operand of the operation</span>
+<span class="sd">    :param name: node name, defaults to &#39;assign_div&#39;</span>
+<span class="sd">    :param threshold: some minute float value to avoid problems like div by 0,</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ref</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assign_div&quot;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">ref</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">op</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>  <span class="c1"># init AssignOperation</span>
+            <span class="n">left</span><span class="o">=</span><span class="n">ref</span><span class="p">,</span>
+            <span class="n">right</span><span class="o">=</span><span class="n">op</span><span class="p">,</span>  <span class="c1"># init Divide</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="n">forward</span> <span class="o">=</span> <span class="n">Divide</span><span class="o">.</span><span class="n">forward</span>
+    <span class="n">backward</span> <span class="o">=</span> <span class="n">Divide</span><span class="o">.</span><span class="n">backward</span></div>
+
+
+<div class="viewcode-block" id="Power"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Power">[docs]</a><span class="k">class</span> <span class="nc">Power</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Power operator.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;power&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Power.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Power.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param left: base</span>
+<span class="sd">        :param right: power</span>
+<span class="sd">        :raises ValueError: integers to negative integer powers are not</span>
+<span class="sd">            allowed (specific behavior of numpy)</span>
+<span class="sd">        :return: left to the power of right</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Power.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Power.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param left: base</span>
+<span class="sd">        :param right: power</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation w.r.t both operands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">left</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+        <span class="n">d_wrt_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
+            <span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="p">)</span>
+        <span class="n">d_wrt_right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
+            <span class="n">dout</span><span class="p">,</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">left</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)),</span>
+        <span class="p">)</span>
+        <span class="k">return</span> <span class="n">d_wrt_left</span><span class="p">,</span> <span class="n">d_wrt_right</span></div></div>
+
+
+<div class="viewcode-block" id="Matmul"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Matmul">[docs]</a><span class="k">class</span> <span class="nc">Matmul</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Matrix multiplication.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;matmul&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Matmul.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Matmul.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :return: dot product of two arrays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Matmul.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Matmul.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation w.r.t both operands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">left</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">right</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">left</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">dout</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Max"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Max">[docs]</a><span class="k">class</span> <span class="nc">Max</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise maximum.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;max&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Max.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Max.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :return: element-wise maximum of array elements</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Max.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Max.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation w.r.t both operands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d_wrt_left</span> <span class="o">=</span> <span class="n">dout</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">left</span> <span class="o">&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">d_wrt_right</span> <span class="o">=</span> <span class="n">dout</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">left</span> <span class="o">&gt;</span> <span class="n">right</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d_wrt_left</span><span class="p">,</span> <span class="n">d_wrt_right</span></div></div>
+
+
+<div class="viewcode-block" id="Min"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Min">[docs]</a><span class="k">class</span> <span class="nc">Min</span><span class="p">(</span><span class="n">BinaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise maximum.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;min&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Min.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Min.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :return: element-wise minimum of array elements</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">minimum</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Min.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Min.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param left: left operand</span>
+<span class="sd">        :param right: right operand</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation w.r.t both operands</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d_wrt_left</span> <span class="o">=</span> <span class="n">dout</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">left</span> <span class="o">&lt;</span> <span class="n">right</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">d_wrt_right</span> <span class="o">=</span> <span class="n">dout</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">left</span> <span class="o">&lt;</span> <span class="n">right</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">d_wrt_left</span><span class="p">,</span> <span class="n">d_wrt_right</span></div></div>
+
+
+<div class="viewcode-block" id="Sqrt"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sqrt">[docs]</a><span class="k">class</span> <span class="nc">Sqrt</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise square root.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sqrt&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Sqrt.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sqrt.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: square root of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Sqrt.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sqrt.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)),)</span></div></div>
+
+
+<div class="viewcode-block" id="Abs"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Abs">[docs]</a><span class="k">class</span> <span class="nc">Abs</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Take the number absolute (element-wise for arrays).&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;abs&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Abs.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Abs.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: square root of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Abs.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Abs.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># implementation details: |x| can be written as sqrt(x**2),</span>
+        <span class="c1"># so derivative of this function will be x/|x|</span>
+        <span class="n">abs_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">abs_</span><span class="p">))),)</span></div></div>
+
+
+<div class="viewcode-block" id="Exp"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Exp">[docs]</a><span class="k">class</span> <span class="nc">Exp</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise exponentiation.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;exp&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Exp.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Exp.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: value exponent</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Exp.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Exp.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">value</span><span class="p">)),)</span></div></div>
+
+
+<div class="viewcode-block" id="Log"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log">[docs]</a><span class="k">class</span> <span class="nc">Log</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise natural logarithm.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;log&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Log.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: natural logarithm of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Log.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">),)</span></div></div>
+
+
+<div class="viewcode-block" id="Log2"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log2">[docs]</a><span class="k">class</span> <span class="nc">Log2</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise natural logarithm.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;log2&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Log2.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log2.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: natural logarithm of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Log2.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log2.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">),</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Log10"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log10">[docs]</a><span class="k">class</span> <span class="nc">Log10</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise natural logarithm.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;log10&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">1e-32</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Log10.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log10.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: natural logarithm of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Log10.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log10.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">),</span>
+        <span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Sin"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sin">[docs]</a><span class="k">class</span> <span class="nc">Sin</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise trigonometric sine&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;sin&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Sin.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sin.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: sin of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Sin.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sin.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">value</span><span class="p">)),)</span></div></div>
+
+
+<div class="viewcode-block" id="Cos"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Cos">[docs]</a><span class="k">class</span> <span class="nc">Cos</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Element-wise trigonometric cosine&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;cos&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+
+<div class="viewcode-block" id="Cos.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Cos.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: cos of the value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Cos.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Cos.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">value</span><span class="p">))),)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

@@ -9,6 +9,7 @@ can be calculated for a number of operations that is proportional to the number
 of operations to calculate the function itself.
 
 Each graph consists of nodes. Nodes are divided into:
+
 - Variable - a basic node with some changeable value
 - Constant - a node with a fixed value
 - Placeholder - a node with no value, so the value can be set later
@@ -390,7 +391,7 @@ class Einsum(Operation):
     def forward(self, *values):
         """Return output of the operation by given input.
 
-        :param value: input
+        :param values: input
         :return: sum of array over a given axis
         """
         return np.einsum(self.subscripts(), *values)
@@ -585,7 +586,9 @@ class AssignAdd(AssignOperation, Add):
 
 
 class Assign(AssignOperation, Add):
-    """Partial case of the addition operation.
+    """Update ref by assigning value to it.
+
+    Partial case of the addition operation (x = x* + 0).
 
     :param ref: left operand of the operation, result of the
         operation will be assigned to this node

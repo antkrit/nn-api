@@ -9,7 +9,7 @@
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
-  
+
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
@@ -17,19 +17,23 @@
         <script src="_static/doctools.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="#" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
 </head>
 
-<body class="wy-body-for-nav"> 
+<body class="wy-body-for-nav">
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-            <a href="index.html" class="icon icon-home"> NN-API
+
+
+
+          <a href="index.html" class="icon icon-home">
+            NN-API
           </a>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
     <input type="hidden" name="check_keywords" value="yes" />
     <input type="hidden" name="area" value="default" />
   </form>
@@ -37,7 +41,13 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="pages/api.html">NN-API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
 </ul>
 
         </div>
@@ -53,8 +63,8 @@
         <div class="rst-content">
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-      <li>Index</li>
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Index</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -62,7 +72,7 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-             
+
 
 <h1 id="index">Index</h1>
 
@@ -74,6 +84,8 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
+ | <a href="#H"><strong>H</strong></a>
+ | <a href="#I"><strong>I</strong></a>
  | <a href="#K"><strong>K</strong></a>
  | <a href="#L"><strong>L</strong></a>
  | <a href="#M"><strong>M</strong></a>
@@ -87,137 +99,244 @@
  | <a href="#V"><strong>V</strong></a>
  | <a href="#X"><strong>X</strong></a>
  | <a href="#Z"><strong>Z</strong></a>
- 
+
 </div>
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Add">Add (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Abs">Abs (class in api.core.autograd.node)</a>
 </li>
-      <li><a href="pages/lib.html#api.lib.model.Model.add">add() (api.lib.model.Model method)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.abs">abs() (in module api.core.autograd.ops)</a>
 </li>
-      <li>
-    api.lib
+      <li><a href="pages/api.core.html#api.core.optimizers.Adadelta">Adadelta (class in api.core.optimizers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.optimizers.Adagrad">Adagrad (class in api.core.optimizers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.optimizers.Adam">Adam (class in api.core.optimizers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.optimizers.Adamax">Adamax (class in api.core.optimizers)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Add">Add (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.generic.Model.add">add() (api.core.generic.Model method)</a>
 
       <ul>
-        <li><a href="pages/lib.html#module-api.lib">module</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.add">(in module api.core.autograd.ops)</a>
+</li>
+      </ul></li>
+      <li><a href="pages/api.core.html#api.core.layers.BaseLayer.add_variable">add_variable() (api.core.layers.BaseLayer method)</a>
+
+      <ul>
+        <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.add_variable">(api.core.optimizers.BaseOptimizer method)</a>
+</li>
+      </ul></li>
+      <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.add_variable_from_reference">add_variable_from_reference() (api.core.optimizers.BaseOptimizer method)</a>
+</li>
+      <li>
+    api
+
+      <ul>
+        <li><a href="pages/api.html#module-api">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.activation
+    api.core
 
       <ul>
-        <li><a href="pages/lib.html#module-api.lib.activation">module</a>
+        <li><a href="pages/api.core.html#module-api.core">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.autograd
+    api.core.activation
 
       <ul>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd">module</a>
+        <li><a href="pages/api.core.html#module-api.core.activation">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.autograd.graph
+    api.core.autograd
 
       <ul>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd.graph">module</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.autograd.math
+    api.core.autograd.graph
 
       <ul>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd.math">module</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.graph">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.autograd.session
+    api.core.autograd.node
 
       <ul>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd.session">module</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.node">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.layers
+    api.core.autograd.ops
 
       <ul>
-        <li><a href="pages/lib/lib.layers.html#module-api.lib.layers">module</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.ops">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.layers.base
+    api.core.autograd.session
 
       <ul>
-        <li><a href="pages/lib/lib.layers.html#module-api.lib.layers.base">module</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.session">module</a>
+</li>
+      </ul></li>
+      <li>
+    api.core.autograd.utils
+
+      <ul>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.utils">module</a>
+</li>
+      </ul></li>
+      <li>
+    api.core.data
+
+      <ul>
+        <li><a href="pages/api.core.html#module-api.core.data">module</a>
+</li>
+      </ul></li>
+      <li>
+    api.core.exception
+
+      <ul>
+        <li><a href="pages/api.core.html#module-api.core.exception">module</a>
+</li>
+      </ul></li>
+      <li>
+    api.core.generic
+
+      <ul>
+        <li><a href="pages/api.core.html#module-api.core.generic">module</a>
+</li>
+      </ul></li>
+      <li>
+    api.core.layers
+
+      <ul>
+        <li><a href="pages/api.core.html#module-api.core.layers">module</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li>
-    api.lib.layers.linear
+    api.core.loss
 
       <ul>
-        <li><a href="pages/lib/lib.layers.html#module-api.lib.layers.linear">module</a>
+        <li><a href="pages/api.core.html#module-api.core.loss">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.loss
+    api.core.model
 
       <ul>
-        <li><a href="pages/lib.html#module-api.lib.loss">module</a>
+        <li><a href="pages/api.core.model.html#module-api.core.model">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.model
+    api.core.model.config
 
       <ul>
-        <li><a href="pages/lib.html#module-api.lib.model">module</a>
+        <li><a href="pages/api.core.model.html#module-api.core.model.config">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.optimization
+    api.core.model.utils
 
       <ul>
-        <li><a href="pages/lib/lib.optimization.html#module-api.lib.optimization">module</a>
+        <li><a href="pages/api.core.model.html#module-api.core.model.utils">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.optimization.base
+    api.core.namespace
 
       <ul>
-        <li><a href="pages/lib/lib.optimization.html#module-api.lib.optimization.base">module</a>
+        <li><a href="pages/api.core.html#module-api.core.namespace">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.optimization.gd
+    api.core.optimizers
 
       <ul>
-        <li><a href="pages/lib/lib.optimization.html#module-api.lib.optimization.gd">module</a>
+        <li><a href="pages/api.core.html#module-api.core.optimizers">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.preprocessing
+    api.core.preprocessing
 
       <ul>
-        <li><a href="pages/lib/lib.preprocessing.html#module-api.lib.preprocessing">module</a>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.preprocessing.initializers
+    api.core.preprocessing.initializers
 
       <ul>
-        <li><a href="pages/lib/lib.preprocessing.html#module-api.lib.preprocessing.initializers">module</a>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing.initializers">module</a>
 </li>
       </ul></li>
       <li>
-    api.lib.preprocessing.selection
+    api.core.preprocessing.samplers
 
       <ul>
-        <li><a href="pages/lib/lib.preprocessing.html#module-api.lib.preprocessing.selection">module</a>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing.samplers">module</a>
 </li>
       </ul></li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Graph.as_default">as_default() (api.lib.autograd.graph.Graph method)</a>
+      <li>
+    api.core.preprocessing.scalers
+
+      <ul>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing.scalers">module</a>
+</li>
+      </ul></li>
+      <li>
+    api.core.utils
+
+      <ul>
+        <li><a href="pages/api.core.html#module-api.core.utils">module</a>
+</li>
+      </ul></li>
+      <li><a href="pages/api.core.html#api.core.optimizers.Adadelta.apply_gradient">apply_gradient() (api.core.optimizers.Adadelta method)</a>
+
+      <ul>
+        <li><a href="pages/api.core.html#api.core.optimizers.Adagrad.apply_gradient">(api.core.optimizers.Adagrad method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.Adam.apply_gradient">(api.core.optimizers.Adam method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.Adamax.apply_gradient">(api.core.optimizers.Adamax method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.apply_gradient">(api.core.optimizers.BaseOptimizer method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.GradientDescent.apply_gradient">(api.core.optimizers.GradientDescent method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.RMSProp.apply_gradient">(api.core.optimizers.RMSProp method)</a>
+</li>
+      </ul></li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.graph.Graph.as_default">as_default() (api.core.autograd.graph.Graph method)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Assign">Assign (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.assign">assign() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.assign_add">assign_add() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.assign_div">assign_div() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.assign_mul">assign_mul() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignAdd">AssignAdd (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignDivide">AssignDivide (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignMultiply">AssignMultiply (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.utils.at_least3d">at_least3d() (in module api.core.utils)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -225,43 +344,101 @@
 <h2 id="B">B</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Add.backward">backward() (api.lib.autograd.graph.Add method)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Abs.backward">backward() (api.core.autograd.node.Abs method)</a>
 
       <ul>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.BinaryOperator.backward">(api.lib.autograd.graph.BinaryOperator method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Add.backward">(api.core.autograd.node.Add method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Cos.backward">(api.lib.autograd.graph.Cos method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Assign.backward">(api.core.autograd.node.Assign method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Divide.backward">(api.lib.autograd.graph.Divide method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignAdd.backward">(api.core.autograd.node.AssignAdd method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Exp.backward">(api.lib.autograd.graph.Exp method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignDivide.backward">(api.core.autograd.node.AssignDivide method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Log.backward">(api.lib.autograd.graph.Log method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignMultiply.backward">(api.core.autograd.node.AssignMultiply method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Matmul.backward">(api.lib.autograd.graph.Matmul method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.BinaryOperation.backward">(api.core.autograd.node.BinaryOperation method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Max.backward">(api.lib.autograd.graph.Max method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Cos.backward">(api.core.autograd.node.Cos method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Mean.backward">(api.lib.autograd.graph.Mean method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Divide.backward">(api.core.autograd.node.Divide method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Multiply.backward">(api.lib.autograd.graph.Multiply method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Einsum.backward">(api.core.autograd.node.Einsum method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Operation.backward">(api.lib.autograd.graph.Operation method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Exp.backward">(api.core.autograd.node.Exp method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Power.backward">(api.lib.autograd.graph.Power method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log.backward">(api.core.autograd.node.Log method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sin.backward">(api.lib.autograd.graph.Sin method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log10.backward">(api.core.autograd.node.Log10 method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sqrt.backward">(api.lib.autograd.graph.Sqrt method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log2.backward">(api.core.autograd.node.Log2 method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sum.backward">(api.lib.autograd.graph.Sum method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Matmul.backward">(api.core.autograd.node.Matmul method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.UnaryOperator.backward">(api.lib.autograd.graph.UnaryOperator method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Max.backward">(api.core.autograd.node.Max method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Mean.backward">(api.core.autograd.node.Mean method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Min.backward">(api.core.autograd.node.Min method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Multiply.backward">(api.core.autograd.node.Multiply method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Operation.backward">(api.core.autograd.node.Operation method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Power.backward">(api.core.autograd.node.Power method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sin.backward">(api.core.autograd.node.Sin method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sqrt.backward">(api.core.autograd.node.Sqrt method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sum.backward">(api.core.autograd.node.Sum method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.UnaryOperation.backward">(api.core.autograd.node.UnaryOperation method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.backward">(api.core.optimizers.BaseOptimizer method)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.BinaryOperator">BinaryOperator (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.layers.BaseLayer">BaseLayer (class in api.core.layers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.loss.BaseLoss">BaseLoss (class in api.core.loss)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer">BaseOptimizer (class in api.core.optimizers)</a>
+</li>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler">BaseScaler (class in api.core.preprocessing.scalers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.layers.BaseLayer.batch">batch (api.core.layers.BaseLayer property)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.layers.BaseLayer.batch_shape">batch_shape (api.core.layers.BaseLayer property)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.loss.BCE">BCE (class in api.core.loss)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.BinaryOperation">BinaryOperation (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.generic.Model.build">build() (api.core.generic.Model method)</a>
+
+      <ul>
+        <li><a href="pages/api.core.html#api.core.layers.BaseLayer.build">(api.core.layers.BaseLayer method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.layers.Dense.build">(api.core.layers.Dense method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.Adadelta.build">(api.core.optimizers.Adadelta method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.Adagrad.build">(api.core.optimizers.Adagrad method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.Adam.build">(api.core.optimizers.Adam method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.Adamax.build">(api.core.optimizers.Adamax method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.build">(api.core.optimizers.BaseOptimizer method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.GradientDescent.build">(api.core.optimizers.GradientDescent method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.RMSProp.build">(api.core.optimizers.RMSProp method)</a>
+</li>
+      </ul></li>
+      <li><a href="pages/api.core.html#api.core.layers.BaseLayer.built">built (api.core.layers.BaseLayer property)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -269,21 +446,31 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Constant">Constant (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.loss.CCE">CCE (class in api.core.loss)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.cos">cos (api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.html#api.core.generic.Model.compile">compile() (api.core.generic.Model method)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Cos">Cos (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.generic.Model.compute_metrics">compute_metrics() (api.core.generic.Model method)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Constant">Constant (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.data.Container">Container (class in api.core.data)</a>
+</li>
+      <li><a href="pages/api.core.model.html#api.core.model.utils.control_compile">control_compile() (in module api.core.model.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Graph.count">count (api.lib.autograd.graph.Graph attribute)</a>
-
-      <ul>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.count">(api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.utils.convert_to_node">convert_to_node() (in module api.core.autograd.utils)</a>
 </li>
-      </ul></li>
-      <li><a href="pages/lib.html#api.lib.loss.crossentropy">crossentropy() (in module api.lib.loss)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Cos">Cos (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.cos">cos() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.graph.Graph.count">count (api.core.autograd.graph.Graph attribute)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.session.Session.ctx_add">ctx_add() (api.core.autograd.session.Session method)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.session.Session.ctx_get">ctx_get() (api.core.autograd.session.Session method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -291,7 +478,17 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Divide">Divide (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.data.Dataset">Dataset (class in api.core.data)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.layers.Dense">Dense (class in api.core.layers)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.div">div() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Divide">Divide (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.dot">dot() (in module api.core.autograd.ops)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -299,11 +496,17 @@
 <h2 id="E">E</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.exp">exp (api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Einsum">Einsum (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.einsum">einsum() (in module api.core.autograd.ops)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Exp">Exp (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.activation.ELU">ELU (class in api.core.activation)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Exp">Exp (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.exp">exp() (in module api.core.autograd.ops)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -311,44 +514,116 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib.html#api.lib.model.Model.fit">fit() (api.lib.model.Model method)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.utils.fill_placeholders">fill_placeholders() (in module api.core.autograd.utils)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Add.forward">forward() (api.lib.autograd.graph.Add method)</a>
+      <li><a href="pages/api.core.html#api.core.generic.Model.fit">fit() (api.core.generic.Model method)</a>
 
       <ul>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.BinaryOperator.forward">(api.lib.autograd.graph.BinaryOperator method)</a>
+        <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler.fit">(api.core.preprocessing.scalers.BaseScaler method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Cos.forward">(api.lib.autograd.graph.Cos method)</a>
+        <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.MinMaxScaler.fit">(api.core.preprocessing.scalers.MinMaxScaler method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Divide.forward">(api.lib.autograd.graph.Divide method)</a>
+        <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.StandardScaler.fit">(api.core.preprocessing.scalers.StandardScaler method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Exp.forward">(api.lib.autograd.graph.Exp method)</a>
+      </ul></li>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler.fit_transform">fit_transform() (api.core.preprocessing.scalers.BaseScaler method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Log.forward">(api.lib.autograd.graph.Log method)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.utils.form_feed_dict">form_feed_dict() (in module api.core.autograd.utils)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Matmul.forward">(api.lib.autograd.graph.Matmul method)</a>
+      <li><a href="pages/api.core.html#api.core.activation.ELU.forward">forward() (api.core.activation.ELU method)</a>
+
+      <ul>
+        <li><a href="pages/api.core.html#api.core.activation.ReLU.forward">(api.core.activation.ReLU method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Max.forward">(api.lib.autograd.graph.Max method)</a>
+        <li><a href="pages/api.core.html#api.core.activation.Sigmoid.forward">(api.core.activation.Sigmoid method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Mean.forward">(api.lib.autograd.graph.Mean method)</a>
+        <li><a href="pages/api.core.html#api.core.activation.Softmax.forward">(api.core.activation.Softmax method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Multiply.forward">(api.lib.autograd.graph.Multiply method)</a>
+        <li><a href="pages/api.core.html#api.core.activation.Softplus.forward">(api.core.activation.Softplus method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Operation.forward">(api.lib.autograd.graph.Operation method)</a>
+        <li><a href="pages/api.core.html#api.core.activation.Swish.forward">(api.core.activation.Swish method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Power.forward">(api.lib.autograd.graph.Power method)</a>
+        <li><a href="pages/api.core.html#api.core.activation.Tanh.forward">(api.core.activation.Tanh method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sin.forward">(api.lib.autograd.graph.Sin method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Abs.forward">(api.core.autograd.node.Abs method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sqrt.forward">(api.lib.autograd.graph.Sqrt method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Add.forward">(api.core.autograd.node.Add method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sum.forward">(api.lib.autograd.graph.Sum method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Assign.forward">(api.core.autograd.node.Assign method)</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.UnaryOperator.forward">(api.lib.autograd.graph.UnaryOperator method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignAdd.forward">(api.core.autograd.node.AssignAdd method)</a>
 </li>
-        <li><a href="pages/lib/lib.layers.html#api.lib.layers.base.Layer.forward">(api.lib.layers.base.Layer method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignDivide.forward">(api.core.autograd.node.AssignDivide method)</a>
 </li>
-        <li><a href="pages/lib/lib.layers.html#api.lib.layers.linear.Linear.forward">(api.lib.layers.linear.Linear method)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.AssignMultiply.forward">(api.core.autograd.node.AssignMultiply method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.BinaryOperation.forward">(api.core.autograd.node.BinaryOperation method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Cos.forward">(api.core.autograd.node.Cos method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Divide.forward">(api.core.autograd.node.Divide method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Einsum.forward">(api.core.autograd.node.Einsum method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Exp.forward">(api.core.autograd.node.Exp method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log.forward">(api.core.autograd.node.Log method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log10.forward">(api.core.autograd.node.Log10 method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log2.forward">(api.core.autograd.node.Log2 method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Matmul.forward">(api.core.autograd.node.Matmul method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Max.forward">(api.core.autograd.node.Max method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Mean.forward">(api.core.autograd.node.Mean method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Min.forward">(api.core.autograd.node.Min method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Multiply.forward">(api.core.autograd.node.Multiply method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Operation.forward">(api.core.autograd.node.Operation method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Power.forward">(api.core.autograd.node.Power method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sin.forward">(api.core.autograd.node.Sin method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sqrt.forward">(api.core.autograd.node.Sqrt method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sum.forward">(api.core.autograd.node.Sum method)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.UnaryOperation.forward">(api.core.autograd.node.UnaryOperation method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.generic.Model.forward">(api.core.generic.Model method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.layers.BaseLayer.forward">(api.core.layers.BaseLayer method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.layers.Dense.forward">(api.core.layers.Dense method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.layers.Input.forward">(api.core.layers.Input method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.BaseLoss.forward">(api.core.loss.BaseLoss method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.BCE.forward">(api.core.loss.BCE method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.CCE.forward">(api.core.loss.CCE method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.Hinge.forward">(api.core.loss.Hinge method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.Huber.forward">(api.core.loss.Huber method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.KLD.forward">(api.core.loss.KLD method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.LHL.forward">(api.core.loss.LHL method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.MAE.forward">(api.core.loss.MAE method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.MBE.forward">(api.core.loss.MBE method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.MSE.forward">(api.core.loss.MSE method)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.forward">(api.core.optimizers.BaseOptimizer method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -357,17 +632,43 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib.html#api.lib.activation.gaussian">gaussian() (in module api.lib.activation)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.graph.get_current_graph">get_current_graph() (in module api.core.autograd.graph)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.get_current_graph">get_current_graph() (in module api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.optimizers.GradientDescent">GradientDescent (class in api.core.optimizers)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.optimization.html#api.lib.optimization.gd.GradientDescent">GradientDescent (class in api.lib.optimization.gd)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.session.Session.gradients">gradients() (api.core.autograd.session.Session method)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.session.gradients">gradients() (in module api.lib.autograd.session)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.graph.Graph">Graph (class in api.core.autograd.graph)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Graph">Graph (class in api.lib.autograd.graph)</a>
+  </ul></td>
+</tr></table>
+
+<h2 id="H">H</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.he_normal">he_normal() (in module api.core.preprocessing.initializers)</a>
+</li>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.he_uniform">he_uniform() (in module api.core.preprocessing.initializers)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pages/api.core.html#api.core.loss.Hinge">Hinge (class in api.core.loss)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.loss.Huber">Huber (class in api.core.loss)</a>
+</li>
+  </ul></td>
+</tr></table>
+
+<h2 id="I">I</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pages/api.core.html#api.core.layers.Input">Input (class in api.core.layers)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pages/api.core.html#api.core.layers.InputShape">InputShape (class in api.core.layers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -375,7 +676,7 @@
 <h2 id="K">K</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.preprocessing.html#api.lib.preprocessing.initializers.kaiming_initializer">kaiming_initializer() (in module api.lib.preprocessing.initializers)</a>
+      <li><a href="pages/api.core.html#api.core.loss.KLD">KLD (class in api.core.loss)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -383,15 +684,25 @@
 <h2 id="L">L</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.layers.html#api.lib.layers.base.Layer">Layer (class in api.lib.layers.base)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.lecun_normal">lecun_normal() (in module api.core.preprocessing.initializers)</a>
 </li>
-      <li><a href="pages/lib/lib.layers.html#api.lib.layers.linear.Linear">Linear (class in api.lib.layers.linear)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.lecun_uniform">lecun_uniform() (in module api.core.preprocessing.initializers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.loss.LHL">LHL (class in api.core.loss)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log">Log (class in api.core.autograd.node)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.log">log (api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.log">log() (in module api.core.autograd.ops)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Log">Log (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log10">Log10 (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.log10">log10() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Log2">Log2 (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.log2">log2() (in module api.core.autograd.ops)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -399,68 +710,92 @@
 <h2 id="M">M</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Matmul">Matmul (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.loss.MAE">MAE (class in api.core.loss)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Max">Max (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Matmul">Matmul (class in api.core.autograd.node)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.max">max() (api.lib.autograd.graph.Node method)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Max">Max (class in api.core.autograd.node)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.mean">mean (api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.max">max() (in module api.core.autograd.ops)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Mean">Mean (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.loss.MBE">MBE (class in api.core.loss)</a>
 </li>
-      <li><a href="pages/lib/lib.optimization.html#api.lib.optimization.base.Optimizer.minimize">minimize() (api.lib.optimization.base.Optimizer method)</a>
-
-      <ul>
-        <li><a href="pages/lib/lib.optimization.html#api.lib.optimization.gd.GradientDescent.minimize">(api.lib.optimization.gd.GradientDescent method)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Mean">Mean (class in api.core.autograd.node)</a>
 </li>
-      </ul></li>
-      <li><a href="pages/lib.html#api.lib.model.Model">Model (class in api.lib.model)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.mean">mean() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Min">Min (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.min">min() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.minimize">minimize() (api.core.optimizers.BaseOptimizer method)</a>
+</li>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.MinMaxScaler">MinMaxScaler (class in api.core.preprocessing.scalers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.generic.Model">Model (class in api.core.generic)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.exception.ModelIsNotCompiledException">ModelIsNotCompiledException</a>
 </li>
       <li>
     module
 
       <ul>
-        <li><a href="pages/lib.html#module-api.lib">api.lib</a>
+        <li><a href="pages/api.html#module-api">api</a>
 </li>
-        <li><a href="pages/lib.html#module-api.lib.activation">api.lib.activation</a>
+        <li><a href="pages/api.core.html#module-api.core">api.core</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd">api.lib.autograd</a>
+        <li><a href="pages/api.core.html#module-api.core.activation">api.core.activation</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd.graph">api.lib.autograd.graph</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd">api.core.autograd</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd.math">api.lib.autograd.math</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.graph">api.core.autograd.graph</a>
 </li>
-        <li><a href="pages/lib/lib.autograd.html#module-api.lib.autograd.session">api.lib.autograd.session</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.node">api.core.autograd.node</a>
 </li>
-        <li><a href="pages/lib/lib.layers.html#module-api.lib.layers">api.lib.layers</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.ops">api.core.autograd.ops</a>
 </li>
-        <li><a href="pages/lib/lib.layers.html#module-api.lib.layers.base">api.lib.layers.base</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.session">api.core.autograd.session</a>
 </li>
-        <li><a href="pages/lib/lib.layers.html#module-api.lib.layers.linear">api.lib.layers.linear</a>
+        <li><a href="pages/api.core.autograd.html#module-api.core.autograd.utils">api.core.autograd.utils</a>
 </li>
-        <li><a href="pages/lib.html#module-api.lib.loss">api.lib.loss</a>
+        <li><a href="pages/api.core.html#module-api.core.data">api.core.data</a>
 </li>
-        <li><a href="pages/lib.html#module-api.lib.model">api.lib.model</a>
+        <li><a href="pages/api.core.html#module-api.core.exception">api.core.exception</a>
 </li>
-        <li><a href="pages/lib/lib.optimization.html#module-api.lib.optimization">api.lib.optimization</a>
+        <li><a href="pages/api.core.html#module-api.core.generic">api.core.generic</a>
 </li>
-        <li><a href="pages/lib/lib.optimization.html#module-api.lib.optimization.base">api.lib.optimization.base</a>
+        <li><a href="pages/api.core.html#module-api.core.layers">api.core.layers</a>
 </li>
-        <li><a href="pages/lib/lib.optimization.html#module-api.lib.optimization.gd">api.lib.optimization.gd</a>
+        <li><a href="pages/api.core.html#module-api.core.loss">api.core.loss</a>
 </li>
-        <li><a href="pages/lib/lib.preprocessing.html#module-api.lib.preprocessing">api.lib.preprocessing</a>
+        <li><a href="pages/api.core.model.html#module-api.core.model">api.core.model</a>
 </li>
-        <li><a href="pages/lib/lib.preprocessing.html#module-api.lib.preprocessing.initializers">api.lib.preprocessing.initializers</a>
+        <li><a href="pages/api.core.model.html#module-api.core.model.config">api.core.model.config</a>
 </li>
-        <li><a href="pages/lib/lib.preprocessing.html#module-api.lib.preprocessing.selection">api.lib.preprocessing.selection</a>
+        <li><a href="pages/api.core.model.html#module-api.core.model.utils">api.core.model.utils</a>
+</li>
+        <li><a href="pages/api.core.html#module-api.core.namespace">api.core.namespace</a>
+</li>
+        <li><a href="pages/api.core.html#module-api.core.optimizers">api.core.optimizers</a>
+</li>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing">api.core.preprocessing</a>
+</li>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing.initializers">api.core.preprocessing.initializers</a>
+</li>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing.samplers">api.core.preprocessing.samplers</a>
+</li>
+        <li><a href="pages/api.core.preprocessing.html#module-api.core.preprocessing.scalers">api.core.preprocessing.scalers</a>
+</li>
+        <li><a href="pages/api.core.html#module-api.core.utils">api.core.utils</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib.html#api.lib.loss.mse">mse() (in module api.lib.loss)</a>
+      <li><a href="pages/api.core.html#api.core.loss.MSE">MSE (class in api.core.loss)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Multiply">Multiply (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.mul">mul() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Multiply">Multiply (class in api.core.autograd.node)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -468,11 +803,15 @@
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node">Node (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Node">Node (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.utils.node_wrapper">node_wrapper() (in module api.core.autograd.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.NodeMeta">NodeMeta (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.html#api.core.exception.NoGradientException">NoGradientException</a>
+</li>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.NormalInitializer">NormalInitializer (class in api.core.preprocessing.initializers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -480,13 +819,13 @@
 <h2 id="O">O</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.preprocessing.html#api.lib.preprocessing.initializers.ones_initializer">ones_initializer() (in module api.lib.preprocessing.initializers)</a>
+      <li><a href="pages/api.core.html#api.core.data.Dataset.on_epoch_end">on_epoch_end() (api.core.data.Dataset method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Operation">Operation (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.ones">ones() (in module api.core.preprocessing.initializers)</a>
 </li>
-      <li><a href="pages/lib/lib.optimization.html#api.lib.optimization.base.Optimizer">Optimizer (class in api.lib.optimization.base)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Operation">Operation (class in api.core.autograd.node)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -494,13 +833,17 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Placeholder">Placeholder (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Placeholder">Placeholder (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.pow">pow() (in module api.core.autograd.ops)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Power">Power (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Power">Power (class in api.core.autograd.node)</a>
 </li>
-      <li><a href="pages/lib.html#api.lib.model.Model.predict">predict() (api.lib.model.Model method)</a>
+      <li><a href="pages/api.core.html#api.core.generic.Model.predict">predict() (api.core.generic.Model method)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.generic.Model.predict_step">predict_step() (api.core.generic.Model method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -508,13 +851,21 @@
 <h2 id="R">R</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib.html#api.lib.activation.relu">relu() (in module api.lib.activation)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.random_normal">random_normal() (in module api.core.preprocessing.initializers)</a>
+</li>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.random_uniform">random_uniform() (in module api.core.preprocessing.initializers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.activation.ReLU">ReLU (class in api.core.activation)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.preprocessing.html#api.lib.preprocessing.initializers.rnormal_initializer">rnormal_initializer() (in module api.lib.preprocessing.initializers)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.graph.reset_current_graph">reset_current_graph() (in module api.core.autograd.graph)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.session.Session.run">run() (api.lib.autograd.session.Session method)</a>
+      <li><a href="pages/api.core.html#api.core.optimizers.RMSProp">RMSProp (class in api.core.optimizers)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.rsqrt">rsqrt() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.session.Session.run">run() (api.core.autograd.session.Session method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -522,25 +873,35 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.session.Session">Session (class in api.lib.autograd.session)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.session.Session">Session (class in api.core.autograd.session)</a>
 </li>
-      <li><a href="pages/lib.html#api.lib.activation.sigmoid">sigmoid() (in module api.lib.activation)</a>
+      <li><a href="pages/api.core.html#api.core.layers.BaseLayer.shape">shape (api.core.layers.BaseLayer property)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.sin">sin (api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.html#api.core.activation.Sigmoid">Sigmoid (class in api.core.activation)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sin">Sin (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sin">Sin (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.sin">sin() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.activation.Softmax">Softmax (class in api.core.activation)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.activation.Softplus">Softplus (class in api.core.activation)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib.html#api.lib.activation.softmax">softmax() (in module api.lib.activation)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sqrt">Sqrt (class in api.core.autograd.node)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.sqrt">sqrt (api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.sqrt">sqrt() (in module api.core.autograd.ops)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sqrt">Sqrt (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.StandardScaler">StandardScaler (class in api.core.preprocessing.scalers)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Node.sum">sum (api.lib.autograd.graph.Node attribute)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Einsum.subscripts">subscripts() (api.core.autograd.node.Einsum method)</a>
 </li>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Sum">Sum (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Sum">Sum (class in api.core.autograd.node)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.ops.sum">sum() (in module api.core.autograd.ops)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.activation.Swish">Swish (class in api.core.activation)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -548,19 +909,37 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib.html#api.lib.activation.tanh">tanh() (in module api.lib.activation)</a>
+      <li><a href="pages/api.core.html#api.core.activation.Tanh">Tanh (class in api.core.activation)</a>
+</li>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.utils.topological_sort">topological_sort() (in module api.core.autograd.utils)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.generic.Model.train_step">train_step() (api.core.generic.Model method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.session.topological_sort">topological_sort() (in module api.lib.autograd.session)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.samplers.train_test_split">train_test_split() (in module api.core.preprocessing.samplers)</a>
 </li>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler.transform">transform() (api.core.preprocessing.scalers.BaseScaler method)</a>
+
+      <ul>
+        <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.MinMaxScaler.transform">(api.core.preprocessing.scalers.MinMaxScaler method)</a>
+</li>
+        <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.scalers.StandardScaler.transform">(api.core.preprocessing.scalers.StandardScaler method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.UnaryOperator">UnaryOperator (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.UnaryOperation">UnaryOperation (class in api.core.autograd.node)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.UniformInitializer">UniformInitializer (class in api.core.preprocessing.initializers)</a>
+</li>
+      <li><a href="pages/api.core.html#api.core.data.unpack_x_y">unpack_x_y() (in module api.core.data)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -568,23 +947,37 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Constant.value">value (api.lib.autograd.graph.Constant property)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Constant.value">value (api.core.autograd.node.Constant property)</a>
 
       <ul>
-        <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Placeholder.value">(api.lib.autograd.graph.Placeholder property)</a>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Node.value">(api.core.autograd.node.Node property)</a>
+</li>
+        <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Variable.value">(api.core.autograd.node.Variable property)</a>
+</li>
+        <li><a href="pages/api.core.html#api.core.loss.BaseLoss.value">(api.core.loss.BaseLoss property)</a>
 </li>
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.autograd.html#api.lib.autograd.graph.Variable">Variable (class in api.lib.autograd.graph)</a>
+      <li><a href="pages/api.core.autograd.html#api.core.autograd.node.Variable">Variable (class in api.core.autograd.node)</a>
 </li>
+      <li><a href="pages/api.core.html#api.core.layers.BaseLayer.variables">variables() (api.core.layers.BaseLayer method)</a>
+
+      <ul>
+        <li><a href="pages/api.core.html#api.core.optimizers.BaseOptimizer.variables">(api.core.optimizers.BaseOptimizer method)</a>
+</li>
+      </ul></li>
   </ul></td>
 </tr></table>
 
 <h2 id="X">X</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.preprocessing.html#api.lib.preprocessing.initializers.xavier_initializer">xavier_initializer() (in module api.lib.preprocessing.initializers)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.xavier_normal">xavier_normal() (in module api.core.preprocessing.initializers)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.xavier_uniform">xavier_uniform() (in module api.core.preprocessing.initializers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -592,7 +985,7 @@
 <h2 id="Z">Z</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="pages/lib/lib.preprocessing.html#api.lib.preprocessing.initializers.zeros_initializer">zeros_initializer() (in module api.lib.preprocessing.initializers)</a>
+      <li><a href="pages/api.core.preprocessing.html#api.core.preprocessing.initializers.zeros">zeros() (in module api.core.preprocessing.initializers)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -606,13 +999,13 @@
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2022, Anton Krytskyi.</p>
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
+
 
 </footer>
         </div>
@@ -623,7 +1016,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script> 
+  </script>
 
 </body>
 </html>

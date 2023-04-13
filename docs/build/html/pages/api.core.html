@@ -1,0 +1,1484 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core package &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="api.core.autograd package" href="api.core.autograd.html" />
+    <link rel="prev" title="api package" href="api.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">Api</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="api.html">api package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="api.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">api.core package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-api">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">Api</a></li>
+          <li class="breadcrumb-item"><a href="api.html">api package</a></li>
+      <li class="breadcrumb-item active">api.core package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pages/api.core.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <section id="api-core-package">
+<h1>api.core package<a class="headerlink" href="#api-core-package" title="Permalink to this heading"></a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api.core.autograd.html">api.core.autograd package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.graph">api.core.autograd.graph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.node">api.core.autograd.node module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.ops">api.core.autograd.ops module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.session">api.core.autograd.session module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.utils">api.core.autograd.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.core.model.html">api.core.model package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.core.model.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.model.html#module-api.core.model.config">api.core.model.config module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.model.html#module-api.core.model.utils">api.core.model.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.model.html#module-api.core.model">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api.core.preprocessing.html">api.core.preprocessing package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.initializers">api.core.preprocessing.initializers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.samplers">api.core.preprocessing.samplers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.scalers">api.core.preprocessing.scalers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-api.core.activation">
+<span id="api-core-activation-module"></span><h2>api.core.activation module<a class="headerlink" href="#module-api.core.activation" title="Permalink to this heading"></a></h2>
+<p>Contains implementation of commonly used activation functions.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.activation.ELU">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.activation.</span></span><span class="sig-name descname"><span class="pre">ELU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#ELU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.ELU" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivation</span></code></p>
+<p>Exponential Linear Unit activation function.</p>
+<p>Fixes some <a class="reference internal" href="#api.core.activation.ReLU" title="api.core.activation.ReLU"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReLU</span></code></a> issues, allows to learn faster.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alpha</strong> – leaky coefficient, defaults to 1</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.activation.ELU.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#ELU.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.ELU.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate elu.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.activation.ReLU">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.activation.</span></span><span class="sig-name descname"><span class="pre">ReLU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#ReLU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.ReLU" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivation</span></code></p>
+<p>(Leaky) Rectified Linear Unit activation function.</p>
+<p>Solve gradient saturation problem, because output range is (-inf, inf).
+If the <span class="math notranslate nohighlight">\(\alpha\)</span> parameter is 0, there is “dead ReLU” problem where the
+function is completely inactive with negative input values.</p>
+<p>Activation rule: <span class="math notranslate nohighlight">\(max(\alpha x, x)\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alpha</strong> – leaky coefficient, defaults to 0</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.activation.ReLU.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#ReLU.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.ReLU.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate (l)relu.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.activation.Sigmoid">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.activation.</span></span><span class="sig-name descname"><span class="pre">Sigmoid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Sigmoid"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Sigmoid" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivation</span></code></p>
+<p>Sigmoid activation function.</p>
+<p>The output of a sigmoid function ranges between 0 and 1. Mostly used for
+models where we have to predict the “probability”.</p>
+<p>Activation rule: <span class="math notranslate nohighlight">\(\dfrac{1}{1 + e^{-x}}\)</span></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.activation.Sigmoid.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Sigmoid.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Sigmoid.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate sigmoid.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.activation.Softmax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.activation.</span></span><span class="sig-name descname"><span class="pre">Softmax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Softmax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Softmax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivation</span></code></p>
+<p>Softmax activation function.</p>
+<p>Mostly used for multi-class classification problems.</p>
+<p>The activation rule is equivalent to:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">exp</span> <span class="o">/</span> <span class="p">(</span><span class="n">ag</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">exp</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.activation.Softmax.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Softmax.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Softmax.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate softmax.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.activation.Softplus">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.activation.</span></span><span class="sig-name descname"><span class="pre">Softplus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Softplus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Softplus" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivation</span></code></p>
+<p>Softplus activation function.</p>
+<p>Relatively smoother version of the <a class="reference internal" href="#api.core.activation.ReLU" title="api.core.activation.ReLU"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReLU</span></code></a>.</p>
+<p>Activation rule: <span class="math notranslate nohighlight">\(ln(1 + e^x)\)</span></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.activation.Softplus.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Softplus.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Softplus.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate softplus.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.activation.Swish">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.activation.</span></span><span class="sig-name descname"><span class="pre">Swish</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">beta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Swish"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Swish" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivation</span></code></p>
+<p>Self-Gated activation function.</p>
+<p>Swish is unbounded above and bounded below. Unlike <a class="reference internal" href="#api.core.activation.ReLU" title="api.core.activation.ReLU"><code class="xref py py-class docutils literal notranslate"><span class="pre">ReLU</span></code></a>,
+the function is smooth and non-monotonic.</p>
+<p>Activation rule: <span class="math notranslate nohighlight">\(x*sigmoid(\beta x)\)</span></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>beta</strong> – either constant or trainable parameter, defaults to 1</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.activation.Swish.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Swish.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Swish.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate self-gated function.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.activation.Tanh">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.activation.</span></span><span class="sig-name descname"><span class="pre">Tanh</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Tanh"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Tanh" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseActivation</span></code></p>
+<p>Hyperbolic Tangent activation function.</p>
+<p>This function is relatively similar to <a class="reference internal" href="#api.core.activation.Sigmoid" title="api.core.activation.Sigmoid"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sigmoid</span></code></a>, but with one big
+advantage - function is 0-centric(output is in range (-1, 1)).</p>
+<p>Activation rule: <span class="math notranslate nohighlight">\(\dfrac{e^{x} - e^{-x}}{e^{x} + e^{-x}}\)</span></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.activation.Tanh.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/activation.html#Tanh.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.activation.Tanh.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate tanh.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.core.data">
+<span id="api-core-data-module"></span><h2>api.core.data module<a class="headerlink" href="#module-api.core.data" title="Permalink to this heading"></a></h2>
+<p>Contains objects to work with data.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.data.Container">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.data.</span></span><span class="sig-name descname"><span class="pre">Container</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/data.html#Container"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.data.Container" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">MutableMapping</span></code></p>
+<p>Base dict-like container class.</p>
+<p>To get an object use any of the three options</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">(</span><span class="n">name</span><span class="o">=...</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="p">[</span><span class="s1">&#39;obj&#39;</span><span class="p">]</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="o">.</span><span class="n">obj</span>
+<span class="go">3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="p">(</span><span class="s1">&#39;obj&#39;</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<p>To get the compiled instance - use __call__ method</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">container</span> <span class="o">=</span> <span class="n">Container</span><span class="p">(</span><span class="n">name</span><span class="o">=...</span><span class="p">,</span> <span class="n">obj</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">container</span><span class="p">(</span><span class="s1">&#39;obj&#39;</span><span class="p">,</span> <span class="n">compiled</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>if in <cite>__call__()</cite> the first argument is not str, then this
+object will be returned.</p>
+</div>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.data.Dataset">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.data.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/data.html#Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.data.Dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Collection of data.</p>
+<p>Implemented as an infinite generator. Use <cite>__len__</cite> property to find out
+number of unique batches in one dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_data</strong> – input data</p></li>
+<li><p><strong>y_data</strong> – input data</p></li>
+<li><p><strong>batch_size</strong> – number of samples per one batch, defaults to 1</p></li>
+<li><p><strong>dim</strong> – x_data shape, while y_data shape will be equal to
+np.ones_like(dim), defaults to (1, 1)</p></li>
+<li><p><strong>shuffle</strong> – whether to shuffle data on epoch end</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.data.Dataset.on_epoch_end">
+<span class="sig-name descname"><span class="pre">on_epoch_end</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/data.html#Dataset.on_epoch_end"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.data.Dataset.on_epoch_end" title="Permalink to this definition"></a></dt>
+<dd><p>Do some postprocessing at the end of each epoch.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.data.unpack_x_y">
+<span class="sig-prename descclassname"><span class="pre">api.core.data.</span></span><span class="sig-name descname"><span class="pre">unpack_x_y</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/data.html#unpack_x_y"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.data.unpack_x_y" title="Permalink to this definition"></a></dt>
+<dd><p>Unpacks user-provided data.</p>
+<p>This utility works with the following data forms: x; (x,); (x, y)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – data to unpack</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – unexpected data format provided</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>one of x, (x,), (x, y)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-api.core.exception">
+<span id="api-core-exception-module"></span><h2>api.core.exception module<a class="headerlink" href="#module-api.core.exception" title="Permalink to this heading"></a></h2>
+<p>Custom exception implementations.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="api.core.exception.ModelIsNotCompiledException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.exception.</span></span><span class="sig-name descname"><span class="pre">ModelIsNotCompiledException</span></span><a class="reference internal" href="../_modules/api/core/exception.html#ModelIsNotCompiledException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.exception.ModelIsNotCompiledException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raise when model is not compiled.</p>
+</dd></dl>
+
+<dl class="py exception">
+<dt class="sig sig-object py" id="api.core.exception.NoGradientException">
+<em class="property"><span class="pre">exception</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.exception.</span></span><span class="sig-name descname"><span class="pre">NoGradientException</span></span><a class="reference internal" href="../_modules/api/core/exception.html#NoGradientException"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.exception.NoGradientException" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Raise for nodes that have no gradients.</p>
+</dd></dl>
+
+</section>
+<section id="module-api.core.generic">
+<span id="api-core-generic-module"></span><h2>api.core.generic module<a class="headerlink" href="#module-api.core.generic" title="Permalink to this heading"></a></h2>
+<p>Contains <cite>Model</cite> definition.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.generic.Model">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.generic.</span></span><span class="sig-name descname"><span class="pre">Model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'model'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.layers.Input" title="api.core.layers.Input"><code class="xref py py-class docutils literal notranslate"><span class="pre">Input</span></code></a></p>
+<p>Neural network model.</p>
+<p>At its core, the model is an <code class="xref py py-class docutils literal notranslate"><span class="pre">Input</span></code> layer with train/predict
+features and some modifications (see <code class="docutils literal notranslate"><span class="pre">Model.forward()</span></code> implementation).</p>
+<p>The model creation procedure always looks the same:</p>
+<ol class="arabic simple">
+<li><p>Initialize model with the expected shape of the input data</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Add some layers to the model</p></li>
+</ol>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">3</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>Model compilation.</p></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Without this step, the model will not be able to train and predict.</p>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;gradient_descent&#39;</span><span class="p">,</span>
+    <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mean_squared_error&#39;</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean_absolute_error&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, the model is ready for training and prediction. For training,
+two options for printing results are possible (see the <cite>verbosity</cite>
+parameter of the <code class="docutils literal notranslate"><span class="pre">Model.fit()</span></code> function). In most cases, your code
+will look something like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;sigmoid&#39;</span><span class="p">))</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;gradient_descent&#39;</span><span class="p">,</span>
+    <span class="n">loss</span><span class="o">=</span><span class="s1">&#39;mean_squared_error&#39;</span><span class="p">,</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;mean_absolute_error&#39;</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">x_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]]])</span>
+<span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[[</span><span class="mi">0</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">1</span><span class="p">]],</span> <span class="p">[[</span><span class="mi">0</span><span class="p">]]])</span>
+
+<span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span>
+    <span class="n">validation_data</span><span class="o">=</span><span class="p">[</span><span class="n">x_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">],</span>
+    <span class="n">batch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">epochs</span><span class="o">=</span><span class="mi">10000</span><span class="p">,</span>
+    <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span>  <span class="c1"># progress bar</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>For prediction, two options are possible:</p>
+<ul class="simple">
+<li><p>Pass only the input data (x_test) to the function. In this case,
+the function will return only the predicted data.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">)</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Pass both x_test and y_test data. In this case, the function will return
+the predicted data and print the estimated metrics for that data</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">x_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_shape</strong> – tuple, input data shape (without batch size)</p></li>
+<li><p><strong>session</strong> – current session, if None - creates new, defaults to None</p></li>
+<li><p><strong>name</strong> – model name, defaults to ‘model’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.add">
+<span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.add"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.add" title="Permalink to this definition"></a></dt>
+<dd><p>Add layer to the model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>layer</strong> – BaseLayer instance, layer to add</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if layer is not of BaseLayer instance</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize layer variables.</p>
+<p>This method may be implemented by subclasses. It will be called
+before execution of <code class="docutils literal notranslate"><span class="pre">forward()</span></code>. Typically used to automatically
+define and validate I/O shapes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.compile">
+<span class="sig-name descname"><span class="pre">compile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.compile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.compile" title="Permalink to this definition"></a></dt>
+<dd><p>Compile model using given parameters.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>optimizer</strong> – str or callable, model optimizer,
+defaults to <cite>gradient_descent</cite></p></li>
+<li><p><strong>loss</strong> – str or callable, model loss, defaults
+to <cite>mean_squared_error</cite></p></li>
+<li><p><strong>metrics</strong> – array of str or callable, additional metrics
+to evaluate, defaults to None</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.compute_metrics">
+<span class="sig-name descname"><span class="pre">compute_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.compute_metrics"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.compute_metrics" title="Permalink to this definition"></a></dt>
+<dd><p>Compute metrics for given data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>data</strong> – input data</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict with pairs metric.name:metric.value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.fit">
+<span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.fit" title="Permalink to this definition"></a></dt>
+<dd><p>Train model for a fixed number of epochs.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To enable cross-validation, just pass validation_data or
+validation_split arguments. In this case, the <cite>validation_data</cite>
+argument will have priority.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_train</strong> – input data</p></li>
+<li><p><strong>y_train</strong> – target (true) outputs</p></li>
+<li><p><strong>validation_data</strong> – array with length 2 - [x_val, y_val],
+defaults to None</p></li>
+<li><p><strong>validation_split</strong> – float in range (0, 1), the proportion of
+the train dataset to include in the validation split. For example,
+if validation split = 0.25, then the validation data will be 25%
+of the training data, defaults to 0.0</p></li>
+<li><p><strong>batch_size</strong> – number of samples per gradient update, defaults to 1</p></li>
+<li><p><strong>shuffle</strong> – whether to shuffle the data on epoch end,
+defaults to False</p></li>
+<li><p><strong>epochs</strong> – number of epochs to train model, defaults to 1</p></li>
+<li><p><strong>verbosity</strong> – 0 or 1, verbosity mode. 0 - silent mode,
+1 - progress bar, defaults to 1</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#api.core.exception.ModelIsNotCompiledException" title="api.core.exception.ModelIsNotCompiledException"><strong>ModelIsNotCompiledException</strong></a> – if this method was called without
+first compiling the model</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate output of the Input layer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.predict">
+<span class="sig-name descname"><span class="pre">predict</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_test</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_test</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.predict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.predict" title="Permalink to this definition"></a></dt>
+<dd><p>Predict output with given input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x_test</strong> – input data</p></li>
+<li><p><strong>y_test</strong> – target output. if the target data was passed
+to the function, not only will the predicted data be returned,
+but also the calculated metrics will be output to the console,
+defaults to None</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference internal" href="#api.core.exception.ModelIsNotCompiledException" title="api.core.exception.ModelIsNotCompiledException"><strong>ModelIsNotCompiledException</strong></a> – if this method was called without
+first compiling the model</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>predicted output</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.predict_step">
+<span class="sig-name descname"><span class="pre">predict_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.predict_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.predict_step" title="Permalink to this definition"></a></dt>
+<dd><p>Perform one predict step.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.train_step">
+<span class="sig-name descname"><span class="pre">train_step</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.train_step"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.train_step" title="Permalink to this definition"></a></dt>
+<dd><p>Perform one training step.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.core.layers">
+<span id="api-core-layers-module"></span><h2>api.core.layers module<a class="headerlink" href="#module-api.core.layers" title="Permalink to this heading"></a></h2>
+<p>Contains layers implementations.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.layers.</span></span><span class="sig-name descname"><span class="pre">BaseLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Layer'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#BaseLayer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.BaseLayer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base layer class.</p>
+<p>In most cases, to create a custom layer, it is enough to
+override the <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>, <code class="docutils literal notranslate"><span class="pre">build()</span></code> and <code class="docutils literal notranslate"><span class="pre">forward()</span></code> methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">build()</span></code> should be used to lazily add new layer variables
+and will be called before the first call of <code class="docutils literal notranslate"><span class="pre">self.forward()</span></code>
+method by <code class="docutils literal notranslate"><span class="pre">__call__()</span></code> method, in other words, this method was
+created to automatically calculate input shapes for new layer
+variables.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">forward()</span></code> should be used to implement layer logic, an algorithm
+that will calculate the layer’s output.</p></li>
+</ul>
+<p>It is possible to override the <code class="docutils literal notranslate"><span class="pre">__call__()</span></code> method, but this is
+not recommended.</p>
+<p>So, a simple layer can be implemented as this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Linear</span><span class="p">(</span><span class="n">BaseLayer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Linear&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="n">units</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">=</span> <span class="n">initializers</span><span class="o">.</span><span class="n">random_normal</span><span class="p">(</span>
+            <span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">initializers</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span>
+            <span class="n">size</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="n">input_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">units</span>
+
+    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">value</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weights</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>session</strong> – current session, if None, create a new one,
+defaults to None</p></li>
+<li><p><strong>name</strong> – name of the layer, defaults to ‘Layer’</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.add_variable">
+<span class="sig-name descname"><span class="pre">add_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#BaseLayer.add_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.BaseLayer.add_variable" title="Permalink to this definition"></a></dt>
+<dd><p>Add new layer value.</p>
+<p>An initializer is expected to be of type <code class="docutils literal notranslate"><span class="pre">BaseInitializer</span></code>,
+which returns a variable. If None, use <code class="docutils literal notranslate"><span class="pre">xavier_uniform</span></code>
+as default.</p>
+<p>New variables will be initialized with the name: layer.name/var_name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.batch">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch</span></span><a class="headerlink" href="#api.core.layers.BaseLayer.batch" title="Permalink to this definition"></a></dt>
+<dd><p>Return batch size.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.batch_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">batch_shape</span></span><a class="headerlink" href="#api.core.layers.BaseLayer.batch_shape" title="Permalink to this definition"></a></dt>
+<dd><p>Return full shape of the data.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#BaseLayer.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.BaseLayer.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize layer variables.</p>
+<p>This method may be implemented by subclasses. It will be called
+before execution of <code class="docutils literal notranslate"><span class="pre">forward()</span></code>. Typically used to automatically
+define and validate I/O shapes.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.built">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">built</span></span><a class="headerlink" href="#api.core.layers.BaseLayer.built" title="Permalink to this definition"></a></dt>
+<dd><p>Access protected built argument.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.forward">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#BaseLayer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.BaseLayer.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate output of the layer.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">shape</span></span><a class="headerlink" href="#api.core.layers.BaseLayer.shape" title="Permalink to this definition"></a></dt>
+<dd><p>Return shape of the layer (without batch size).</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.BaseLayer.variables">
+<span class="sig-name descname"><span class="pre">variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#BaseLayer.variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.BaseLayer.variables" title="Permalink to this definition"></a></dt>
+<dd><p>Return trainable variables.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.layers.Dense">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.layers.</span></span><span class="sig-name descname"><span class="pre">Dense</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Dense'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Dense"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Dense" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.layers.BaseLayer" title="api.core.layers.BaseLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLayer</span></code></a></p>
+<p>Dense (or Fully Connected) layer.</p>
+<p>The output of this layer is computed as activate(X &#64; W + b), where
+X is layer input, W - layer weights, b - layer bias, activate -
+some activation function. Bias and activate are optional and can
+be disabled when creating the layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>units</strong> – number of layer units, defaults to 1</p></li>
+<li><p><strong>activation</strong> – activation function, if None - the activation function
+will not be applied to the resulting formula, defaults to None</p></li>
+<li><p><strong>weight_initializer</strong> – str or callable, name of the function
+(or function itself) used to initialize the weights, if None -
+<code class="docutils literal notranslate"><span class="pre">`xavier_uniform</span></code> will be used as default, defaults to None</p></li>
+<li><p><strong>bias_initializer</strong> – str or callable, name of the function
+(or function itself) used to initialize the biases, if None -
+<code class="docutils literal notranslate"><span class="pre">zeros</span></code> will be used as default, defaults to None</p></li>
+<li><p><strong>use_bias</strong> – whether to use a bias when the forward pass</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.Dense.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Dense.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Dense.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize layer variables.</p>
+<p>This method may be implemented by subclasses. It will be called
+before execution of <code class="docutils literal notranslate"><span class="pre">forward()</span></code>. Typically used to automatically
+define and validate I/O shapes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.Dense.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Dense.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Dense.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate output of the layer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.layers.Input">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.layers.</span></span><span class="sig-name descname"><span class="pre">Input</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Input'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Input"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Input" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.layers.BaseLayer" title="api.core.layers.BaseLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLayer</span></code></a></p>
+<p>Input layer.</p>
+<p>By default, the input layer is required to know the size of the input
+data. When calling a layer without arguments, a Placeholder with the
+input_shape mentioned above will be created.</p>
+<p>If the Input layer was called with some argument x (in other words, the
+input data was passed directly) - it will return a Variable with that data</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>input_shape</strong> – fixed shape of future data, at least 1d</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – if input_shape dimension &lt; 1</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.Input.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Input.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Input.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate output of the Input layer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.layers.InputShape">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.layers.</span></span><span class="sig-name descname"><span class="pre">InputShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#InputShape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.InputShape" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Contains information about the shape of the input data.</p>
+<p>If the length of the batch_input_shape is less than 2, then
+batch will be set to None. Otherwise, the first element of
+the batch_input_shape will be the batch size. The rest of
+the batch_input_shape elements are considered input_shape.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>batch_input_shape</strong> – array that contains at least 2 elements,
+the first element is batch size and all the rest are input shape.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – array length is less than 2</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-api.core.loss">
+<span id="api-core-loss-module"></span><h2>api.core.loss module<a class="headerlink" href="#module-api.core.loss" title="Permalink to this heading"></a></h2>
+<p>Contains implementation of commonly used loss functions.</p>
+<p>Regression:</p>
+<ul class="simple">
+<li><p>(Root) Mean Squared Error</p></li>
+<li><p>Mean Absolute Error</p></li>
+<li><p>Mean Bias Error</p></li>
+<li><p>Huber Loss</p></li>
+</ul>
+<p>Binary Classification:</p>
+<ul class="simple">
+<li><p>Likelihood Loss</p></li>
+<li><p>Binary Cross Entropy</p></li>
+<li><p>(Squared) Hinge Loss</p></li>
+</ul>
+<p>Multinomial Classification:</p>
+<ul class="simple">
+<li><p>Categorical Cross Entropy</p></li>
+<li><p>Kullback-Leibler Divergence</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.BCE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">BCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'binary_cross_entropy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#BCE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.BCE" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Binary Cross Entropy.</p>
+<p>Modification of the <a class="reference internal" href="#api.core.loss.LHL" title="api.core.loss.LHL"><code class="xref py py-class docutils literal notranslate"><span class="pre">LHL</span></code></a> using logarithms. This allows for
+more severe penalties for large errors.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.BCE.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#BCE.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.BCE.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate BCE.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.BaseLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">BaseLoss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'loss'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#BaseLoss"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.BaseLoss" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Base loss class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> – name of the loss, defaults to loss</p></li>
+<li><p><strong>session</strong> – current session, if None - creates new, defaults to None</p></li>
+<li><p><strong>threshold</strong> – some minute value to avoid problems like
+div by 0 or log(0), defaults to 0</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.BaseLoss.forward">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#BaseLoss.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.BaseLoss.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate loss.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="api.core.loss.BaseLoss.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#api.core.loss.BaseLoss.value" title="Permalink to this definition"></a></dt>
+<dd><p>Return loss value.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.CCE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">CCE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'categorical_cross_entropy'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#CCE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.CCE" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Categorical Cross Entropy.</p>
+<p>Used for multinomial classification. Similar formula as in the <a class="reference internal" href="#api.core.loss.BCE" title="api.core.loss.BCE"><code class="xref py py-class docutils literal notranslate"><span class="pre">BCE</span></code></a>,
+but with one extra step. The output label is assigned one-hot category
+encoding value in form of 0s and 1. Calculate the loss for every pair
+of targets and predictions and return the mean</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.CCE.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#CCE.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.CCE.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate CCE.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.Hinge">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">Hinge</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'hinge'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#Hinge"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.Hinge" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Hinge Loss.</p>
+<p>Primarily was developed to evaluate SVM models. Incorrect or less
+confident right predictions are more penalized with Hinge Loss</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>To apply Hinge Loss, classes must be marked as 1 and -1 (not 0)</p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.Hinge.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#Hinge.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.Hinge.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate HL.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.Huber">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">Huber</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'huber'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delta</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#Huber"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.Huber" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Huber Loss.</p>
+<p>Combination of <a class="reference internal" href="#api.core.loss.MAE" title="api.core.loss.MAE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MAE</span></code></a> and <a class="reference internal" href="#api.core.loss.MSE" title="api.core.loss.MSE"><code class="xref py py-class docutils literal notranslate"><span class="pre">MSE</span></code></a>. This loss applies MAE for
+values that fits under the expected values, and MSE is applied to outliers.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>delta</strong> – a number, point where two functions are connected,
+defaults to 1</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.Huber.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#Huber.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.Huber.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate Huber loss.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.KLD">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">KLD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'kullback_leibler_divergence'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-32</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#KLD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.KLD" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Kullback-Leibler Divergence.</p>
+<p>Similar to <a class="reference internal" href="#api.core.loss.CCE" title="api.core.loss.CCE"><code class="xref py py-class docutils literal notranslate"><span class="pre">CCE</span></code></a>, but considers the probability of occurrence
+of observations. Useful when classes are not balanced.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.KLD.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#KLD.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.KLD.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate KLD.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.LHL">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">LHL</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'likelihood'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#LHL"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.LHL" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Likelihood Loss.</p>
+<p>Multiplication of the probability for the ground truth labels. If the
+true class is [1], we use the output probability, otherwise if the
+true class is [0], we use 1-output probability. Mostly used for
+binary classification.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.LHL.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#LHL.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.LHL.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate LHL.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.MAE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">MAE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean_absolute_error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#MAE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.MAE" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Mean Absolute Error.</p>
+<p>Finds the averaged absolute difference between predicted and
+actual values. Mostly used for regression problems.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.MAE.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#MAE.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.MAE.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate MAE.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.MBE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">MBE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean_bias_error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#MBE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.MBE" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>Mean Bias Error.</p>
+<p>Finds the averaged difference between predicted and actual values.
+Mostly used for regression problems.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.MBE.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#MBE.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.MBE.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate MBE.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.loss.MSE">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.loss.</span></span><span class="sig-name descname"><span class="pre">MSE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean_squared_error'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#MSE"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.MSE" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.loss.BaseLoss" title="api.core.loss.BaseLoss"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLoss</span></code></a></p>
+<p>(Root) Mean Squared Error.</p>
+<p>Finds the averaged squared difference between predicted and
+actual values. Mostly used for regression problems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>root</strong> – set to True when RMSE loss is required, defaults to False</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.loss.MSE.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">y_pred</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_true</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/loss.html#MSE.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.loss.MSE.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate (R)MSE.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.core.namespace">
+<span id="api-core-namespace-module"></span><h2>api.core.namespace module<a class="headerlink" href="#module-api.core.namespace" title="Permalink to this heading"></a></h2>
+<p>Defines containers with available names that are used to identify and refer
+to objects of various kinds.</p>
+</section>
+<section id="module-api.core.optimizers">
+<span id="api-core-optimizers-module"></span><h2>api.core.optimizers module<a class="headerlink" href="#module-api.core.optimizers" title="Permalink to this heading"></a></h2>
+<p>Contains implementation of optimizers.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.optimizers.Adadelta">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adadelta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adadelta'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adadelta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adadelta" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
+<p>Optimizer that implements the Adadelta algorithm.</p>
+<p>Adadelta is a more robust extension of Adagrad that adapts learning rates
+based on a moving window of gradient updates, instead of accumulating all
+past gradients. This way, Adadelta continues learning even when many
+updates have been done. Compared to Adagrad, in the original version of
+Adadelta you don’t have to set an initial learning rate. In this
+implementation learning_rate can be set</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>learning_rate</strong> – hyperparameter, some small value, defaults to 1</p></li>
+<li><p><strong>rho</strong> – hyperparameter, the decay rate, defaults to 0.9</p></li>
+<li><p><strong>epsilon</strong> – small floating point value used to maintain numerical
+stability, defaults to 1e-16</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adadelta.apply_gradient">
+<span class="sig-name descname"><span class="pre">apply_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adadelta.apply_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adadelta.apply_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Apply computed gradients to trainable variables using update rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – node, value to update</p></li>
+<li><p><strong>grad</strong> – gradient of the x node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>update operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adadelta.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adadelta.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adadelta.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize optimizer variables.</p>
+<p>This method should be implemented and called by subclasses.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.optimizers.Adagrad">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adagrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_accumulator_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adagrad'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adagrad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adagrad" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
+<p>Optimizer that implements the Adaptive Gradient algorithm.</p>
+<p>Adagrad is an optimizer with parameter-specific learning rates,
+which are adapted relative to how frequently a parameter gets
+updated during training. The more updates a parameter receives,
+the smaller the updates.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>learning_rate</strong> – hyperparameter, some small value, defaults to 0.1</p></li>
+<li><p><strong>initial_accumulator_value</strong> – hyperparameter, value in range [0, 1],
+defaults to 0</p></li>
+<li><p><strong>epsilon</strong> – small floating point value used to maintain numerical
+stability, defaults to 1e-16</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adagrad.apply_gradient">
+<span class="sig-name descname"><span class="pre">apply_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adagrad.apply_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adagrad.apply_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Apply computed gradients to trainable variables using update rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – node, value to update</p></li>
+<li><p><strong>grad</strong> – gradient of the x node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>update operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adagrad.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adagrad.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adagrad.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize optimizer variables.</p>
+<p>This method should be implemented and called by subclasses.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.optimizers.Adam">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amsgrad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adam'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adam" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
+<p>Optimizer that implements the Adam algorithm.</p>
+<p>Adam optimization is a stochastic gradient descent method that is based on
+adaptive estimation of first-order and second-order moments.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>learning_rate</strong> – hyperparameter, some small value, defaults to 0.1</p></li>
+<li><p><strong>beta_1</strong> – hyperparameter, the exponential decay rate for the 1st
+moment estimates, defaults to 0.9.</p></li>
+<li><p><strong>beta_2</strong> – hyperparameter, the exponential decay rate for the 2nd
+moment estimates, defaults to 0.9.</p></li>
+<li><p><strong>epsilon</strong> – small floating point value used to maintain numerical
+stability, defaults to 1e-16</p></li>
+<li><p><strong>amsgrad</strong> – whether to apply AMSGrad variant of this algorithm from
+the paper “On the Convergence of Adam and beyond”, defaults to False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adam.apply_gradient">
+<span class="sig-name descname"><span class="pre">apply_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adam.apply_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adam.apply_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Apply computed gradients to trainable variables using update rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – node, value to update</p></li>
+<li><p><strong>grad</strong> – gradient of the x node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>update operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adam.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adam.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adam.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize optimizer variables.</p>
+<p>This method should be implemented and called by subclasses.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.optimizers.Adamax">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adamax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adamax'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adamax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adamax" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
+<p>Optimizer that implements the Adamax algorithm.</p>
+<p>Adamax, a variant of Adam based on the infinity norm, is a first-order
+gradient-based optimization method</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>learning_rate</strong> – hyperparameter, some small value, defaults to 0.1</p></li>
+<li><p><strong>beta_1</strong> – hyperparameter, the exponential decay rate for the 1st
+moment estimates, defaults to 0.9.</p></li>
+<li><p><strong>beta_2</strong> – hyperparameter, the exponential decay rate for the 2nd
+moment estimates, defaults to 0.999.</p></li>
+<li><p><strong>epsilon</strong> – small floating point value used to maintain numerical
+stability, defaults to 1e-16</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adamax.apply_gradient">
+<span class="sig-name descname"><span class="pre">apply_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adamax.apply_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adamax.apply_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Apply computed gradients to trainable variables using update rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – node, value to update</p></li>
+<li><p><strong>grad</strong> – gradient of the x node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>update operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.Adamax.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adamax.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adamax.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize optimizer variables.</p>
+<p>This method should be implemented and called by subclasses.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">BaseOptimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Operation" title="api.core.autograd.node.Operation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></a></p>
+<p>Base optimizer class.</p>
+<p>Basically, every optimizer is an Operation. So, in most cases,
+to create a custom optimizer, it is enough to override the <code class="docutils literal notranslate"><span class="pre">__init__()</span></code>,
+<code class="docutils literal notranslate"><span class="pre">build()</span></code> and <code class="docutils literal notranslate"><span class="pre">apply_gradient()</span></code> methods:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">build()</span></code> should be used to add new optimizer variables and will be
+called inside the <code class="docutils literal notranslate"><span class="pre">self.forward()</span></code> method (in general, this method was
+created to add some inner context to each optimizer, e.g. momentums).
+Each child implementation should call the parent’s <code class="docutils literal notranslate"><span class="pre">build()</span></code> method
+at the beginning.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">apply_gradient()</span></code> should be used to implement optimizer logic, an
+algorithm that will be used to update a variable.</p></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Any other methods are not recommended to be overridden.</p>
+</div>
+<p>So, a simple optimizer can be implemented as this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SimpleGD</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">trainable</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;gd&#39;</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">trainable</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="s1">&#39;learning_rate&#39;</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">autograd</span><span class="o">.</span><span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">*</span> <span class="n">grad</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trainable_variables</strong> – variables to optimize, defaults to None</p></li>
+<li><p><strong>session</strong> – current session, if None - creates new, defaults to None</p></li>
+<li><p><strong>name</strong> – optimizer name</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.add_variable">
+<span class="sig-name descname"><span class="pre">add_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">init_val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.add_variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.add_variable" title="Permalink to this definition"></a></dt>
+<dd><p>Add new optimizer value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>init_val</strong> – value of a variable to be created</p></li>
+<li><p><strong>var_name</strong> – name of the node to be created</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an optimizer variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.add_variable_from_reference">
+<span class="sig-name descname"><span class="pre">add_variable_from_reference</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.add_variable_from_reference"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.add_variable_from_reference" title="Permalink to this definition"></a></dt>
+<dd><p>Create an optimizer variable from model variable.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_var</strong> – <code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code> node. The corresponding model
+variable to the optimizer variable to be created.</p></li>
+<li><p><strong>var_name</strong> – new optimizer value will be created with name
+‘model_var.name/var_name’</p></li>
+<li><p><strong>init</strong> – the initial value or initializer(callable) of the
+optimizer variable, if None, the initial value will be
+default to 0, defaults to None</p></li>
+<li><p><strong>shape</strong> – shape of the optimizer variable value</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an optimizer variable</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.apply_gradient">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">apply_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.apply_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.apply_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Apply computed gradients to trainable variables.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.backward">
+<span class="sig-name descname"><span class="pre">backward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.backward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.backward" title="Permalink to this definition"></a></dt>
+<dd><p>Return gradient of the operation by given inputs.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.build">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize optimizer variables.</p>
+<p>This method should be implemented and called by subclasses.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objective</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Compute gradients and apply an update rule to trainable variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parma objective<span class="colon">:</span></dt>
+<dd class="field-odd"><p>objective function, for which the gradients
+will be calculated</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.minimize">
+<span class="sig-name descname"><span class="pre">minimize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">operation</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.minimize"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.minimize" title="Permalink to this definition"></a></dt>
+<dd><p>Set operation [to minimize] for the optimizer.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.variables">
+<span class="sig-name descname"><span class="pre">variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.variables" title="Permalink to this definition"></a></dt>
+<dd><p>Return all variables.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.optimizers.GradientDescent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">GradientDescent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nesterov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GradientDescent'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#GradientDescent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.GradientDescent" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
+<p>Gradient Descent optimizer.</p>
+<p>Update rule for parameter <cite>w</cite> with gradient <cite>g</cite> when <cite>momentum</cite> is 0:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">g</span>
+</pre></div>
+</div>
+<p>Update rule when <cite>momentum</cite> is larger than 0:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">velocity</span> <span class="o">=</span> <span class="n">momentum</span> <span class="o">*</span> <span class="n">velocity</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">g</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="n">velocity</span>
+</pre></div>
+</div>
+<p>When <cite>nesterov=True</cite>, this rule becomes:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">velocity</span> <span class="o">=</span> <span class="n">momentum</span> <span class="o">*</span> <span class="n">velocity</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">g</span>
+<span class="n">w</span> <span class="o">=</span> <span class="n">w</span> <span class="o">+</span> <span class="n">momentum</span> <span class="o">*</span> <span class="n">velocity</span> <span class="o">-</span> <span class="n">learning_rate</span> <span class="o">*</span> <span class="n">g</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>learning_rate</strong> – hyperparameter, some small value, defaults to 0.001</p></li>
+<li><p><strong>momentum</strong> – hyperparameter, value in range [0, 1], defaults to 0</p></li>
+<li><p><strong>nesterov</strong> – whether to apply Nesterov momentum, defaults to False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.GradientDescent.apply_gradient">
+<span class="sig-name descname"><span class="pre">apply_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#GradientDescent.apply_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.GradientDescent.apply_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Apply computed gradients to trainable variables using update rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – node, value to update</p></li>
+<li><p><strong>grad</strong> – gradient of the x node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>update operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.GradientDescent.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#GradientDescent.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.GradientDescent.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize optimizer variables.</p>
+<p>This method should be implemented and called by subclasses.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.optimizers.RMSProp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">RMSProp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RMSProp'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#RMSProp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.RMSProp" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
+<p>Optimizer that implements the Root Mean Squared Propagation algorithm.</p>
+<p>This implementation of RMSProp uses plain momentum, not Nesterov momentum.</p>
+<p>The centered version additionally maintains a moving average of the
+gradients, and uses that average to estimate the variance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>learning_rate</strong> – hyperparameter, some small value, defaults to 0.1</p></li>
+<li><p><strong>momentum</strong> – hyperparameter, value in range [0, 1], defaults to 0</p></li>
+<li><p><strong>rho</strong> – hyperparameter, the decay rate, defaults to 0.9</p></li>
+<li><p><strong>epsilon</strong> – small floating point value used to maintain numerical
+stability, defaults to 1e-16</p></li>
+<li><p><strong>centered</strong> – if True, gradients are normalized by the estimated
+variance of the gradient; if False, by the uncentered second moment.
+Setting this to True may help with training, but is slightly more
+expensive in terms of computation and memory, defaults to False</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.RMSProp.apply_gradient">
+<span class="sig-name descname"><span class="pre">apply_gradient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#RMSProp.apply_gradient"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.RMSProp.apply_gradient" title="Permalink to this definition"></a></dt>
+<dd><p>Apply computed gradients to trainable variables using update rule.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>x</strong> – node, value to update</p></li>
+<li><p><strong>grad</strong> – gradient of the x node</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>update operation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.RMSProp.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#RMSProp.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.RMSProp.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize optimizer variables.</p>
+<p>This method should be implemented and called by subclasses.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-api.core.utils">
+<span id="api-core-utils-module"></span><h2>api.core.utils module<a class="headerlink" href="#module-api.core.utils" title="Permalink to this heading"></a></h2>
+<p>Contains useful frequently used objects.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="api.core.utils.at_least3d">
+<span class="sig-prename descclassname"><span class="pre">api.core.utils.</span></span><span class="sig-name descname"><span class="pre">at_least3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/utils.html#at_least3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.utils.at_least3d" title="Permalink to this definition"></a></dt>
+<dd><p>View inputs as arrays with at least three dimensions.</p>
+<p>Unlike the numpy counterpart, this function has the following behaviour:
+a 1-D array of shape (N,) becomes a view of shape (1, N, 1),
+and a 2-D array of shape (M, N) becomes a view of shape (1, M, N).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>array</strong> – array-like sequence</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an array with ndim &gt;= 3</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-api.core">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-api.core" title="Permalink to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api.html" class="btn btn-neutral float-left" title="api package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api.core.autograd.html" class="btn btn-neutral float-right" title="api.core.autograd package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

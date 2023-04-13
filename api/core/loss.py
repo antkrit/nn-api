@@ -1,15 +1,20 @@
 """Contains implementation of commonly used loss functions.
 
 Regression:
+
 - (Root) Mean Squared Error
 - Mean Absolute Error
 - Mean Bias Error
 - Huber Loss
+
 Binary Classification:
+
 - Likelihood Loss
 - Binary Cross Entropy
 - (Squared) Hinge Loss
+
 Multinomial Classification:
+
 - Categorical Cross Entropy
 - Kullback-Leibler Divergence
 """
@@ -75,6 +80,9 @@ class BaseLoss:
 class MSE(BaseLoss):
     """(Root) Mean Squared Error.
 
+    Finds the averaged squared difference between predicted and
+    actual values. Mostly used for regression problems.
+
     :param root: set to True when RMSE loss is required, defaults to False
     """
 
@@ -89,58 +97,42 @@ class MSE(BaseLoss):
             self.name = "root_" + self.name
 
     def forward(self, y_pred, y_true):
-        """Calculate (R)MSE.
-
-        Finds the averaged squared difference between predicted and
-        actual values. Mostly used for regression problems.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node that contains (root) mean squared error
-        """
+        """Calculate (R)MSE."""
         err = (y_pred - y_true) ** 2
         total = ag.ops.mean(err)
         return ag.ops.sqrt(total) if self.root else total
 
 
 class MAE(BaseLoss):
-    """Mean Absolute Error."""
+    """Mean Absolute Error.
+
+    Finds the averaged absolute difference between predicted and
+    actual values. Mostly used for regression problems.
+    """
 
     def __init__(self, name="mean_absolute_error", session=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
-        """Calculate MAE.
-
-        Finds the averaged absolute difference between predicted and
-        actual values. Mostly used for regression problems.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node that contains mean absolute error
-        """
+        """Calculate MAE."""
         err = ag.ops.abs(y_pred - y_true)
         return ag.ops.mean(err)
 
 
 class MBE(BaseLoss):
-    """Mean Bias Error."""
+    """Mean Bias Error.
+
+    Finds the averaged difference between predicted and actual values.
+    Mostly used for regression problems.
+    """
 
     def __init__(self, name="mean_bias_error", session=None, threshold=0):
         """Constructor method."""
         super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
-        """Calculate MBE.
-
-        Finds the averaged difference between predicted and actual values.
-        Mostly used for regression problems.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node that contains mean absolute error
-        """
+        """Calculate MBE."""
         err = y_pred - y_true
         return ag.ops.mean(err)
 
@@ -148,8 +140,8 @@ class MBE(BaseLoss):
 class Huber(BaseLoss):
     """Huber Loss.
 
-    Combination of class:`MAE` and class:`MSE`. This loss applies MAE for values
-    that fits under the expected values, and MSE is applied to outliers.
+    Combination of :class:`MAE` and :class:`MSE`. This loss applies MAE for
+    values that fits under the expected values, and MSE is applied to outliers.
 
     :param delta: a number, point where two functions are connected,
         defaults to 1
@@ -161,12 +153,7 @@ class Huber(BaseLoss):
         self.delta = delta
 
     def forward(self, y_pred, y_true):
-        """Calculate Huber loss.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node that contains mean absolute error
-        """
+        """Calculate Huber loss."""
         err = ag.ops.abs(y_pred - y_true)
 
         is_err_small = self.session.run(err) <= self.delta
@@ -200,12 +187,7 @@ class LHL(BaseLoss):
         super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
-        """Calculate LHL.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node that contains likelihood loss
-        """
+        """Calculate LHL."""
         err = y_true * y_pred + (1 - y_true) * (1 - y_pred)
         return ag.ops.mean(err)
 
@@ -213,7 +195,7 @@ class LHL(BaseLoss):
 class BCE(BaseLoss):
     """Binary Cross Entropy.
 
-    Modification of the class:`LHL` using logarithms. This allows for
+    Modification of the :class:`LHL` using logarithms. This allows for
     more severe penalties for large errors.
     """
 
@@ -224,12 +206,7 @@ class BCE(BaseLoss):
         super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
-        """Calculate BCE.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node that contains binary cross entropy loss
-        """
+        """Calculate BCE."""
         err = y_true * ag.ops.log10(y_pred + self.threshold)
         err_1 = (1 - y_true) * ag.ops.log10(1 - y_pred + self.threshold)
         return ag.ops.mean(-(err + err_1))
@@ -250,12 +227,7 @@ class Hinge(BaseLoss):
         super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
-        """Calculate HL.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node, that contains (squared) hinge loss
-        """
+        """Calculate HL."""
         err = ag.ops.max(0, 1 - (y_pred * y_true))
         return ag.ops.mean(err)
 
@@ -263,7 +235,7 @@ class Hinge(BaseLoss):
 class CCE(BaseLoss):
     """Categorical Cross Entropy.
 
-    Used for multinomial classification. Similar formula as in the class:`BSE`,
+    Used for multinomial classification. Similar formula as in the :class:`BCE`,
     but with one extra step. The output label is assigned one-hot category
     encoding value in form of 0s and 1. Calculate the loss for every pair
     of targets and predictions and return the mean
@@ -276,12 +248,7 @@ class CCE(BaseLoss):
         super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
-        """Calculate CCE.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node, that contains categorical cross entropy loss
-        """
+        """Calculate CCE."""
         err = y_true * ag.ops.log10(y_pred + self.threshold)
         return ag.ops.mean(-err)
 
@@ -289,7 +256,7 @@ class CCE(BaseLoss):
 class KLD(BaseLoss):
     """Kullback-Leibler Divergence.
 
-    Similar to class:`CCE`, but considers the probability of occurrence
+    Similar to :class:`CCE`, but considers the probability of occurrence
     of observations. Useful when classes are not balanced.
     """
 
@@ -300,12 +267,7 @@ class KLD(BaseLoss):
         super().__init__(name=name, session=session, threshold=threshold)
 
     def forward(self, y_pred, y_true):
-        """Calculate KLD.
-
-        :param y_pred: values predicted by model
-        :param y_true: actual values
-        :return: node, that contains Kullback-Leibler loss
-        """
+        """Calculate KLD."""
         prob = (y_true + self.threshold) / (y_pred + self.threshold)
         err = y_true * ag.ops.log10(prob)
         return ag.ops.mean(err)
