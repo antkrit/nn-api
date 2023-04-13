@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.autograd.session &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
+        <script src="../../../../_static/jquery.js"></script>
+        <script src="../../../../_static/underscore.js"></script>
+        <script src="../../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../../_static/doctools.js"></script>
+    <script src="../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../../../../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">api.core.autograd.session</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for api.core.autograd.session</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains classes and functions to work with graph.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">operator</span>
+
+<span class="kn">from</span> <span class="nn">api.core.autograd.node</span> <span class="kn">import</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">Placeholder</span>
+<span class="kn">from</span> <span class="nn">api.core.autograd.utils</span> <span class="kn">import</span> <span class="n">topological_sort</span>
+
+
+<div class="viewcode-block" id="Session"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.session.Session">[docs]</a><span class="k">class</span> <span class="nc">Session</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;A class for running graph operations.</span>
+
+<span class="sd">    Basically graph is a parsed mathematical expression</span>
+<span class="sd">    consisting of a list of nodes. To get the result of such</span>
+<span class="sd">    expression, it is necessary to create a Session and call the</span>
+<span class="sd">    :func:`run` method.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        Until the step forward is taken, Operation nodes have no own value,</span>
+<span class="sd">        only operands. So, gradients should only be calculated after all the</span>
+<span class="sd">        class:`Operation` nodes have their own value</span>
+
+<span class="sd">    Every session has its own context. There is at least one field in each</span>
+<span class="sd">    context: &#39;globals&#39; consisting of a list of context variables (keys). Any</span>
+<span class="sd">    other fields can be added manually using the :func:`ctx_add` method</span>
+
+<span class="sd">    :Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; from api.core.autograd import Variable</span>
+<span class="sd">    &gt;&gt;&gt; a = Variable(10)</span>
+<span class="sd">    &gt;&gt;&gt; b = Variable(20)</span>
+<span class="sd">    &gt;&gt;&gt; c = a + b  # Node.__add__(a, b)</span>
+<span class="sd">    &gt;&gt;&gt; session = Session()</span>
+<span class="sd">    &gt;&gt;&gt; session.run(c)</span>
+<span class="sd">    30</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx_global_token</span> <span class="o">=</span> <span class="s2">&quot;globals&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__context</span> <span class="o">=</span> <span class="p">{</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx_global_token</span><span class="p">:</span> <span class="p">[]}</span>
+
+<div class="viewcode-block" id="Session.run"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.session.Session.run">[docs]</a>    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">target</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Forward propagation aver a graph.</span>
+
+<span class="sd">        Computes the output of a target operation(s). If target is a list</span>
+<span class="sd">        of operations then they will be performed in the specified order.</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">           feed_dict values is supposed to be an iterator. Otherwise,</span>
+<span class="sd">           TypeError will be raised. To avoid such errors - use</span>
+<span class="sd">           :func:`form_feed_dict` utility.</span>
+
+<span class="sd">        .. note::</span>
+<span class="sd">            If there are placeholders in the graph you need to fill them</span>
+<span class="sd">            with data. Otherwise, TypeError will be raised. Pass that data</span>
+<span class="sd">            to the feed_dict as the node_name:data entry.</span>
+
+<span class="sd">            &gt;&gt;&gt; from api.core.autograd import Placeholder</span>
+<span class="sd">            &gt;&gt;&gt; a = 2</span>
+<span class="sd">            &gt;&gt;&gt; b = Placeholder(&#39;x&#39;)</span>
+<span class="sd">            &gt;&gt;&gt; c = a * b  # Node.__mul__(a, b)</span>
+<span class="sd">            &gt;&gt;&gt; session = Session()</span>
+<span class="sd">            &gt;&gt;&gt; session.run(c, feed_dict={b.name: 15}).astype(int)</span>
+<span class="sd">            array(30)</span>
+
+<span class="sd">        :param target: node or list of nodes to perform the forward step for</span>
+<span class="sd">        :param feed_dict: data for placeholders</span>
+<span class="sd">        :param returns: list of target resutls that need to be returned,</span>
+<span class="sd">            if None - returns all targets resutls, defaults to None</span>
+<span class="sd">        :return: value or list of value specified in the `returns` argument</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">feed_dict</span> <span class="o">=</span> <span class="n">feed_dict</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">run_output_token</span> <span class="o">=</span> <span class="s2">&quot;FORWARD_OUTPUT&quot;</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">sorted_</span> <span class="ow">in</span> <span class="n">topological_sort</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">sorted_</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__step_forward</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="n">feed_dict</span><span class="p">)</span>
+
+            <span class="n">head_node</span> <span class="o">=</span> <span class="n">sorted_</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">head_node_entry</span> <span class="o">=</span> <span class="n">output</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">head_node</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+            <span class="k">try</span><span class="p">:</span>
+                <span class="c1"># add a new node output to the list</span>
+                <span class="n">head_node_entry</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">head_node</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">head_node_entry</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="c1"># if there is single node output in the</span>
+                    <span class="c1"># output dict, create list with the new one</span>
+                    <span class="n">output</span><span class="p">[</span><span class="n">head_node</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">output</span><span class="p">[</span><span class="n">head_node</span><span class="p">],</span> <span class="n">head_node</span><span class="o">.</span><span class="n">value</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># if this node&#39;s output does not exist in the</span>
+                    <span class="c1"># output dict, set it to a single value</span>
+                    <span class="n">output</span><span class="p">[</span><span class="n">head_node</span><span class="p">]</span> <span class="o">=</span> <span class="n">head_node</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx_add</span><span class="p">(</span><span class="n">run_output_token</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+
+        <span class="n">returns</span> <span class="o">=</span> <span class="n">returns</span> <span class="ow">or</span> <span class="n">output</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="n">returns</span><span class="p">)(</span><span class="n">output</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Session.gradients"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.session.Session.gradients">[docs]</a>    <span class="k">def</span> <span class="nf">gradients</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute gradients for the given graph.</span>
+
+<span class="sd">        Function performs topological sort for the target node, then sets</span>
+<span class="sd">        its gradient to 1.0 and recursively computes all other gradients.</span>
+
+<span class="sd">        &gt;&gt;&gt; from api.core.autograd import Variable</span>
+<span class="sd">        &gt;&gt;&gt; w = Variable(1, name=&#39;w&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; x = Variable(2, name=&#39;x&#39;)</span>
+<span class="sd">        &gt;&gt;&gt; op = w * x</span>
+<span class="sd">        &gt;&gt;&gt; op.name = &#39;op&#39;</span>
+<span class="sd">        &gt;&gt;&gt; session = Session()</span>
+<span class="sd">        &gt;&gt;&gt; _ = session.run(op)  # fill ops with value</span>
+<span class="sd">        &gt;&gt;&gt; # d(op)/dw = x, d(op)/dx = w, d(op)/d(op) = 1</span>
+<span class="sd">        &gt;&gt;&gt; x_grd, w_grd = session.gradients(op, returns=[x, w])</span>
+<span class="sd">        &gt;&gt;&gt; w_grd</span>
+<span class="sd">        2.0</span>
+<span class="sd">        &gt;&gt;&gt; x_grd</span>
+<span class="sd">        1.0</span>
+
+<span class="sd">        .. warning::</span>
+<span class="sd">            To calculate the gradient, it is important to run forward</span>
+<span class="sd">            step first so that all class:`Operation` nodes have their</span>
+<span class="sd">            own value. If there are placeholders, it is necessary run</span>
+<span class="sd">            forward propagation first or manually fill them with data.</span>
+<span class="sd">            Otherwise, TypeError error will be raised.</span>
+
+<span class="sd">        :param target: head nodes of the graph</span>
+<span class="sd">        :param returns: list of nodes whose gradient should be returned,</span>
+<span class="sd">            if None - returns all targets resutls, defaults to None</span>
+<span class="sd">        :return: a list of gradients</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">order</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">topological_sort</span><span class="p">(</span><span class="n">target</span><span class="p">))</span>
+        <span class="n">visited</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+
+        <span class="n">order</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="mf">1.0</span>  <span class="c1"># df/df</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">order</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Operation</span><span class="p">):</span>
+                <span class="n">inputs</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">inputs</span>
+                <span class="n">grads</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">backward</span><span class="p">(</span>
+                    <span class="o">*</span><span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">],</span> <span class="n">dout</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">gradient</span>
+                <span class="p">)</span>
+
+                <span class="k">for</span> <span class="n">inp</span><span class="p">,</span> <span class="n">grad</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">grads</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">inp</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                        <span class="n">inp</span><span class="o">.</span><span class="n">gradient</span> <span class="o">+=</span> <span class="n">grad</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">inp</span><span class="o">.</span><span class="n">gradient</span> <span class="o">=</span> <span class="n">grad</span>
+                    <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+
+        <span class="n">grads</span> <span class="o">=</span> <span class="p">{</span><span class="n">node</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">gradient</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">order</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ctx_add</span><span class="p">(</span><span class="s2">&quot;gradients&quot;</span><span class="p">,</span> <span class="n">grads</span><span class="p">)</span>
+
+        <span class="n">returns</span> <span class="o">=</span> <span class="n">returns</span> <span class="ow">or</span> <span class="n">grads</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">operator</span><span class="o">.</span><span class="n">itemgetter</span><span class="p">(</span><span class="o">*</span><span class="n">returns</span><span class="p">)(</span><span class="n">grads</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Session.ctx_add"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.session.Session.ctx_add">[docs]</a>    <span class="k">def</span> <span class="nf">ctx_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_name</span><span class="p">,</span> <span class="n">v_value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add a variable to the session context.</span>
+
+<span class="sd">        :param v_name: variable name</span>
+<span class="sd">        :param v_value: value of the variable</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">v_name</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__context</span><span class="p">:</span>
+            <span class="c1"># automatically add unique names to globals.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ctx_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ctx_global_token</span><span class="p">,</span> <span class="n">v_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__context</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">v_name</span><span class="p">,</span> <span class="p">[])</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v_value</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Session.ctx_get"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.session.Session.ctx_get">[docs]</a>    <span class="k">def</span> <span class="nf">ctx_get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">v_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a variable from the session context.</span>
+
+<span class="sd">        :param v_name: variable name</span>
+<span class="sd">        :return: value of the variable or None if there is no such value</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">v_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__handle_operation_forward</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process operation node.</span>
+
+<span class="sd">        :param node: operation node to process</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">value</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">forward</span><span class="p">(</span><span class="o">*</span><span class="n">inputs</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">__handle_placeholder_forward</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">feed_dict</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Process placeholder node.</span>
+
+<span class="sd">        :param node: placeholder node to process</span>
+<span class="sd">        :param feed_dict: original feed_dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">feed_dict</span> <span class="o">=</span> <span class="n">feed_dict</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">feed_dict</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__step_forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">feed_dict</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Get a node as input and process it depending on the class.</span>
+
+<span class="sd">        :param node: node to process</span>
+<span class="sd">        :param feed_dict: original feed dict (used to handle placeholders),</span>
+<span class="sd">            defaults to None</span>
+<span class="sd">        :return: processed node</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Placeholder</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__handle_placeholder_forward</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">feed_dict</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">Operation</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__handle_operation_forward</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">node</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>

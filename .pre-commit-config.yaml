@@ -1,0 +1,63 @@
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v3.3.0
+    hooks:
+    - id: end-of-file-fixer
+      exclude: ^docs/
+    - id: check-yaml
+    - id: check-added-large-files
+    - id: trailing-whitespace
+      exclude: ^docs/
+    - id: check-docstring-first
+    - id: check-json
+    - id: check-merge-conflict
+    - id: check-xml
+    - id: detect-private-key
+    - id: mixed-line-ending
+      exclude: ^docs/
+    - id: pretty-format-json
+      args:
+        - --autofix
+
+- repo: https://github.com/hadialqattan/pycln
+  rev: v1.1.0
+  hooks:
+    - id: pycln
+      name: pycln
+      entry: pycln
+      exclude: ^tests/
+- repo: https://github.com/pycqa/isort
+  rev: 5.12.0
+  hooks:
+    - id: isort
+      name: isort
+      entry: isort
+      args:
+        - --profile
+        - black
+        - -l 80
+- repo: https://github.com/psf/black
+  rev: 21.10b0
+  hooks:
+    - id: black
+      name: black (python39)
+      entry: black
+      language: system
+      types: [ python ]
+      args:
+        - api/
+        - -l 80
+- repo: local
+  hooks:
+    - id: pylint
+      name: pylint
+      entry: pylint
+      language: system
+      types: [python]
+      exclude: '^(docs|tests)/.*$'
+      args:
+        - -rn
+        - -sn
+        - --rcfile=.pylintrc
+        - --fail-under=10.0
+        - --disable=R0801

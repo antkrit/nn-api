@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>api.core.optimizers &mdash; NN-API  documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+</head>
+
+<body class="wy-body-for-nav">
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+
+
+          <a href="../../../index.html" class="icon icon-home">
+            NN-API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/installation.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/modules.html">Api</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pages/README.html">Readme</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference external" href="https://github.com/antkrit/nn-api/">GitHub</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">NN-API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">api.core.optimizers</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+
+  <h1>Source code for api.core.optimizers</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Contains implementation of optimizers.&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">abc</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="kn">from</span> <span class="nn">api.core.autograd</span> <span class="kn">import</span> <span class="n">Constant</span><span class="p">,</span> <span class="n">Operation</span><span class="p">,</span> <span class="n">Session</span><span class="p">,</span> <span class="n">Variable</span><span class="p">,</span> <span class="n">ops</span>
+<span class="kn">from</span> <span class="nn">api.core.exception</span> <span class="kn">import</span> <span class="n">NoGradientException</span>
+<span class="kn">from</span> <span class="nn">api.core.preprocessing.initializers</span> <span class="kn">import</span> <span class="n">NormalInitializer</span>
+
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s2">&quot;BaseOptimizer&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;GradientDescent&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Adagrad&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Adadelta&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;RMSProp&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Adam&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Adamax&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># optimizers have many abbreviations (such as lr=learning_rate) well known</span>
+<span class="c1"># to users. Therefore, for convenience, C0103 has been disabled in this file</span>
+<span class="c1"># pylint: disable=invalid-name</span>
+
+
+<div class="viewcode-block" id="BaseOptimizer"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer">[docs]</a><span class="k">class</span> <span class="nc">BaseOptimizer</span><span class="p">(</span><span class="n">Operation</span><span class="p">,</span> <span class="n">metaclass</span><span class="o">=</span><span class="n">abc</span><span class="o">.</span><span class="n">ABCMeta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Base optimizer class.</span>
+
+<span class="sd">    Basically, every optimizer is an Operation. So, in most cases,</span>
+<span class="sd">    to create a custom optimizer, it is enough to override the ``__init__()``,</span>
+<span class="sd">    ``build()`` and ``apply_gradient()`` methods:</span>
+
+<span class="sd">    - ``build()`` should be used to add new optimizer variables and will be</span>
+<span class="sd">      called inside the ``self.forward()`` method (in general, this method was</span>
+<span class="sd">      created to add some inner context to each optimizer, e.g. momentums).</span>
+<span class="sd">      Each child implementation should call the parent&#39;s ``build()`` method</span>
+<span class="sd">      at the beginning.</span>
+<span class="sd">    - ``apply_gradient()`` should be used to implement optimizer logic, an</span>
+<span class="sd">      algorithm that will be used to update a variable.</span>
+
+<span class="sd">    .. warning::</span>
+<span class="sd">        Any other methods are not recommended to be overridden.</span>
+
+<span class="sd">    So, a simple optimizer can be implemented as this:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        class SimpleGD(BaseOptimizer):</span>
+
+<span class="sd">            def __init__(self, learning_rate=0.1, trainable=None, name=&#39;gd&#39;):</span>
+<span class="sd">                super().__init__(trainable, session=None, name=name)</span>
+<span class="sd">                self.learning_rate = learning_rate</span>
+
+<span class="sd">                self._lr = None</span>
+<span class="sd">                self._built = False</span>
+
+<span class="sd">            def build(self, var_list):</span>
+<span class="sd">                super().build(var_list)</span>
+<span class="sd">                if self._built:</span>
+<span class="sd">                    return</span>
+
+<span class="sd">                self._lr = self.add_variable(</span>
+<span class="sd">                    self.learning_rate, &#39;learning_rate&#39;</span>
+<span class="sd">                )</span>
+<span class="sd">                self._built = True</span>
+
+<span class="sd">            def apply_gradient(self, x, grad):</span>
+<span class="sd">                return autograd.ops.assign_add(x, -self._lr * grad)</span>
+
+<span class="sd">    :param trainable_variables: variables to optimize, defaults to None</span>
+<span class="sd">    :param session: current session, if None - creates new, defaults to None</span>
+<span class="sd">    :param name: optimizer name</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainable_variables</span><span class="p">,</span> <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span> <span class="o">=</span> <span class="n">session</span> <span class="ow">or</span> <span class="n">Session</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trainable</span> <span class="o">=</span> <span class="n">trainable_variables</span> <span class="ow">or</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+<div class="viewcode-block" id="BaseOptimizer.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.build">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize optimizer variables.</span>
+
+<span class="sd">        This method should be implemented and called by subclasses.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_built&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;/local-iteration&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_build_indexed_dict</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_build_indexed_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Assign index to each trainable node.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">var_list</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span>
+
+<div class="viewcode-block" id="BaseOptimizer.add_variable"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.add_variable">[docs]</a>    <span class="k">def</span> <span class="nf">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init_val</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Add new optimizer value.</span>
+
+<span class="sd">        :param init_val: value of a variable to be created</span>
+<span class="sd">        :param var_name: name of the node to be created</span>
+<span class="sd">        :returns: an optimizer variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">var</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">init_val</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">var_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">var</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.add_variable_from_reference"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.add_variable_from_reference">[docs]</a>    <span class="k">def</span> <span class="nf">add_variable_from_reference</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">model_var</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create an optimizer variable from model variable.</span>
+
+<span class="sd">        :param model_var: :class:`Variable` node. The corresponding model</span>
+<span class="sd">            variable to the optimizer variable to be created.</span>
+<span class="sd">        :param var_name: new optimizer value will be created with name</span>
+<span class="sd">            &#39;model_var.name/var_name&#39;</span>
+<span class="sd">        :param init: the initial value or initializer(callable) of the</span>
+<span class="sd">            optimizer variable, if None, the initial value will be</span>
+<span class="sd">            default to 0, defaults to None</span>
+<span class="sd">        :param shape: shape of the optimizer variable value</span>
+<span class="sd">        :returns: an optimizer variable</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">model_var_numpy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">model_var</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">init</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">init</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">model_var_numpy</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">callable</span><span class="p">(</span><span class="n">init</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">shape</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="n">model_var_numpy</span><span class="o">.</span><span class="n">shape</span>
+
+            <span class="c1"># init supposed to be of BaseInitializer type,</span>
+            <span class="c1"># which returns node</span>
+            <span class="n">init</span> <span class="o">=</span> <span class="n">init</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">model_var_name</span> <span class="o">=</span> <span class="n">model_var</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">var_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_var_name</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="n">var_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="n">var</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">init</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">var_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">var</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.variables"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.variables">[docs]</a>    <span class="k">def</span> <span class="nf">variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return all variables.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_variables</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.apply_gradient"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.apply_gradient">[docs]</a>    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply computed gradients to trainable variables.&quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s2">&quot;Must be implemented in child classes.&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.forward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">objective</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Compute gradients and apply an update rule to trainable variables.</span>
+
+<span class="sd">        :parma objective: objective function, for which the gradients</span>
+<span class="sd">            will be calculated</span>
+<span class="sd">        :return: list of results</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainable</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">gradients</span><span class="p">(</span><span class="n">objective</span><span class="p">)</span>
+        <span class="n">apply_ops</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">apply_gradient</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="o">=</span><span class="n">Variable</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">gradient</span><span class="p">))</span>
+            <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainable</span>
+        <span class="p">]</span>
+        <span class="n">iteration</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">session</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="o">*</span><span class="n">apply_ops</span><span class="p">,</span> <span class="n">iteration</span><span class="p">,</span> <span class="n">returns</span><span class="o">=</span><span class="n">apply_ops</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.backward"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given inputs.&quot;&quot;&quot;</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;There is no gradient for operation </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="k">raise</span> <span class="n">NoGradientException</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BaseOptimizer.minimize"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.BaseOptimizer.minimize">[docs]</a>    <span class="k">def</span> <span class="nf">minimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">operation</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Set operation [to minimize] for the optimizer.&quot;&quot;&quot;</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;/target-wrapper&quot;</span>
+        <span class="n">wrapped_operation</span> <span class="o">=</span> <span class="n">Constant</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="n">operation</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">wrapped_operation</span><span class="p">,)</span>
+
+        <span class="k">return</span> <span class="bp">self</span></div></div>
+
+
+<div class="viewcode-block" id="GradientDescent"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.GradientDescent">[docs]</a><span class="k">class</span> <span class="nc">GradientDescent</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+    <span class="sa">r</span><span class="sd">&quot;&quot;&quot;Gradient Descent optimizer.</span>
+
+<span class="sd">    Update rule for parameter `w` with gradient `g` when `momentum` is 0:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        w = w - learning_rate * g</span>
+
+<span class="sd">    Update rule when `momentum` is larger than 0:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        velocity = momentum * velocity - learning_rate * g</span>
+<span class="sd">        w = w + velocity</span>
+
+<span class="sd">    When `nesterov=True`, this rule becomes:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        velocity = momentum * velocity - learning_rate * g</span>
+<span class="sd">        w = w + momentum * velocity - learning_rate * g</span>
+
+
+<span class="sd">    :param learning_rate: hyperparameter, some small value, defaults to 0.001</span>
+<span class="sd">    :param momentum: hyperparameter, value in range [0, 1], defaults to 0</span>
+<span class="sd">    :param nesterov: whether to apply Nesterov momentum, defaults to False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.001</span><span class="p">,</span>
+        <span class="n">momentum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">nesterov</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">trainable_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;GradientDescent&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">trainable_variables</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">=</span> <span class="n">momentum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nesterov</span> <span class="o">=</span> <span class="n">nesterov</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">momentum</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">))</span> <span class="ow">and</span> <span class="p">(</span>
+            <span class="n">momentum</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">momentum</span> <span class="o">&gt;</span> <span class="mi">1</span>
+        <span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;momentum must be in range [0, 1].&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GradientDescent.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.GradientDescent.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">momentum</span><span class="p">,</span> <span class="s2">&quot;momentum&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">model_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="GradientDescent.apply_gradient"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.GradientDescent.apply_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply computed gradients to trainable variables using update rule.</span>
+
+<span class="sd">        :param x: node, value to update</span>
+<span class="sd">        :param grad: gradient of the x node</span>
+<span class="sd">        :return: update operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+        <span class="n">momentum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momentum</span>
+
+        <span class="k">if</span> <span class="n">momentum</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">momentum</span> <span class="o">-</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">grad</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">nesterov</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span> <span class="o">*</span> <span class="n">momentum</span> <span class="o">-</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">grad</span><span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+
+        <span class="c1"># pylint: disable=invalid-unary-operand-type</span>
+        <span class="c1"># learning rate is defined with `build()` method</span>
+        <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">lr</span> <span class="o">*</span> <span class="n">grad</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Adagrad"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adagrad">[docs]</a><span class="k">class</span> <span class="nc">Adagrad</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Optimizer that implements the Adaptive Gradient algorithm.</span>
+
+<span class="sd">    Adagrad is an optimizer with parameter-specific learning rates,</span>
+<span class="sd">    which are adapted relative to how frequently a parameter gets</span>
+<span class="sd">    updated during training. The more updates a parameter receives,</span>
+<span class="sd">    the smaller the updates.</span>
+
+<span class="sd">    :param learning_rate: hyperparameter, some small value, defaults to 0.1</span>
+<span class="sd">    :param initial_accumulator_value: hyperparameter, value in range [0, 1],</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    :param epsilon: small floating point value used to maintain numerical</span>
+<span class="sd">        stability, defaults to 1e-16</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">initial_accumulator_value</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-16</span><span class="p">,</span>
+        <span class="n">trainable_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Adagrad&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">trainable_variables</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">epsilon</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initial_accumulator_value</span> <span class="o">=</span> <span class="n">initial_accumulator_value</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulators</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Adagrad.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adagrad.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulators</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_accumulators</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span>
+                    <span class="n">model_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span>
+                    <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;accumulator&quot;</span><span class="p">,</span>
+                    <span class="n">init</span><span class="o">=</span><span class="n">NormalInitializer</span><span class="p">(</span>
+                        <span class="n">mu</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">initial_accumulator_value</span><span class="p">,</span> <span class="n">sigma</span><span class="o">=</span><span class="mi">0</span>
+                    <span class="p">),</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Adagrad.apply_gradient"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adagrad.apply_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply computed gradients to trainable variables using update rule.</span>
+
+<span class="sd">        :param x: node, value to update</span>
+<span class="sd">        :param grad: gradient of the x node</span>
+<span class="sd">        :return: update operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+        <span class="n">accumulator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accumulators</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+
+        <span class="n">accumulator</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">accumulator</span><span class="p">,</span> <span class="n">grad</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">acc_grad</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">div</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="n">ops</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">accumulator</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">))</span>
+
+        <span class="c1"># pylint: disable=invalid-unary-operand-type</span>
+        <span class="c1"># learning rate is defined with `build()` method</span>
+        <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">lr</span> <span class="o">*</span> <span class="n">acc_grad</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Adadelta"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adadelta">[docs]</a><span class="k">class</span> <span class="nc">Adadelta</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Optimizer that implements the Adadelta algorithm.</span>
+
+<span class="sd">    Adadelta is a more robust extension of Adagrad that adapts learning rates</span>
+<span class="sd">    based on a moving window of gradient updates, instead of accumulating all</span>
+<span class="sd">    past gradients. This way, Adadelta continues learning even when many</span>
+<span class="sd">    updates have been done. Compared to Adagrad, in the original version of</span>
+<span class="sd">    Adadelta you don&#39;t have to set an initial learning rate. In this</span>
+<span class="sd">    implementation learning_rate can be set</span>
+
+<span class="sd">    :param learning_rate: hyperparameter, some small value, defaults to 1</span>
+<span class="sd">    :param rho: hyperparameter, the decay rate, defaults to 0.9</span>
+<span class="sd">    :param epsilon: small floating point value used to maintain numerical</span>
+<span class="sd">        stability, defaults to 1e-16</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">rho</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-16</span><span class="p">,</span>
+        <span class="n">trainable_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Adadelta&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">trainable_variables</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">epsilon</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rho</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_grads</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_delta_vars</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Adadelta.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adadelta.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_grads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_delta_vars</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_grads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;accumulated_grad&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_delta_vars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;accumulated_delta_var&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Adadelta.apply_gradient"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adadelta.apply_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply computed gradients to trainable variables using update rule.</span>
+
+<span class="sd">        :param x: node, value to update</span>
+<span class="sd">        :param grad: gradient of the x node</span>
+<span class="sd">        :return: update operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rho</span>
+
+        <span class="n">accumulated_grad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_grads</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+        <span class="n">accumulated_delta_var</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_accumulated_delta_vars</span><span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+        <span class="p">]</span>
+
+        <span class="k">def</span> <span class="nf">rms</span><span class="p">(</span><span class="n">val</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">val</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">)</span>
+
+        <span class="n">accumulated_grad</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+            <span class="n">accumulated_grad</span><span class="p">,</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">accumulated_grad</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">grad</span> <span class="o">*</span> <span class="n">grad</span>
+        <span class="p">)</span>
+        <span class="n">delta_var</span> <span class="o">=</span> <span class="o">-</span><span class="n">rms</span><span class="p">(</span><span class="n">accumulated_delta_var</span><span class="p">)</span> <span class="o">*</span> <span class="n">grad</span> <span class="o">/</span> <span class="n">rms</span><span class="p">(</span><span class="n">accumulated_grad</span><span class="p">)</span>
+        <span class="n">accumulated_delta_var</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+            <span class="n">accumulated_delta_var</span><span class="p">,</span>
+            <span class="n">rho</span> <span class="o">*</span> <span class="n">accumulated_delta_var</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">delta_var</span> <span class="o">*</span> <span class="n">delta_var</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="c1"># required to run an assignment operation for accumulated_delta_var</span>
+        <span class="n">zero_value</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">*</span> <span class="n">accumulated_delta_var</span>
+
+        <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">delta_var</span> <span class="o">+</span> <span class="n">zero_value</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="RMSProp"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.RMSProp">[docs]</a><span class="k">class</span> <span class="nc">RMSProp</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Optimizer that implements the Root Mean Squared Propagation algorithm.</span>
+
+<span class="sd">    This implementation of RMSProp uses plain momentum, not Nesterov momentum.</span>
+
+<span class="sd">    The centered version additionally maintains a moving average of the</span>
+<span class="sd">    gradients, and uses that average to estimate the variance.</span>
+
+<span class="sd">    :param learning_rate: hyperparameter, some small value, defaults to 0.1</span>
+<span class="sd">    :param momentum: hyperparameter, value in range [0, 1], defaults to 0</span>
+<span class="sd">    :param rho: hyperparameter, the decay rate, defaults to 0.9</span>
+<span class="sd">    :param epsilon: small floating point value used to maintain numerical</span>
+<span class="sd">        stability, defaults to 1e-16</span>
+<span class="sd">    :param centered: if True, gradients are normalized by the estimated</span>
+<span class="sd">        variance of the gradient; if False, by the uncentered second moment.</span>
+<span class="sd">        Setting this to True may help with training, but is slightly more</span>
+<span class="sd">        expensive in terms of computation and memory, defaults to False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">momentum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+        <span class="n">rho</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-16</span><span class="p">,</span>
+        <span class="n">centered</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">trainable_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;RMSProp&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">trainable_variables</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">epsilon</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">=</span> <span class="n">momentum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rho</span> <span class="o">=</span> <span class="n">rho</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">centered</span> <span class="o">=</span> <span class="n">centered</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rho</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_average_gradients</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="RMSProp.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.RMSProp.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">momentum</span><span class="p">,</span> <span class="s2">&quot;momentum&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rho</span><span class="p">,</span> <span class="s2">&quot;rho&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;velocity&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;momentum&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_average_gradients</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">centered</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_average_gradients</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">var</span><span class="p">,</span> <span class="s2">&quot;average_gradient&quot;</span><span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="RMSProp.apply_gradient"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.RMSProp.apply_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply computed gradients to trainable variables using update rule.</span>
+
+<span class="sd">        :param x: node, value to update</span>
+<span class="sd">        :param grad: gradient of the x node</span>
+<span class="sd">        :return: update operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+        <span class="n">rho</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rho</span>
+
+        <span class="n">velocity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+        <span class="n">momentum</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">momentum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+        <span class="n">average_grad</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">centered</span><span class="p">:</span>
+            <span class="n">average_grad</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_average_gradients</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+
+        <span class="n">velocity</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+            <span class="n">velocity</span><span class="p">,</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">velocity</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">ops</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">centered</span><span class="p">:</span>
+            <span class="n">average_grad</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+                <span class="n">average_grad</span><span class="p">,</span> <span class="n">rho</span> <span class="o">*</span> <span class="n">average_grad</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">rho</span><span class="p">)</span> <span class="o">*</span> <span class="n">grad</span>
+            <span class="p">)</span>
+            <span class="n">denominator</span> <span class="o">=</span> <span class="n">velocity</span> <span class="o">-</span> <span class="n">ops</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">average_grad</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">denominator</span> <span class="o">=</span> <span class="n">velocity</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+
+        <span class="n">increment</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">grad</span> <span class="o">*</span> <span class="n">ops</span><span class="o">.</span><span class="n">rsqrt</span><span class="p">(</span><span class="n">denominator</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span><span class="p">:</span>
+            <span class="n">momentum</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span>
+                <span class="n">momentum</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">*</span> <span class="n">momentum</span> <span class="o">+</span> <span class="n">increment</span>
+            <span class="p">)</span>
+            <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">momentum</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="n">increment</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Adam"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adam">[docs]</a><span class="k">class</span> <span class="nc">Adam</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Optimizer that implements the Adam algorithm.</span>
+
+<span class="sd">    Adam optimization is a stochastic gradient descent method that is based on</span>
+<span class="sd">    adaptive estimation of first-order and second-order moments.</span>
+
+<span class="sd">    :param learning_rate: hyperparameter, some small value, defaults to 0.1</span>
+<span class="sd">    :param beta_1: hyperparameter, the exponential decay rate for the 1st</span>
+<span class="sd">        moment estimates, defaults to 0.9.</span>
+<span class="sd">    :param beta_2: hyperparameter, the exponential decay rate for the 2nd</span>
+<span class="sd">        moment estimates, defaults to 0.9.</span>
+<span class="sd">    :param epsilon: small floating point value used to maintain numerical</span>
+<span class="sd">        stability, defaults to 1e-16</span>
+<span class="sd">    :param amsgrad: whether to apply AMSGrad variant of this algorithm from</span>
+<span class="sd">        the paper &quot;On the Convergence of Adam and beyond&quot;, defaults to False</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">beta_2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-16</span><span class="p">,</span>
+        <span class="n">amsgrad</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">trainable_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Adam&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">trainable_variables</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">epsilon</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_1</span> <span class="o">=</span> <span class="n">beta_1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_2</span> <span class="o">=</span> <span class="n">beta_2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">amsgrad</span> <span class="o">=</span> <span class="n">amsgrad</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_hats</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Adam.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adam.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_1</span><span class="p">,</span> <span class="s2">&quot;beta_1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_2</span><span class="p">,</span> <span class="s2">&quot;beta_2&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">model_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">model_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;v&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amsgrad</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_hats</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_hats</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span>
+                        <span class="n">model_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;vhat&quot;</span>
+                    <span class="p">)</span>
+                <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Adam.apply_gradient"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adam.apply_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply computed gradients to trainable variables using update rule.</span>
+
+<span class="sd">        :param x: node, value to update</span>
+<span class="sd">        :param grad: gradient of the x node</span>
+<span class="sd">        :return: update operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+        <span class="n">beta_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span>
+        <span class="n">beta_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span>
+        <span class="n">beta_1_power</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">beta_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">beta_2_power</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">beta_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocities</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">lr</span> <span class="o">*</span> <span class="n">ops</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta_2_power</span><span class="p">)</span>
+        <span class="n">alpha</span> <span class="o">/=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">beta_1_power</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">grad</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta_1</span><span class="p">))</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="p">(</span><span class="n">ops</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">grad</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">-</span> <span class="n">v</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta_2</span><span class="p">))</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">amsgrad</span><span class="p">:</span>
+            <span class="n">v_hat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_velocity_hats</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+            <span class="n">v</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">v_hat</span><span class="p">,</span> <span class="n">ops</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">v_hat</span><span class="p">,</span> <span class="n">v</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">m</span> <span class="o">*</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">ops</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">))</span></div></div>
+
+
+<div class="viewcode-block" id="Adamax"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adamax">[docs]</a><span class="k">class</span> <span class="nc">Adamax</span><span class="p">(</span><span class="n">BaseOptimizer</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Optimizer that implements the Adamax algorithm.</span>
+
+<span class="sd">    Adamax, a variant of Adam based on the infinity norm, is a first-order</span>
+<span class="sd">    gradient-based optimization method</span>
+
+<span class="sd">    :param learning_rate: hyperparameter, some small value, defaults to 0.1</span>
+<span class="sd">    :param beta_1: hyperparameter, the exponential decay rate for the 1st</span>
+<span class="sd">        moment estimates, defaults to 0.9.</span>
+<span class="sd">    :param beta_2: hyperparameter, the exponential decay rate for the 2nd</span>
+<span class="sd">        moment estimates, defaults to 0.999.</span>
+<span class="sd">    :param epsilon: small floating point value used to maintain numerical</span>
+<span class="sd">        stability, defaults to 1e-16</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">learning_rate</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span>
+        <span class="n">beta_1</span><span class="o">=</span><span class="mf">0.9</span><span class="p">,</span>
+        <span class="n">beta_2</span><span class="o">=</span><span class="mf">0.999</span><span class="p">,</span>
+        <span class="n">epsilon</span><span class="o">=</span><span class="mf">1e-16</span><span class="p">,</span>
+        <span class="n">trainable_variables</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">session</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">name</span><span class="o">=</span><span class="s2">&quot;Adamax&quot;</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">trainable_variables</span><span class="p">,</span> <span class="n">session</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">epsilon</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="n">learning_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_1</span> <span class="o">=</span> <span class="n">beta_1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta_2</span> <span class="o">=</span> <span class="n">beta_2</span>
+
+        <span class="c1"># should be initialized with build() method</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">False</span>
+
+<div class="viewcode-block" id="Adamax.build"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adamax.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">var_list</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">var_list</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_built</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">learning_rate</span><span class="p">,</span> <span class="s2">&quot;learning_rate&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_1</span><span class="p">,</span> <span class="s2">&quot;beta_1&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">add_variable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta_2</span><span class="p">,</span> <span class="s2">&quot;beta_2&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">var_list</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">model_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">add_variable_from_reference</span><span class="p">(</span><span class="n">model_var</span><span class="o">=</span><span class="n">var</span><span class="p">,</span> <span class="n">var_name</span><span class="o">=</span><span class="s2">&quot;u&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_built</span> <span class="o">=</span> <span class="kc">True</span></div>
+
+<div class="viewcode-block" id="Adamax.apply_gradient"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.optimizers.Adamax.apply_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">apply_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">grad</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Apply computed gradients to trainable variables using update rule.</span>
+
+<span class="sd">        :param x: node, value to update</span>
+<span class="sd">        :param grad: gradient of the x node</span>
+<span class="sd">        :return: update operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_lr</span>
+        <span class="n">beta_1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_1</span>
+        <span class="n">beta_2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_beta_2</span>
+        <span class="n">beta_1_power</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">pow</span><span class="p">(</span><span class="n">beta_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_iteration</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_momentums</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_index_dict</span><span class="p">[</span><span class="n">x</span><span class="p">]]</span>
+
+        <span class="n">m</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="p">(</span><span class="n">grad</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta_1</span><span class="p">))</span>
+        <span class="n">u</span> <span class="o">=</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">ops</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">beta_2</span> <span class="o">*</span> <span class="n">u</span><span class="p">,</span> <span class="n">ops</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">grad</span><span class="p">)))</span>
+        <span class="k">return</span> <span class="n">ops</span><span class="o">.</span><span class="n">assign_add</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">lr</span> <span class="o">*</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">beta_1_power</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">u</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">threshold</span><span class="p">))</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023, Anton Krytskyi.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+</body>
+</html>
