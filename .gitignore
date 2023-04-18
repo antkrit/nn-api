@@ -6,5 +6,6 @@ logs/
 __pycache__/
 .pytest_cache
 .coverage
+*.pkl
 
 notebooks/playground.ipynb
