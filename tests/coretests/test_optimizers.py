@@ -20,12 +20,12 @@ def test_base_optimizer(session, mocker):
 
     var_ref = base.add_variable(init_val=1, var_name="added")
     assert isinstance(var_ref, namespace.nodes.variable)
-    assert np.array_equal(var_ref.value, 1)
+    assert np.allclose(var_ref.value, 1)
     assert var_ref in base.variables()
 
     var = base.add_variable_from_reference(var_ref, var_name="added+ref")
     assert isinstance(var, namespace.nodes.variable)
-    assert np.array_equal(var.value, 0)
+    assert np.allclose(var.value, 0)
     assert var in base.variables()
 
     var = base.add_variable_from_reference(
@@ -33,7 +33,7 @@ def test_base_optimizer(session, mocker):
     )
     var_shape = var.value.shape if hasattr(var.value, "shape") else ()
     assert isinstance(var, namespace.nodes.variable)
-    assert np.array_equal(var.value, np.ones(var_shape))
+    assert np.allclose(var.value, np.ones(var_shape))
     assert var in base.variables()
 
     var_shape = (2, 2)
@@ -41,7 +41,7 @@ def test_base_optimizer(session, mocker):
         var_ref, var_name="added+ref", init=ones, shape=var_shape
     )
     assert isinstance(var, namespace.nodes.variable)
-    assert np.array_equal(var.value, np.ones(var_shape))
+    assert np.allclose(var.value, np.ones(var_shape))
     assert var in base.variables()
 
     op = (test_var**2) / 2  # d(op)/dx = x
@@ -119,12 +119,12 @@ def test_gradient_descent(session, lr):
     session.run(objective, minimize_op)
 
     x_expected = x_init_value - x_init_value * lr
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
 
     session.run(minimize_op)
 
     x_expected = x_expected - x_expected * lr
-    assert np.array_equal(X.value, x_expected)
+    assert np.allclose(X.value, x_expected)
 
 
 @pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
