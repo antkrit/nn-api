@@ -3,7 +3,7 @@ import os
 
 import joblib
 
-MODEL_PATH = os.environ["MODEL_PATH"]
+MODEL_PATH = os.getenv("MODEL_PATH")
 
 
 class Model:
