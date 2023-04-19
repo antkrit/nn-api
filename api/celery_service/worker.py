@@ -10,7 +10,7 @@ worker = Celery(
     "celery_app",
     broker=BROKER_URI,
     backend=BACKEND_URI,
-    include=["celery_task_app.tasks"],
+    include=["api.celery_service.tasks"],
 )
 
 worker.conf.update(result_expires=3600)
