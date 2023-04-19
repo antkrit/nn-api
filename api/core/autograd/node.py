@@ -79,11 +79,6 @@ class NodeMixin:
         """Return current graph."""
         return get_current_graph()
 
-    def prepare_graph(self, graph):
-        """Do some graph post-processing."""
-        graph.nodes.append(self)
-        graph.head_node = self
-
 
 # E1101(no-member) is disabled because this class should only
 # be used to detect Node objects (isinstance)
@@ -108,7 +103,6 @@ class Node(NodeMixin):
         self.graph = self.current_graph()
         self._prefix = name or "node"
         self.name = f"{self.graph.name}/{self._prefix}-{self.count()}"
-        self.prepare_graph(self.graph)
 
         value_not_none = self._value is not None
 
