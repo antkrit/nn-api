@@ -8,7 +8,7 @@ from celery.result import AsyncResult
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from api.celery.tasks import predict_task
+from api.celery_service.tasks import predict_task
 from api.v1.schemas import InputData, Prediction, Task
 
 model_router = APIRouter(

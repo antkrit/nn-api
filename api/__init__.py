@@ -3,7 +3,7 @@
 Contains following modules and packages:
 
 Modules:
-- `celery`: celery application and tasks
+- `celery_service`: celery_service application and tasks
 - `core`: neural network library
 - `v1`: api v1 implementation
 

@@ -1,10 +1,10 @@
-"""Contains celery tasks implementation."""
+"""Contains celery_service tasks implementation."""
 import importlib
 from abc import ABC
 
 from celery import Task
 
-from api.celery.worker import worker
+from api.celery_service.worker import worker
 
 
 class WrappedTask(Task, ABC):
