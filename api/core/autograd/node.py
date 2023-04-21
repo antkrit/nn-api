@@ -52,6 +52,8 @@ __all__ = (
     "Cos",
     "Divide",
     "Einsum",
+    "Reshape",
+    "Flatten",
     "Exp",
     "Log",
     "Log2",
@@ -410,6 +412,76 @@ class Einsum(Operation):
         output = result[0] if len(result) == 1 else result
 
         return output
+
+
+class Reshape(UnaryOperation):
+    """Reshape an element.
+
+    :param value: array to reshape
+    :param to_shape: new shape
+    :param name: node name, defaults to 'sum'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(
+        self, value, to_shape, name="reshape", shape=None, threshold=0
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
+        self.inputs = (value,)
+        self.from_shape = None
+        self.to_shape = to_shape
+
+    def forward(self, value):
+        """Return output of the operation by given input.
+
+        :param value: input
+        :return: reshaped array
+        """
+        self.from_shape = value.shape
+        return np.reshape(value, self.to_shape)
+
+    def backward(self, value, dout):
+        """Return gradient of the operation by given input.
+
+        :param value: input
+        :param dout: gradient of the path to this node
+        :return: gradient of the operation
+        """
+        return (np.multiply(dout, np.reshape(value, self.from_shape)),)
+
+
+class Flatten(Reshape):
+    """Flatten an element.
+
+    :param value: array to reshape
+    :param name: node name, defaults to 'sum'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(self, value, name="reshape", shape=None, threshold=0):
+        """Constructor method."""
+        super().__init__(
+            value=value,
+            to_shape=None,
+            name=name,
+            shape=shape,
+            threshold=threshold,
+        )
+
+    def forward(self, value):
+        """Return output of the operation by given input.
+
+        :param value: input
+        :return: reshaped array
+        """
+        value = np.asarray(value)
+        self.to_shape = (value.size,)
+        self.from_shape = value.shape
+
+        return np.reshape(value, self.to_shape)
 
 
 class Sum(UnaryOperation):

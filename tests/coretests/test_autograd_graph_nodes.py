@@ -201,6 +201,19 @@ class TestOtherOperations:
 
 @pytest.mark.parametrize("dout", dout_cases, ids=dout_ids)
 class TestUnaryOperators:
+    def test_reshape(self, test_case_unary, dout):
+        a = np.asarray(test_case_unary)
+        to_shape = a.size
+        s = Reshape(a, to_shape=a.size)
+        assert np.array_equal(s.forward(a), np.reshape(a, to_shape))
+        assert np.array_equal(s.backward(a, dout), [np.multiply(dout, a)])
+
+    def test_flatten(self, test_case_unary, dout):
+        a = np.asarray(test_case_unary)
+        s = Flatten(a)
+        assert np.array_equal(s.forward(a), a.flatten())
+        assert np.array_equal(s.backward(a, dout), [np.multiply(dout, a)])
+
     def test_sqrt(self, test_case_unary, dout):
         a = test_case_unary
         s = Sqrt(a)
