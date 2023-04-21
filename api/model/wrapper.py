@@ -1,13 +1,11 @@
 """Contains model wrapper."""
-from pathlib import Path
-
 import joblib
 
 from api import __version__
+from api.config import BASEDIR
 
-BASE_DIR = Path(__file__).resolve(strict=True).parent
 MODEL_FILENAME = f"trained_model-{__version__}.pkl"
-MODEL_PATH = BASE_DIR.joinpath(MODEL_FILENAME)
+MODEL_PATH = BASEDIR / "api" / "model" / MODEL_FILENAME
 
 
 class Model:

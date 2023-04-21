@@ -36,8 +36,7 @@ async def result(task_id):
     if not task.ready():
         return JSONResponse(
             status_code=202,
-            content={"task_id": str(task_id), "status": "Processing"},
+            content={"task_id": str(task_id), "status": task.status},
         )
 
-    output = task.get()
-    return {"task_id": task_id, "status": "Success", "result": str(output)}
+    return {"task_id": task_id, "status": task.status, "result": task.result}

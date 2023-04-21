@@ -1,10 +1,10 @@
 """Celery worker."""
-import os
-
 from celery import Celery
 
-BROKER_URI = os.getenv("BROKER_URI")
-BACKEND_URI = os.getenv("BACKEND_URI")
+from api.config import config
+
+BROKER_URI = config.get("CELERY_BROKER_URI", "pyamqp://guest@localhost//")
+BACKEND_URI = config.get("CELERY_BACKEND_URI", "redis://localhost")
 
 worker = Celery(
     "celery_app",
