@@ -449,7 +449,9 @@ class Reshape(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return (np.multiply(dout, np.reshape(value, self.from_shape)),)
+        dout = np.reshape(dout, self.from_shape)
+        value = np.reshape(value, self.from_shape)
+        return (np.multiply(dout, value),)
 
 
 class Flatten(Reshape):
@@ -474,12 +476,18 @@ class Flatten(Reshape):
     def forward(self, value):
         """Return output of the operation by given input.
 
+        Returns at least 3d array.
+
         :param value: input
         :return: reshaped array
         """
         value = np.asarray(value)
-        self.to_shape = (value.size,)
         self.from_shape = value.shape
+
+        if value.ndim > 2:
+            self.to_shape = (value.shape[0], 1, -1)
+        else:
+            self.to_shape = (1, 1, value.size)
 
         return np.reshape(value, self.to_shape)
 

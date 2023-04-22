@@ -79,5 +79,9 @@ def test_other_ops(session):
 
     a = np.arange(100)
     a_var = namespace.nodes.variable(a)
-    assert np.array_equal(session.run(ops.flatten(a)), a.flatten())
-    assert np.array_equal(session.run(ops.flatten(a_var)), a.flatten())
+    to_shape = (1, 1, a.size) if a.ndim < 2 else (a.shape[0], 1, -1)
+    assert np.array_equal(session.run(ops.flatten(a)), np.reshape(a, to_shape))
+    assert session.run(ops.flatten(a)).ndim == 3
+    assert np.array_equal(
+        session.run(ops.flatten(a_var)), np.reshape(a, to_shape)
+    )

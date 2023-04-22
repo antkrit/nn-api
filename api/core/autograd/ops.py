@@ -129,7 +129,11 @@ def reshape(this, to_shape, **kwargs):
 
 
 def flatten(this, **kwargs):
-    """Flatten array."""
+    """Flatten array.
+
+    Returns 3d array. Ignore batch if this.ndim > 3,
+    else add batch of size 1.
+    """
     return node_wrapper(Flatten, this, **kwargs)
 
 
