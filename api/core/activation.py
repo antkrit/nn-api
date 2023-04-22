@@ -57,7 +57,7 @@ class Sigmoid(BaseActivation):
 
     def forward(self, x):
         """Calculate sigmoid."""
-        return 1 / (1 + ag.ops.exp(-x))
+        return ag.ops.exp(x) / (1 + ag.ops.exp(x))
 
 
 class Tanh(BaseActivation):
@@ -111,12 +111,14 @@ class ELU(BaseActivation):
 
     def forward(self, x):
         """Calculate elu."""
+        # TODO: remove session call, add if cond operation
         cond = np.asarray(self.session.run(x)) > 0
 
         cond_true = ag.utils.convert_to_node(value=np.asarray(cond, dtype=int))
         cond_false = ag.utils.convert_to_node(
             value=np.asarray(np.invert(cond), dtype=int)
         )
+
         return cond_true * x + cond_false * self.alpha * (ag.ops.exp(x) - 1)
 
 
@@ -134,8 +136,10 @@ class Softmax(BaseActivation):
 
     def forward(self, x):
         """Calculate softmax."""
-        shiftx = x - np.max(self.session.run(x))
+        # TODO: shiftx = x - ops.max(x)
+        shiftx = x
         exp = ag.ops.exp(shiftx)
+
         return exp / (ag.ops.sum(exp) + self.threshold)
 
 

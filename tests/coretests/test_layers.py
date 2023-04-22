@@ -106,8 +106,43 @@ def test_dense_layer(session, x, activation, weight_init, use_bias):
     assert layer_output.shape == expected_output_shape
 
 
-@pytest.mark.parametrize("shape", [(1,), (1, 1)], ids=["shape-1d", "shape-2d"])
+def test_embedding_layer(session):
+    array = np.ones((10, 1, 4))
+
+    emb = Embedding(input_dim=50, output_dim=8, input_length=4)
+    assert session.run(emb(array)).shape == (10, 4, 8)
+    assert emb.shape == (4, 8)
+
+
+def test_flatten_layer(session, test_case_unary):
+    if isinstance(test_case_unary, int):
+        pytest.skip()
+
+    layer = Flatten()
+    assert session.run(layer(test_case_unary)).ndim == 3
+
+    if test_case_unary.ndim > 2:
+        assert (
+            session.run(layer(test_case_unary)).shape[0]
+            == test_case_unary.shape[0]
+        )
+    else:
+        assert session.run(layer(test_case_unary)).shape[0] == 1
+
+
+@pytest.mark.parametrize(
+    "shape", [(1,), (1, 1), (1, 1, 1)], ids=["shape-1d", "shape-2d", "shape-3d"]
+)
 def test_input_layer(session, shape):
+    # fix PyCharm warning:
+    # `Expected type 'Sized', got 'int' instead`
+    assert isinstance(shape, tuple)
+
+    if len(shape) < 2:
+        with pytest.raises(ValueError):
+            _ = Input(input_shape=shape, batch_size=1)
+        pytest.skip()
+
     with pytest.raises(ValueError):
         _ = Input(input_shape=())
 
@@ -167,9 +202,9 @@ def test_input_shape():
 
     shape = (1, 1)
     input_shape = InputShape(shape)
-    assert input_shape.shape == shape[1:]
-    assert input_shape.batch == 1
-    assert input_shape.batch_input_shape == shape
+    assert input_shape.shape == shape
+    assert input_shape.batch is None
+    assert input_shape.batch_input_shape == (None, *shape)
 
     shape = (1, 1, 1)
     input_shape = InputShape(shape)
