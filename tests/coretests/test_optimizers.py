@@ -4,7 +4,7 @@ import pytest
 from api.core import autograd as ag
 from api.core import namespace
 from api.core.optimizers import *
-from api.core.preprocessing.initializers import ones, random_uniform
+from api.core.preprocessing.initializers import ones
 
 np.seterr(all="ignore")
 
@@ -17,6 +17,9 @@ def test_base_optimizer(session, mocker):
 
     test_var = namespace.nodes.variable(value=1, name="x")
     base = BaseOptimizer(trainable_variables=[test_var])
+
+    with pytest.raises(namespace.exceptions.NoGradient):
+        base.backward()
 
     var_ref = base.add_variable(init_val=1, var_name="added")
     assert isinstance(var_ref, namespace.nodes.variable)
@@ -65,6 +68,15 @@ def test_base_optimizer(session, mocker):
     assert base.forward(op) == 1
     assert session.run(base._iteration) == 1
 
+    gradients = [-1234, 1, 1234]
+    assert np.array_equal(base.clip(gradients), gradients)
+
+    base = BaseOptimizer(clipvalue=10, trainable_variables=[])
+    assert np.array_equal(base.clip(gradients), np.clip(gradients, -10, 10))
+
+    base = BaseOptimizer(clipnorm=2, trainable_variables=[])
+    assert np.linalg.norm(base.clip(gradients)) == 3
+
 
 def test_base_optimizer_docstring_example(session):
     class SimpleGD(BaseOptimizer):
@@ -86,7 +98,7 @@ def test_base_optimizer_docstring_example(session):
         def apply_gradient(self, x, grad):
             return ag.ops.assign_add(x, -self._lr * grad)
 
-    X = random_uniform((3, 3))
+    X = ones((3, 3))
     x_init_value = X.value.copy()
     lr = 0.01
 
@@ -106,10 +118,26 @@ def test_base_optimizer_docstring_example(session):
 
 @pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_gradient_descent(session, lr):
-    X = random_uniform((3, 3))
+    X = ones((3, 3))
     x_init_value = X.value.copy()
 
     objective = (X**2) / 2  # d(op)/dx = x
+
+    with pytest.raises(ValueError):
+        _ = GradientDescent(
+            learning_rate=lr,
+            momentum=999,
+            trainable_variables=[X],
+            session=session,
+        )
+
+    with pytest.raises(ValueError):
+        _ = GradientDescent(
+            learning_rate=lr,
+            momentum=-999,
+            trainable_variables=[X],
+            session=session,
+        )
 
     optimizer = GradientDescent(
         learning_rate=lr, momentum=0, trainable_variables=[X], session=session
@@ -129,7 +157,7 @@ def test_gradient_descent(session, lr):
 
 @pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adagrad(session, lr):
-    X = random_uniform((3, 3))
+    X = ones((3, 3))
     x_init_value = X.value.copy()
 
     objective = (X**2) / 2  # d(op)/dx = x
@@ -152,7 +180,7 @@ def test_adagrad(session, lr):
 
 @pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adadelta(session, lr):
-    X = random_uniform((3, 3))
+    X = ones((3, 3))
     x_init_value = X.value.copy()
 
     objective = (X**2) / 2  # d(op)/dx = x
@@ -180,7 +208,7 @@ def test_adadelta(session, lr):
 
 @pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_rmsprop(session, lr):
-    X = random_uniform((3, 3))
+    X = ones((3, 3))
     x_init_value = X.value.copy()
 
     objective = (X**2) / 2  # d(op)/dx = x
@@ -209,7 +237,7 @@ def test_rmsprop(session, lr):
 )
 @pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adam(session, lr, amsgrad):
-    X = random_uniform((3, 3))
+    X = ones((3, 3))
     x_init_value = X.value.copy()
 
     objective = (X**2) / 2  # d(op)/dx = x
@@ -253,7 +281,7 @@ def test_adam(session, lr, amsgrad):
 
 @pytest.mark.parametrize("lr", [0.01, 2], ids=["lr=0.01", "lr=2"])
 def test_adamax(session, lr):
-    X = random_uniform((3, 3))
+    X = ones((3, 3))
     x_init_value = X.value.copy()
 
     objective = (X**2) / 2  # d(op)/dx = x

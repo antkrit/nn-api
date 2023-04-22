@@ -71,6 +71,16 @@ __all__ = (
 )
 
 
+# prevent numpy RuntimeWarning: overflow encountered in ...
+MIN_CLIP_EXP = -709.78
+MAX_CLIP_EXP = 709.78
+
+MIN_CLIP_POW = -1.34e15
+MAX_CLIP_POW = 1.34e15
+
+MIN_CLIP_LOG = 0
+
+
 class NodeMixin:
     """Contains different useful members for nodes."""
 
@@ -826,6 +836,7 @@ class Power(BinaryOperation):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
+
         d_wrt_left = np.multiply(
             dout, np.multiply(right, np.power(left, right - 1))
         )
@@ -994,7 +1005,7 @@ class Exp(UnaryOperation):
         :param value: input
         :return: value exponent
         """
-        return np.exp(value)
+        return np.exp(np.clip(value, MIN_CLIP_EXP, MAX_CLIP_EXP))
 
     def backward(self, value, dout):
         """Return gradient of the operation by given input.
@@ -1003,7 +1014,11 @@ class Exp(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return (np.multiply(dout, np.exp(value)),)
+        return (
+            np.multiply(
+                dout, np.exp(np.clip(value, MIN_CLIP_EXP, MAX_CLIP_EXP))
+            ),
+        )
 
 
 class Log(UnaryOperation):
