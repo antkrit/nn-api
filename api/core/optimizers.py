@@ -67,16 +67,31 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
                 return autograd.ops.assign_add(x, -self._lr * grad)
 
     :param trainable_variables: variables to optimize, defaults to None
+    :param clipnorm: if set, the gradient of each weight is individually
+        clipped so that its norm is no higher than this value.
+    :param clipvalue: if set, the gradient of each weight is clipped to be
+        no higher than this value.
     :param session: current session, if None - creates new, defaults to None
     :param name: optimizer name
     """
 
-    def __init__(self, trainable_variables, session=None, name=None, **kwargs):
+    def __init__(
+        self,
+        trainable_variables,
+        clipnorm=0,
+        clipvalue=0,
+        session=None,
+        name=None,
+        **kwargs,
+    ):
         """Constructor method."""
         super().__init__(name=name, **kwargs)
         self.session = session or Session()
         self.trainable = trainable_variables or []
         self._variables = []
+
+        self.clipnorm = clipnorm
+        self.clipvalue = clipvalue
 
         # should be initialized with build() method
         self._iteration = None
@@ -156,6 +171,23 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
         """Return all variables."""
         return self._variables
 
+    def clip(self, gradients):
+        """Clip gradients if clipnorm or clipvalue is set."""
+        if self.clipvalue:
+            return [
+                np.clip(g, -self.clipvalue, self.clipvalue) for g in gradients
+            ]
+
+        if self.clipnorm:
+            return [
+                self.clipnorm * (g / (np.linalg.norm(g) + 1e-16))
+                if np.linalg.norm(g) >= self.clipnorm
+                else g
+                for g in gradients
+            ]
+
+        return np.atleast_1d(gradients).tolist()
+
     @abc.abstractmethod
     def apply_gradient(self, *args, **kwargs):
         """Apply computed gradients to trainable variables."""
@@ -169,10 +201,13 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
         :return: list of results
         """
         self.build(self.trainable)
-        self.session.gradients(objective)
+
+        gradients = self.session.gradients(objective, returns=self.trainable)
+        clipped_gradients = self.clip(gradients)
+
         apply_ops = [
-            self.apply_gradient(x, grad=Variable(x.gradient))
-            for x in self.trainable
+            self.apply_gradient(x, grad=Variable(clipped_gradients[i]))
+            for i, x in enumerate(self.trainable)
         ]
         iteration = ops.assign_add(self._iteration, 1)
 
@@ -226,12 +261,20 @@ class GradientDescent(BaseOptimizer):
         learning_rate=0.001,
         momentum=0,
         nesterov=False,
+        clipvalue=0,
+        clipnorm=0,
         trainable_variables=None,
         session=None,
         name="GradientDescent",
     ):
         """Constructor method."""
-        super().__init__(trainable_variables, session, name=name)
+        super().__init__(
+            trainable_variables=trainable_variables,
+            clipvalue=clipvalue,
+            clipnorm=clipnorm,
+            session=session,
+            name=name,
+        )
         self.learning_rate = learning_rate
         self.momentum = momentum
         self.nesterov = nesterov
@@ -307,13 +350,20 @@ class Adagrad(BaseOptimizer):
         learning_rate=0.1,
         initial_accumulator_value=0.1,
         epsilon=1e-16,
+        clipvalue=0,
+        clipnorm=0,
         trainable_variables=None,
         session=None,
         name="Adagrad",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables, session, name=name, threshold=epsilon
+            trainable_variables=trainable_variables,
+            clipvalue=clipvalue,
+            clipnorm=clipnorm,
+            session=session,
+            name=name,
+            threshold=epsilon,
         )
         self.learning_rate = learning_rate
         self.initial_accumulator_value = initial_accumulator_value
@@ -384,13 +434,20 @@ class Adadelta(BaseOptimizer):
         learning_rate=1,
         rho=0.9,
         epsilon=1e-16,
+        clipvalue=0,
+        clipnorm=0,
         trainable_variables=None,
         session=None,
         name="Adadelta",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables, session, name=name, threshold=epsilon
+            trainable_variables=trainable_variables,
+            clipvalue=clipvalue,
+            clipnorm=clipnorm,
+            session=session,
+            name=name,
+            threshold=epsilon,
         )
         self.learning_rate = learning_rate
         self.rho = rho
@@ -482,13 +539,20 @@ class RMSProp(BaseOptimizer):
         rho=0.95,
         epsilon=1e-16,
         centered=False,
+        clipvalue=0,
+        clipnorm=0,
         trainable_variables=None,
         session=None,
         name="RMSProp",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables, session, name=name, threshold=epsilon
+            trainable_variables=trainable_variables,
+            clipvalue=clipvalue,
+            clipnorm=clipnorm,
+            session=session,
+            name=name,
+            threshold=epsilon,
         )
         self.learning_rate = learning_rate
         self.momentum = momentum
@@ -599,13 +663,20 @@ class Adam(BaseOptimizer):
         beta_2=0.999,
         epsilon=1e-16,
         amsgrad=False,
+        clipvalue=0,
+        clipnorm=0,
         trainable_variables=None,
         session=None,
         name="Adam",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables, session, name=name, threshold=epsilon
+            trainable_variables=trainable_variables,
+            clipvalue=clipvalue,
+            clipnorm=clipnorm,
+            session=session,
+            name=name,
+            threshold=epsilon,
         )
         self.learning_rate = learning_rate
         self.beta_1 = beta_1
@@ -700,13 +771,20 @@ class Adamax(BaseOptimizer):
         beta_1=0.9,
         beta_2=0.999,
         epsilon=1e-16,
+        clipvalue=0,
+        clipnorm=0,
         trainable_variables=None,
         session=None,
         name="Adamax",
     ):
         """Constructor method."""
         super().__init__(
-            trainable_variables, session, name=name, threshold=epsilon
+            trainable_variables=trainable_variables,
+            clipvalue=clipvalue,
+            clipnorm=clipnorm,
+            session=session,
+            name=name,
+            threshold=epsilon,
         )
         self.learning_rate = learning_rate
         self.beta_1 = beta_1

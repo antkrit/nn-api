@@ -5,6 +5,7 @@ logs/
 *.pkl
 
 notebooks/playground.ipynb
+notebooks/data/
 
 
 # Byte-compiled / optimized / DLL files

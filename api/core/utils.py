@@ -2,7 +2,7 @@
 import numpy as np
 
 
-def at_least3d(array):
+def atleast_3d(array):
     """View inputs as arrays with at least three dimensions.
 
     Unlike the numpy counterpart, this function has the following behaviour:

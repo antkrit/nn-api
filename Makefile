@@ -1,6 +1,6 @@
 # target: test - run tests from tests/ folder
 test:
-	pytest --cov-report term-missing --cov --doctest-modules
+	pytest --cov-report term-missing --cov api/ --doctest-modules
 
 # target: lint - run code style tests for api/ folder
 lint:
