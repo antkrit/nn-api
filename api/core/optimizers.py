@@ -186,6 +186,9 @@ class BaseOptimizer(Operation, metaclass=abc.ABCMeta):
                 for g in gradients
             ]
 
+        # `Session.gradient()` returns either 1 value or array of values
+        # see `BaseOptimizer.forward()` implementation
+        gradients = np.asarray(gradients, dtype=object)
         return np.atleast_1d(gradients).tolist()
 
     @abc.abstractmethod
