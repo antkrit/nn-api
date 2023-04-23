@@ -1,11 +1,7 @@
 """Contains model wrapper."""
 import joblib
 
-from api import __version__
-from api.config import BASEDIR
-
-MODEL_FILENAME = f"trained_model-{__version__}.pkl"
-MODEL_PATH = BASEDIR / "api" / "model" / MODEL_FILENAME
+from api.config import settings
 
 
 class Model:
@@ -13,7 +9,7 @@ class Model:
 
     def __init__(self):
         """Constructor method."""
-        self.model = self._load_model(MODEL_PATH)
+        self.model = self._load_model(settings["MODEL_PATH"])
 
     @staticmethod
     def _load_model(path):
