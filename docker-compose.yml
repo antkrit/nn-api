@@ -43,7 +43,7 @@ services:
   # CELERY WORKER
   celery:
     image: api-module-image:latest
-    container_name: celery-worker
+    container_name: celery_service-worker
     env_file: .env
     networks:
       - local
@@ -56,7 +56,7 @@ services:
   # CELERY MONITOR
   flower:
     image: api-module-image:latest
-    container_name: celery-flower
+    container_name: celery_service-flower
     env_file: .env
     command: /start-flower
     volumes:

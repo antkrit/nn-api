@@ -1,6 +1,6 @@
 """Contains pydantic schemas implementations."""
 # pylint: disable=no-name-in-module
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Task(BaseModel):
@@ -10,11 +10,11 @@ class Task(BaseModel):
     status: str
 
 
-class InputData(BaseModel):
-    """Model input schema."""
+class PredictionEntry(BaseModel):
+    """Single :class:`Prediction` result."""
 
-    x: int
-    y: int
+    class_: int = Field(alias="class")
+    probability: str = Field(alias="probability")
 
 
 class Prediction(BaseModel):
@@ -22,4 +22,4 @@ class Prediction(BaseModel):
 
     task_id: str
     status: str
-    result: list
+    result: list[PredictionEntry]

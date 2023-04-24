@@ -28,12 +28,12 @@ class WrappedTask(Task, ABC):
         return self.run(*args, **kwargs)
 
 
-# make sure the `model_module` points to a file that has a model wrapper
-# implementation, and the `model_object` to the name of the wrapper
 @worker.task(
     ignore_result=False,
     bind=True,
     base=WrappedTask,
+    # make sure the `model_module` points to a file that has a model wrapper
+    # implementation, and the `model_object` to the name of the wrapper
     model_module="api.model.wrapper",
     model_object="Model",
 )

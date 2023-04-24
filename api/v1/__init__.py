@@ -7,22 +7,16 @@ from api.v1.router import model_router
 DESCRIPTION = """
 Neural Network API🖧.
 
-**Model served**: XOR
+**Model served**: MNIST Image Classifier
 
 **Problem description**:
 
-The XOR problem is a classic problem in neural networks researches.
-The problem is this:
+Dataset is a set of 70,000 28x28 images of digits handwritten
+by high school students and employees of the US Census Bureau. Each image
+is labeled with the digit it represents. The model must be able to recognize
+the numbers in the image.
 
-given the two inputs (data can only be '0' or '1'), we need to predict
-the value of XOR function. Here are all the possible inputs and outputs:
-
-| out | y   | x   |
-|-----|-----|-----|
-| 0   | 0   | 0   |
-| 1   | 1   | 0   |
-| 1   | 0   | 1   |
-| 0   | 1   | 1   |
+MNIST dataset: http://yann.lecun.com/exdb/mnist/
 
 ## Usage
 
@@ -36,10 +30,6 @@ app = FastAPI(
     title="NN-API",
     description=DESCRIPTION,
     version=__version__,
-    contact={
-        "name": "Corp.",
-        "email": "nn-api@example.com",
-    },
     license_info={
         "name": "MIT License",
         "url": "https://mit-license.org/",

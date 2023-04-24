@@ -19,4 +19,4 @@ class Model:
 
     def predict(self, data, *args, **kwargs):
         """Model `predict()` method wrapper."""
-        return self.model.predict([data], *args, **kwargs)
+        return self.model.predict(data, *args, **kwargs)

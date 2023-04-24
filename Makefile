@@ -18,6 +18,6 @@ isort:
 build:
 	docker compose --project-name nn-api build
 
-# target: celery - run celery service (using .env variables)
+# target: celery_service - run celery_service service (using .env variables)
 celery:
 	celery -A api.celery_service.worker worker -l info --pool=solo

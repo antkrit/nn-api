@@ -1,13 +1,16 @@
 """Contains main app."""
 from fastapi import FastAPI
 
+from api import __version__
 from api.v1 import app as api_v1
 
 app = FastAPI()
-app.mount("/api/v1", api_v1)
+
+API_V1_PATH = "/api/v1"
+app.mount(API_V1_PATH, api_v1)
 
 
 @app.get("/")
 async def root():
     """Get root."""
-    return {"message": "get an API v1.0 docs on '/api/v1/docs'"}
+    return {"message": f"get API v{__version__} docs on '{API_V1_PATH}/docs'"}
