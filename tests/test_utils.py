@@ -30,10 +30,10 @@ def test_preprocess_image():
     ids=["1d", "2d", "3d"],
 )
 def test_output_decoding(output):
-    decoded = decode_mnist_model_output(output, n=3)
+    decoded = decode_mnist_model_output(output, n_entries=3)
     assert tuple(decoded.keys()) == (2, 0, 1)
     assert tuple(decoded.values()) == (0.7, 0.5, 0.4)
 
-    decoded = decode_mnist_model_output(output, n=1)
+    decoded = decode_mnist_model_output(output, n_entries=1)
     assert tuple(decoded.keys()) == (2,)
     assert tuple(decoded.values()) == (0.7,)

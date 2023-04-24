@@ -1,5 +1,7 @@
 """Contains pydantic schemas implementations."""
 # pylint: disable=no-name-in-module
+from typing import List
+
 from pydantic import BaseModel, Field
 
 
@@ -22,4 +24,4 @@ class Prediction(BaseModel):
 
     task_id: str
     status: str
-    result: list[PredictionEntry]
+    result: List[PredictionEntry]
