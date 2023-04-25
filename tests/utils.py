@@ -30,4 +30,4 @@ def create_in_memory_image(size=(50, 50), filename="test", filetype="png"):
     file.name = f"{filename}.{filetype}"
     file.seek(0)
 
-    return Image.open(file)
+    return file

@@ -8,10 +8,10 @@ from celery.result import AsyncResult
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse
 
-from api.celery_service.tasks import predict_task
 from api.utils.data import decode_mnist_model_output
 from api.utils.image import ALLOWED_IMAGE_EXT, read_imagefile
 from api.v1.schemas import Prediction, Task
+from api.v1.tasks import predict_task
 
 model_router = APIRouter(
     prefix="/mnist", tags=["model"]  # prefix can be changed to match your model
@@ -36,6 +36,7 @@ model_router = APIRouter(
 async def predict(file: UploadFile = File(...)):
     """Predict result for the input data."""
     extension = file.filename.split(".")[-1] in ALLOWED_IMAGE_EXT
+
     if not extension:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
@@ -48,7 +49,7 @@ async def predict(file: UploadFile = File(...)):
     return {"task_id": str(task_id), "status": "Processing"}
 
 
-@model_router.post(
+@model_router.get(
     "/{task_id}",
     response_model=Prediction,
     status_code=status.HTTP_200_OK,
@@ -64,7 +65,7 @@ async def predict(file: UploadFile = File(...)):
         }
     },
 )
-async def result(task_id: str, n: int):  # pylint: disable=invalid-name
+async def result(task_id: str, limit: int = 1):
     """Get task result."""
     task = AsyncResult(task_id)
 
@@ -74,7 +75,7 @@ async def result(task_id: str, n: int):  # pylint: disable=invalid-name
             content={"task_id": task_id, "status": task.status},
         )
 
-    prediction = decode_mnist_model_output(task.result, n_entries=n)
+    prediction = decode_mnist_model_output(task.result, n_entries=limit)
 
     response = []
     for idx, probability in prediction.items():

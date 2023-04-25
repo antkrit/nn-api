@@ -5,4 +5,4 @@ set -o errexit
 # exits if any of variables is not set
 set -o nounset
 
-celery -A api.celery_service.worker worker --loglevel=info
+celery -A api.v1.worker worker --loglevel=info

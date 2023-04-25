@@ -1,4 +1,5 @@
 import pytest
+from PIL import Image
 
 from api.utils.data import decode_mnist_model_output
 from api.utils.image import IMAGE_SIZE, preprocess_image
@@ -6,20 +7,20 @@ from tests.utils import create_in_memory_image
 
 
 def test_preprocess_image():
-    image = create_in_memory_image(size=(25, 25))
+    image = Image.open(create_in_memory_image(size=(25, 25)))
 
     with pytest.raises(ValueError):
         preprocess_image(image)
 
-    image = create_in_memory_image(size=(28, 28))
+    image = Image.open(create_in_memory_image(size=(28, 28)))
     image = preprocess_image(image)
     assert image.shape == (1, IMAGE_SIZE)
 
-    image = create_in_memory_image(size=(7, 112))
+    image = Image.open(create_in_memory_image(size=(7, 112)))
     image = preprocess_image(image)
     assert image.shape == (1, IMAGE_SIZE)
 
-    image = create_in_memory_image(size=(1, 784))
+    image = Image.open(create_in_memory_image(size=(1, 784)))
     image = preprocess_image(image)
     assert image.shape == (1, IMAGE_SIZE)
 

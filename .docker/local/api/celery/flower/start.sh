@@ -7,7 +7,7 @@ set -o nounset
 
 
 worker_ready() {
-    celery -A api.celery_service.worker inspect ping
+    celery -A api.v1.worker inspect ping
 }
 
 until worker_ready; do
@@ -16,4 +16,4 @@ until worker_ready; do
 done
 >&2 echo 'Celery workers is available'
 
-celery --broker ${CELERY_BROKER_URI} --result-backend ${CELERY_BACKEND_URI} -A api.celery_service.worker flower
+celery --broker ${CELERY_BROKER_URI} --result-backend ${CELERY_BACKEND_URI} -A api.v1.worker flower

@@ -4,7 +4,7 @@ from abc import ABC
 
 from celery import Task
 
-from api.celery_service.worker import worker
+from api.v1.worker import worker
 
 
 class WrappedTask(Task, ABC):
