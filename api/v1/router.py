@@ -81,9 +81,11 @@ async def predict(file: UploadFile = File(...)):
         }
     },
 )
-async def result(task_id: str, limit: int = 1):
+async def result(task_id: str, limit: int = 1, sort: str = "desc"):
     """Get task result."""
     task = AsyncResult(task_id)
+
+    sort_query = {"asc": 1, "desc": 0}
 
     if not task.ready():
         return JSONResponse(
@@ -100,5 +102,9 @@ async def result(task_id: str, limit: int = 1):
             "probability": f"{probability*100:0.2f}%",
         }
         response.append(response_entry)
+
+    reverse = sort_query.get(sort, False)
+    if reverse:
+        response = response[::-1]
 
     return {"task_id": task_id, "status": task.status, "result": response}

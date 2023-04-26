@@ -7,7 +7,7 @@ from celery import Task
 
 from api.v1.worker import worker
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("default")
 
 
 class WrappedTask(Task, ABC):
