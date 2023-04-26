@@ -3,7 +3,7 @@ from celery import Celery
 
 from api.v1.config import settings
 
-BROKER_URI = settings.get("CELERY_BROKER_URI", "redis://localhost")
+BROKER_URI = settings.get("CELERY_BROKER_URI", "amqp://")
 BACKEND_URI = settings.get("CELERY_BACKEND_URI", "redis://localhost")
 
 worker = Celery(
