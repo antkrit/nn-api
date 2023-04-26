@@ -38,7 +38,7 @@ class BaseJSONLog(BaseModel):
     app_version: str
     app_env: str
     duration: int
-    exceptions: Union[list[str], str] = None
+    exceptions: Union[List[str], str] = None
 
     class Config:  # pylint: disable=missing-class-docstring
         allow_population_by_field_name = True
