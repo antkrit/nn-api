@@ -29,6 +29,15 @@ def test_mnist_predict(mocker, client):
     )
     assert response.status_code == 202
 
+    file = create_in_memory_image(
+        size=(13, 17), filename=filename, filetype=filetype
+    )
+
+    response = client.post(
+        "api/v1/mnist/predict", files={"file": (filename, file, "image/jpeg")}
+    )
+    assert response.status_code == 400
+
 
 def test_mnist_task_id(mocker, client):
     max_value = 0.9
@@ -75,6 +84,13 @@ def test_mnist_task_id(mocker, client):
     assert len(result) == 1  # equal to ?limit=
     assert result[0]["class"] == max_value_id
 
+    response = client.get("api/v1/mnist/some_id")
+    assert response.status_code == 200
+
+    result = response.json()["result"]
+    assert len(result) == 1
+    assert result[0]["class"] == max_value_id
+
     response = client.get("api/v1/mnist/some_id?limit=5")
     assert response.status_code == 200
 
@@ -82,3 +98,29 @@ def test_mnist_task_id(mocker, client):
     # larger of the two values: {len(fake_task_result); ?limit=}
     assert len(result) == len(fake_task_result)
     assert result[0]["class"] == max_value_id
+
+    response = client.get("api/v1/mnist/some_id?limit=1&sort=desc")
+    assert response.status_code == 200
+
+    result = response.json()["result"]
+    assert len(result) == 1
+    assert result[0]["class"] == max_value_id
+
+    response = client.get("api/v1/mnist/some_id?limit=1&sort=asc")
+    assert response.status_code == 200
+
+    result = response.json()["result"]
+    assert result[0]["class"] == max_value_id
+
+    response = client.get("api/v1/mnist/some_id?limit=2&sort=asc")
+    assert response.status_code == 200
+
+    result = response.json()["result"]
+    assert result[0]["class"] != max_value_id
+
+    response = client.get("api/v1/mnist/some_id?limit=2&sort=asc")
+    assert response.status_code == 200
+
+    result = response.json()["result"]
+    assert result[0]["class"] != max_value_id
+    assert result[1]["class"] == max_value_id

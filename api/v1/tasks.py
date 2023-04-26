@@ -52,6 +52,6 @@ def predict_task(self, input_data):
     """Return model prediction."""
 
     if isinstance(input_data, dict):
-        input_data = tuple(input_data.values())
+        input_data = tuple(input_data.values())[0]
 
     return self.model.predict(input_data).tolist()

@@ -17,3 +17,7 @@ def test_predict_task(load_custom_model_sgd_mse):
     data = np.ones(model.shape)
     output = np.asarray(predict_task.apply(args=(data,)).get())
     assert output.shape == (1, 1, 5)
+
+    args = {"data": data, "extra": 1}
+    output = np.asarray(predict_task.apply(args=(args,)).get())
+    assert output.shape == (1, 1, 5)
