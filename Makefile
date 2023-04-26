@@ -4,7 +4,7 @@ test:
 
 # target: lint - run code style tests for api/ folder
 lint:
-	pylint api/
+	pylint api/ --rcfile .pylintrc
 
 # target: format - run automatic code styler (black)
 format:
@@ -13,3 +13,11 @@ format:
 # target: isort - sort imports
 isort:
 	isort api/ --profile black -l 80
+
+# target: build - build `api-module-image` .docker image
+build:
+	docker compose --project-name nn-api build
+
+# target: celery_service - run celery_service service (using .env variables)
+celery:
+	celery -A api.celery_service.worker worker -l info --pool=solo
