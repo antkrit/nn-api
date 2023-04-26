@@ -4,6 +4,8 @@ Routes:
 - (POST) '/predict': predict result for the input data
 - (POST) '/{task_id}': get task status/result
 """
+import logging
+
 from celery.result import AsyncResult
 from fastapi import APIRouter, File, HTTPException, UploadFile, status
 from fastapi.responses import JSONResponse
@@ -13,9 +15,9 @@ from api.utils.image import ALLOWED_IMAGE_EXT, read_imagefile
 from api.v1.schemas import Prediction, Task
 from api.v1.tasks import predict_task
 
-model_router = APIRouter(
-    prefix="/mnist", tags=["model"]  # prefix can be changed to match your model
-)
+logger = logging.getLogger(__name__)
+
+model_router = APIRouter()
 
 
 @model_router.post(
@@ -28,25 +30,39 @@ model_router = APIRouter(
     task with Celery.
     """,
     responses={
+        status.HTTP_400_BAD_REQUEST: {
+            "detail": "Unable to delay `predict` task."
+        },
         status.HTTP_415_UNSUPPORTED_MEDIA_TYPE: {
             "detail": "Extension of the provided file is not allowed."
-        }
+        },
     },
 )
 async def predict(file: UploadFile = File(...)):
     """Predict result for the input data."""
-    extension = file.filename.split(".")[-1] in ALLOWED_IMAGE_EXT
+    extension = file.filename.split(".")[-1]
+    ext_allowed = extension in ALLOWED_IMAGE_EXT
 
-    if not extension:
+    if not ext_allowed:
         raise HTTPException(
             status_code=status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            detail="Extension of the provided file is not allowed.",
+            detail="Extension of the provided file is not allowed:"
+            f" `{extension}`.",
         )
 
-    data = read_imagefile(await file.read())
-    task_id = predict_task.delay(data)
+    try:
+        data = read_imagefile(await file.read())
+        task_id = predict_task.delay(data)
 
-    return {"task_id": str(task_id), "status": "Processing"}
+        return {"task_id": str(task_id), "status": "Processing"}
+    except ValueError as exc:
+        detail = f"Unable to delay `predict` task: {str(exc)}"
+        logger.error(msg=detail, exc_info=True)
+
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=detail,
+        ) from exc
 
 
 @model_router.get(

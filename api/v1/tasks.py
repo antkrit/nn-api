@@ -1,10 +1,13 @@
 """Contains celery_service tasks implementation."""
 import importlib
+import logging
 from abc import ABC
 
 from celery import Task
 
 from api.v1.worker import worker
+
+logger = logging.getLogger(__name__)
 
 
 class WrappedTask(Task, ABC):
@@ -20,10 +23,18 @@ class WrappedTask(Task, ABC):
         if not self.model:
             # additional args is defined by the `worker.task()` decorator
             # pylint: disable=no-member
+            logger.info(
+                "Import model. Wrapper path: %s.%s",
+                self.model_module,
+                self.model_object,
+            )
+
             module_import = importlib.import_module(self.model_module)
             model_obj = getattr(module_import, self.model_object)
 
             self.model = model_obj()
+
+            logger.info("Model imported.")
 
         return self.run(*args, **kwargs)
 

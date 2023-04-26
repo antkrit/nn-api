@@ -1,7 +1,7 @@
 """Contains model wrapper."""
 import joblib
 
-from api.config import settings
+from api.v1.config import settings
 
 
 class Model:

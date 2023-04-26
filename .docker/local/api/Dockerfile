@@ -30,14 +30,6 @@ FROM       base as builder
 ENV        PIP_DEFAULT_TIMEOUT=100 \
            PIP_DISABLE_PIP_VERSION_CHECK=1
 
-RUN        pip install -e .
-RUN        pip freeze > requirements.txt
-
-FROM       base as final
-
-WORKDIR    /app
-
-COPY       --from=builder /app/requirements.txt .
-RUN        pip install --no-cache-dir -r requirements.txt
+RUN        pip install --no-cache-dir -e .
 
 ENTRYPOINT ["/entrypoint"]

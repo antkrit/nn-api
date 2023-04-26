@@ -1,8 +1,15 @@
 """API v.1"""
+import logging
+from logging.config import dictConfig
+
 from fastapi import FastAPI
 
 from api import __version__
+from api.v1.config import LOGGING_CONFIG
+from api.v1.middleware import LoggingMiddleware
 from api.v1.router import model_router
+
+dictConfig(LOGGING_CONFIG)
 
 DESCRIPTION = """
 Neural Network API🖧.
@@ -17,14 +24,7 @@ is labeled with the digit it represents. The model must be able to recognize
 the numbers in the image.
 
 MNIST dataset: http://yann.lecun.com/exdb/mnist/
-
-## Usage
-
-You are be able to:
-* **Predict data**
-* **Get prediction results**
 """
-
 
 app = FastAPI(
     title="NN-API",
@@ -36,5 +36,8 @@ app = FastAPI(
     },
 )
 
+# Routes
+app.include_router(model_router, prefix="/mnist", tags=["model"])
 
-app.include_router(model_router)
+# Middlewares
+app.add_middleware(LoggingMiddleware, logger=logging.getLogger(__name__))
