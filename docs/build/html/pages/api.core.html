@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>api.core package &mdash; NN-API  documentation</title>
@@ -10,28 +10,26 @@
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-
+  
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
         <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="api.core.autograd package" href="api.core.autograd.html" />
-    <link rel="prev" title="api package" href="api.html" />
+    <link rel="prev" title="api package" href="api.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-
-
+          
+          
           <a href="../index.html" class="icon icon-home">
             NN-API
           </a>
@@ -57,7 +55,6 @@
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="README.html">Readme</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
 <ul>
@@ -89,7 +86,7 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-
+             
   <section id="api-core-package">
 <h1>api.core package<a class="headerlink" href="#api-core-package" title="Permalink to this heading"></a></h1>
 <section id="subpackages">
@@ -98,26 +95,266 @@
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="api.core.autograd.html">api.core.autograd package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.graph">api.core.autograd.graph module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.node">api.core.autograd.node module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.ops">api.core.autograd.ops module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.session">api.core.autograd.session module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.utils">api.core.autograd.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.graph">api.core.autograd.graph module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.graph.Graph"><code class="docutils literal notranslate"><span class="pre">Graph</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.graph.Graph.as_default"><code class="docutils literal notranslate"><span class="pre">Graph.as_default()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.graph.Graph.count"><code class="docutils literal notranslate"><span class="pre">Graph.count</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.graph.get_current_graph"><code class="docutils literal notranslate"><span class="pre">get_current_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.graph.reset_current_graph"><code class="docutils literal notranslate"><span class="pre">reset_current_graph()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.node">api.core.autograd.node module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Abs"><code class="docutils literal notranslate"><span class="pre">Abs</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Abs.backward"><code class="docutils literal notranslate"><span class="pre">Abs.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Abs.forward"><code class="docutils literal notranslate"><span class="pre">Abs.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Add"><code class="docutils literal notranslate"><span class="pre">Add</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Add.backward"><code class="docutils literal notranslate"><span class="pre">Add.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Add.forward"><code class="docutils literal notranslate"><span class="pre">Add.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Assign"><code class="docutils literal notranslate"><span class="pre">Assign</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Assign.backward"><code class="docutils literal notranslate"><span class="pre">Assign.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Assign.forward"><code class="docutils literal notranslate"><span class="pre">Assign.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignAdd"><code class="docutils literal notranslate"><span class="pre">AssignAdd</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignAdd.backward"><code class="docutils literal notranslate"><span class="pre">AssignAdd.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignAdd.forward"><code class="docutils literal notranslate"><span class="pre">AssignAdd.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignDivide"><code class="docutils literal notranslate"><span class="pre">AssignDivide</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignDivide.backward"><code class="docutils literal notranslate"><span class="pre">AssignDivide.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignDivide.forward"><code class="docutils literal notranslate"><span class="pre">AssignDivide.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignMultiply"><code class="docutils literal notranslate"><span class="pre">AssignMultiply</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignMultiply.backward"><code class="docutils literal notranslate"><span class="pre">AssignMultiply.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.AssignMultiply.forward"><code class="docutils literal notranslate"><span class="pre">AssignMultiply.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.BinaryOperation"><code class="docutils literal notranslate"><span class="pre">BinaryOperation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.BinaryOperation.backward"><code class="docutils literal notranslate"><span class="pre">BinaryOperation.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.BinaryOperation.forward"><code class="docutils literal notranslate"><span class="pre">BinaryOperation.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Constant"><code class="docutils literal notranslate"><span class="pre">Constant</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Constant.value"><code class="docutils literal notranslate"><span class="pre">Constant.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Cos"><code class="docutils literal notranslate"><span class="pre">Cos</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Cos.backward"><code class="docutils literal notranslate"><span class="pre">Cos.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Cos.forward"><code class="docutils literal notranslate"><span class="pre">Cos.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Divide"><code class="docutils literal notranslate"><span class="pre">Divide</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Divide.backward"><code class="docutils literal notranslate"><span class="pre">Divide.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Divide.forward"><code class="docutils literal notranslate"><span class="pre">Divide.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Einsum"><code class="docutils literal notranslate"><span class="pre">Einsum</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Einsum.backward"><code class="docutils literal notranslate"><span class="pre">Einsum.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Einsum.forward"><code class="docutils literal notranslate"><span class="pre">Einsum.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Einsum.subscripts"><code class="docutils literal notranslate"><span class="pre">Einsum.subscripts()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Exp"><code class="docutils literal notranslate"><span class="pre">Exp</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Exp.backward"><code class="docutils literal notranslate"><span class="pre">Exp.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Exp.forward"><code class="docutils literal notranslate"><span class="pre">Exp.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Flatten"><code class="docutils literal notranslate"><span class="pre">Flatten</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Flatten.forward"><code class="docutils literal notranslate"><span class="pre">Flatten.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log"><code class="docutils literal notranslate"><span class="pre">Log</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log.backward"><code class="docutils literal notranslate"><span class="pre">Log.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log.forward"><code class="docutils literal notranslate"><span class="pre">Log.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log10"><code class="docutils literal notranslate"><span class="pre">Log10</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log10.backward"><code class="docutils literal notranslate"><span class="pre">Log10.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log10.forward"><code class="docutils literal notranslate"><span class="pre">Log10.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log2"><code class="docutils literal notranslate"><span class="pre">Log2</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log2.backward"><code class="docutils literal notranslate"><span class="pre">Log2.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Log2.forward"><code class="docutils literal notranslate"><span class="pre">Log2.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Matmul"><code class="docutils literal notranslate"><span class="pre">Matmul</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Matmul.backward"><code class="docutils literal notranslate"><span class="pre">Matmul.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Matmul.forward"><code class="docutils literal notranslate"><span class="pre">Matmul.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Max"><code class="docutils literal notranslate"><span class="pre">Max</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Max.backward"><code class="docutils literal notranslate"><span class="pre">Max.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Max.forward"><code class="docutils literal notranslate"><span class="pre">Max.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Mean"><code class="docutils literal notranslate"><span class="pre">Mean</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Mean.backward"><code class="docutils literal notranslate"><span class="pre">Mean.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Mean.forward"><code class="docutils literal notranslate"><span class="pre">Mean.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Min"><code class="docutils literal notranslate"><span class="pre">Min</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Min.backward"><code class="docutils literal notranslate"><span class="pre">Min.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Min.forward"><code class="docutils literal notranslate"><span class="pre">Min.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Multiply"><code class="docutils literal notranslate"><span class="pre">Multiply</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Multiply.backward"><code class="docutils literal notranslate"><span class="pre">Multiply.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Multiply.forward"><code class="docutils literal notranslate"><span class="pre">Multiply.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Node.value"><code class="docutils literal notranslate"><span class="pre">Node.value</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Operation"><code class="docutils literal notranslate"><span class="pre">Operation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Operation.backward"><code class="docutils literal notranslate"><span class="pre">Operation.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Operation.forward"><code class="docutils literal notranslate"><span class="pre">Operation.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Placeholder"><code class="docutils literal notranslate"><span class="pre">Placeholder</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Power"><code class="docutils literal notranslate"><span class="pre">Power</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Power.backward"><code class="docutils literal notranslate"><span class="pre">Power.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Power.forward"><code class="docutils literal notranslate"><span class="pre">Power.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Reshape"><code class="docutils literal notranslate"><span class="pre">Reshape</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Reshape.backward"><code class="docutils literal notranslate"><span class="pre">Reshape.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Reshape.forward"><code class="docutils literal notranslate"><span class="pre">Reshape.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sin"><code class="docutils literal notranslate"><span class="pre">Sin</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sin.backward"><code class="docutils literal notranslate"><span class="pre">Sin.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sin.forward"><code class="docutils literal notranslate"><span class="pre">Sin.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sqrt"><code class="docutils literal notranslate"><span class="pre">Sqrt</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sqrt.backward"><code class="docutils literal notranslate"><span class="pre">Sqrt.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sqrt.forward"><code class="docutils literal notranslate"><span class="pre">Sqrt.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sum"><code class="docutils literal notranslate"><span class="pre">Sum</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sum.backward"><code class="docutils literal notranslate"><span class="pre">Sum.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Sum.forward"><code class="docutils literal notranslate"><span class="pre">Sum.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.UnaryOperation"><code class="docutils literal notranslate"><span class="pre">UnaryOperation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.UnaryOperation.backward"><code class="docutils literal notranslate"><span class="pre">UnaryOperation.backward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.UnaryOperation.forward"><code class="docutils literal notranslate"><span class="pre">UnaryOperation.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Variable"><code class="docutils literal notranslate"><span class="pre">Variable</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Variable.value"><code class="docutils literal notranslate"><span class="pre">Variable.value</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.ops">api.core.autograd.ops module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.abs"><code class="docutils literal notranslate"><span class="pre">abs()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.add"><code class="docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.assign"><code class="docutils literal notranslate"><span class="pre">assign()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.assign_add"><code class="docutils literal notranslate"><span class="pre">assign_add()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.assign_div"><code class="docutils literal notranslate"><span class="pre">assign_div()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.assign_mul"><code class="docutils literal notranslate"><span class="pre">assign_mul()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.cos"><code class="docutils literal notranslate"><span class="pre">cos()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.div"><code class="docutils literal notranslate"><span class="pre">div()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.dot"><code class="docutils literal notranslate"><span class="pre">dot()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.einsum"><code class="docutils literal notranslate"><span class="pre">einsum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.exp"><code class="docutils literal notranslate"><span class="pre">exp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.flatten"><code class="docutils literal notranslate"><span class="pre">flatten()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.log"><code class="docutils literal notranslate"><span class="pre">log()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.log10"><code class="docutils literal notranslate"><span class="pre">log10()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.log2"><code class="docutils literal notranslate"><span class="pre">log2()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.max"><code class="docutils literal notranslate"><span class="pre">max()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.mean"><code class="docutils literal notranslate"><span class="pre">mean()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.min"><code class="docutils literal notranslate"><span class="pre">min()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.mul"><code class="docutils literal notranslate"><span class="pre">mul()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.pow"><code class="docutils literal notranslate"><span class="pre">pow()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.reshape"><code class="docutils literal notranslate"><span class="pre">reshape()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.rsqrt"><code class="docutils literal notranslate"><span class="pre">rsqrt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.sin"><code class="docutils literal notranslate"><span class="pre">sin()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.sqrt"><code class="docutils literal notranslate"><span class="pre">sqrt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.ops.sum"><code class="docutils literal notranslate"><span class="pre">sum()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.session">api.core.autograd.session module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.session.Session"><code class="docutils literal notranslate"><span class="pre">Session</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.session.Session.ctx_add"><code class="docutils literal notranslate"><span class="pre">Session.ctx_add()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.session.Session.ctx_get"><code class="docutils literal notranslate"><span class="pre">Session.ctx_get()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.session.Session.gradients"><code class="docutils literal notranslate"><span class="pre">Session.gradients()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.session.Session.run"><code class="docutils literal notranslate"><span class="pre">Session.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd.utils">api.core.autograd.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.utils.convert_to_node"><code class="docutils literal notranslate"><span class="pre">convert_to_node()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.utils.fill_placeholders"><code class="docutils literal notranslate"><span class="pre">fill_placeholders()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.utils.form_feed_dict"><code class="docutils literal notranslate"><span class="pre">form_feed_dict()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.utils.node_wrapper"><code class="docutils literal notranslate"><span class="pre">node_wrapper()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.autograd.html#api.core.autograd.utils.topological_sort"><code class="docutils literal notranslate"><span class="pre">topological_sort()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="api.core.autograd.html#module-api.core.autograd">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.core.model.html">api.core.model package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.core.model.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="api.core.model.html#module-api.core.model.config">api.core.model.config module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.model.html#module-api.core.model.utils">api.core.model.utils module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.model.html#module-api.core.model.utils">api.core.model.utils module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.model.html#api.core.model.utils.control_compile"><code class="docutils literal notranslate"><span class="pre">control_compile()</span></code></a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="api.core.model.html#module-api.core.model">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="api.core.preprocessing.html">api.core.preprocessing package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.initializers">api.core.preprocessing.initializers module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.samplers">api.core.preprocessing.samplers module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.scalers">api.core.preprocessing.scalers module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.initializers">api.core.preprocessing.initializers module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.NormalInitializer"><code class="docutils literal notranslate"><span class="pre">NormalInitializer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.UniformInitializer"><code class="docutils literal notranslate"><span class="pre">UniformInitializer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.he_normal"><code class="docutils literal notranslate"><span class="pre">he_normal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.he_uniform"><code class="docutils literal notranslate"><span class="pre">he_uniform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.lecun_normal"><code class="docutils literal notranslate"><span class="pre">lecun_normal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.lecun_uniform"><code class="docutils literal notranslate"><span class="pre">lecun_uniform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.ones"><code class="docutils literal notranslate"><span class="pre">ones()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.random_normal"><code class="docutils literal notranslate"><span class="pre">random_normal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.random_uniform"><code class="docutils literal notranslate"><span class="pre">random_uniform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.xavier_normal"><code class="docutils literal notranslate"><span class="pre">xavier_normal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.xavier_uniform"><code class="docutils literal notranslate"><span class="pre">xavier_uniform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.initializers.zeros"><code class="docutils literal notranslate"><span class="pre">zeros()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.samplers">api.core.preprocessing.samplers module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.samplers.train_test_split"><code class="docutils literal notranslate"><span class="pre">train_test_split()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing.scalers">api.core.preprocessing.scalers module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler"><code class="docutils literal notranslate"><span class="pre">BaseScaler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler.fit"><code class="docutils literal notranslate"><span class="pre">BaseScaler.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler.fit_transform"><code class="docutils literal notranslate"><span class="pre">BaseScaler.fit_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.BaseScaler.transform"><code class="docutils literal notranslate"><span class="pre">BaseScaler.transform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.MinMaxScaler"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.MinMaxScaler.fit"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.MinMaxScaler.transform"><code class="docutils literal notranslate"><span class="pre">MinMaxScaler.transform()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.StandardScaler"><code class="docutils literal notranslate"><span class="pre">StandardScaler</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.StandardScaler.fit"><code class="docutils literal notranslate"><span class="pre">StandardScaler.fit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="api.core.preprocessing.html#api.core.preprocessing.scalers.StandardScaler.transform"><code class="docutils literal notranslate"><span class="pre">StandardScaler.transform()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="api.core.preprocessing.html#module-api.core.preprocessing">Module contents</a></li>
 </ul>
 </li>
@@ -291,7 +528,7 @@ object will be returned.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.data.Dataset">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.data.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/data.html#Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.data.Dataset" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.data.</span></span><span class="sig-name descname"><span class="pre">Dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(1,</span> <span class="pre">1)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_dim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/data.html#Dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.data.Dataset" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Collection of data.</p>
 <p>Implemented as an infinite generator. Use <cite>__len__</cite> property to find out
@@ -302,8 +539,9 @@ number of unique batches in one dataset.</p>
 <li><p><strong>x_data</strong> – input data</p></li>
 <li><p><strong>y_data</strong> – input data</p></li>
 <li><p><strong>batch_size</strong> – number of samples per one batch, defaults to 1</p></li>
-<li><p><strong>dim</strong> – x_data shape, while y_data shape will be equal to
-np.ones_like(dim), defaults to (1, 1)</p></li>
+<li><p><strong>x_dim</strong> – x_data shape, defaults to (1, 1)</p></li>
+<li><p><strong>y_dim</strong> – y_data shape, if None - will be equal to np.ones_like(dim),
+defaults to None</p></li>
 <li><p><strong>shuffle</strong> – whether to shuffle data on epoch end</p></li>
 </ul>
 </dd>
@@ -498,6 +736,12 @@ to evaluate, defaults to None</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="api.core.generic.Model.dataset">
+<span class="sig-name descname"><span class="pre">dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.dataset"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.dataset" title="Permalink to this definition"></a></dt>
+<dd><p>Create a dataset for the given data.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="api.core.generic.Model.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y_train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shuffle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbosity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Train model for a fixed number of epochs.</p>
@@ -536,7 +780,7 @@ first compiling the model</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="api.core.generic.Model.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/generic.html#Model.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.generic.Model.forward" title="Permalink to this definition"></a></dt>
-<dd><p>Calculate output of the Input layer.</p>
+<dd><p>Calculate output of the layer.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -725,7 +969,61 @@ define and validate I/O shapes.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="api.core.layers.Dense.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Dense.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Dense.forward" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Dense.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Dense.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate output of the layer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.layers.Embedding">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.layers.</span></span><span class="sig-name descname"><span class="pre">Embedding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_length</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_initializer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Embedding'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Embedding"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Embedding" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.layers.BaseLayer" title="api.core.layers.BaseLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLayer</span></code></a></p>
+<p>Turns positive integers (indexes) into dense vectors of fixed size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_dim</strong> – int, size of the vocabulary</p></li>
+<li><p><strong>output_dim</strong> – int, dimension of the dense embedding</p></li>
+<li><p><strong>input_length</strong> – int, length of input sequences</p></li>
+<li><p><strong>weight_initializer</strong> – initializer for the weight matrix</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.Embedding.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Embedding.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Embedding.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize layer variables.</p>
+<p>This method may be implemented by subclasses. It will be called
+before execution of <code class="docutils literal notranslate"><span class="pre">forward()</span></code>. Typically used to automatically
+define and validate I/O shapes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.Embedding.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Embedding.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Embedding.forward" title="Permalink to this definition"></a></dt>
+<dd><p>Calculate output of the layer.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="api.core.layers.Flatten">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.layers.</span></span><span class="sig-name descname"><span class="pre">Flatten</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Flatten'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Flatten"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Flatten" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#api.core.layers.BaseLayer" title="api.core.layers.BaseLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseLayer</span></code></a></p>
+<p>Flattens layer input. Ignoring batch size.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.Flatten.build">
+<span class="sig-name descname"><span class="pre">build</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Flatten.build"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Flatten.build" title="Permalink to this definition"></a></dt>
+<dd><p>Initialize layer variables.</p>
+<p>This method may be implemented by subclasses. It will be called
+before execution of <code class="docutils literal notranslate"><span class="pre">forward()</span></code>. Typically used to automatically
+define and validate I/O shapes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="api.core.layers.Flatten.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Flatten.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Flatten.forward" title="Permalink to this definition"></a></dt>
 <dd><p>Calculate output of the layer.</p>
 </dd></dl>
 
@@ -743,7 +1041,7 @@ input_shape mentioned above will be created.</p>
 input data was passed directly) - it will return a Variable with that data</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>input_shape</strong> – fixed shape of future data, at least 1d</p>
+<dd class="field-odd"><p><strong>input_shape</strong> – fixed shape of future data, at least 2d</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – if input_shape dimension &lt; 1</p>
@@ -752,7 +1050,7 @@ input data was passed directly) - it will return a Variable with that data</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="api.core.layers.Input.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#Input.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.Input.forward" title="Permalink to this definition"></a></dt>
-<dd><p>Calculate output of the Input layer.</p>
+<dd><p>Calculate output of the layer.</p>
 </dd></dl>
 
 </dd></dl>
@@ -762,17 +1060,14 @@ input data was passed directly) - it will return a Variable with that data</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.layers.</span></span><span class="sig-name descname"><span class="pre">InputShape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch_input_shape</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/layers.html#InputShape"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.layers.InputShape" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Contains information about the shape of the input data.</p>
-<p>If the length of the batch_input_shape is less than 2, then
+<p>If the length of the batch_input_shape is less than 3, then
 batch will be set to None. Otherwise, the first element of
 the batch_input_shape will be the batch size. The rest of
 the batch_input_shape elements are considered input_shape.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>batch_input_shape</strong> – array that contains at least 2 elements,
+<dd class="field-odd"><p><strong>batch_input_shape</strong> – array that contains at least 3 elements
 the first element is batch size and all the rest are input shape.</p>
-</dd>
-<dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – array length is less than 2</p>
 </dd>
 </dl>
 </dd></dl>
@@ -993,7 +1288,7 @@ to objects of various kinds.</p>
 <p>Contains implementation of optimizers.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.optimizers.Adadelta">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adadelta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adadelta'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adadelta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adadelta" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adadelta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adadelta'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adadelta"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adadelta" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
 <p>Optimizer that implements the Adadelta algorithm.</p>
 <p>Adadelta is a more robust extension of Adagrad that adapts learning rates
@@ -1040,7 +1335,7 @@ stability, defaults to 1e-16</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.optimizers.Adagrad">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adagrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_accumulator_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adagrad'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adagrad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adagrad" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adagrad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">initial_accumulator_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adagrad'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adagrad"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adagrad" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
 <p>Optimizer that implements the Adaptive Gradient algorithm.</p>
 <p>Adagrad is an optimizer with parameter-specific learning rates,
@@ -1086,7 +1381,7 @@ stability, defaults to 1e-16</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.optimizers.Adam">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amsgrad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adam'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adam" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adam</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amsgrad</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adam'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adam"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adam" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
 <p>Optimizer that implements the Adam algorithm.</p>
 <p>Adam optimization is a stochastic gradient descent method that is based on
@@ -1134,7 +1429,7 @@ the paper “On the Convergence of Adam and beyond”, defaults to False</p></li
 
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.optimizers.Adamax">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adamax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adamax'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adamax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adamax" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">Adamax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_1</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta_2</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.999</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Adamax'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#Adamax"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.Adamax" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
 <p>Optimizer that implements the Adamax algorithm.</p>
 <p>Adamax, a variant of Adam based on the infinity norm, is a first-order
@@ -1180,7 +1475,7 @@ stability, defaults to 1e-16</p></li>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">BaseOptimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">BaseOptimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="api.core.autograd.html#api.core.autograd.node.Operation" title="api.core.autograd.node.Operation"><code class="xref py py-class docutils literal notranslate"><span class="pre">Operation</span></code></a></p>
 <p>Base optimizer class.</p>
 <p>Basically, every optimizer is an Operation. So, in most cases,
@@ -1227,6 +1522,10 @@ algorithm that will be used to update a variable.</p></li>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>trainable_variables</strong> – variables to optimize, defaults to None</p></li>
+<li><p><strong>clipnorm</strong> – if set, the gradient of each weight is individually
+clipped so that its norm is no higher than this value.</p></li>
+<li><p><strong>clipvalue</strong> – if set, the gradient of each weight is clipped to be
+no higher than this value.</p></li>
 <li><p><strong>session</strong> – current session, if None - creates new, defaults to None</p></li>
 <li><p><strong>name</strong> – optimizer name</p></li>
 </ul>
@@ -1292,6 +1591,12 @@ default to 0, defaults to None</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.clip">
+<span class="sig-name descname"><span class="pre">clip</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">gradients</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.clip"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.clip" title="Permalink to this definition"></a></dt>
+<dd><p>Clip gradients if clipnorm or clipvalue is set.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="api.core.optimizers.BaseOptimizer.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objective</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#BaseOptimizer.forward"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.BaseOptimizer.forward" title="Permalink to this definition"></a></dt>
 <dd><p>Compute gradients and apply an update rule to trainable variables.</p>
@@ -1322,7 +1627,7 @@ will be calculated</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.optimizers.GradientDescent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">GradientDescent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nesterov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GradientDescent'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#GradientDescent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.GradientDescent" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">GradientDescent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nesterov</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GradientDescent'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#GradientDescent"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.GradientDescent" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
 <p>Gradient Descent optimizer.</p>
 <p>Update rule for parameter <cite>w</cite> with gradient <cite>g</cite> when <cite>momentum</cite> is 0:</p>
@@ -1376,7 +1681,7 @@ will be calculated</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="api.core.optimizers.RMSProp">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">RMSProp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RMSProp'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#RMSProp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.RMSProp" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">api.core.optimizers.</span></span><span class="sig-name descname"><span class="pre">RMSProp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">momentum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rho</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-16</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centered</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">clipnorm</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trainable_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">session</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'RMSProp'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/optimizers.html#RMSProp"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.optimizers.RMSProp" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#api.core.optimizers.BaseOptimizer" title="api.core.optimizers.BaseOptimizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">BaseOptimizer</span></code></a></p>
 <p>Optimizer that implements the Root Mean Squared Propagation algorithm.</p>
 <p>This implementation of RMSProp uses plain momentum, not Nesterov momentum.</p>
@@ -1428,8 +1733,8 @@ expensive in terms of computation and memory, defaults to False</p></li>
 <span id="api-core-utils-module"></span><h2>api.core.utils module<a class="headerlink" href="#module-api.core.utils" title="Permalink to this heading"></a></h2>
 <p>Contains useful frequently used objects.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="api.core.utils.at_least3d">
-<span class="sig-prename descclassname"><span class="pre">api.core.utils.</span></span><span class="sig-name descname"><span class="pre">at_least3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/utils.html#at_least3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.utils.at_least3d" title="Permalink to this definition"></a></dt>
+<dt class="sig sig-object py" id="api.core.utils.atleast_3d">
+<span class="sig-prename descclassname"><span class="pre">api.core.utils.</span></span><span class="sig-name descname"><span class="pre">atleast_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/api/core/utils.html#atleast_3d"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#api.core.utils.atleast_3d" title="Permalink to this definition"></a></dt>
 <dd><p>View inputs as arrays with at least three dimensions.</p>
 <p>Unlike the numpy counterpart, this function has the following behaviour:
 a 1-D array of shape (N,) becomes a view of shape (1, N, 1),
@@ -1467,7 +1772,7 @@ and a 2-D array of shape (M, N) becomes a view of shape (1, M, N).</p>
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
+   
 
 </footer>
         </div>
@@ -1478,7 +1783,7 @@ and a 2-D array of shape (M, N) becomes a view of shape (1, M, N).</p>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
+  </script> 
 
 </body>
 </html>

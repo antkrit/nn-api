@@ -9,7 +9,7 @@ from api.core.autograd import Node, Session, ops
 from api.core.autograd import utils as ag_utils
 from api.core.preprocessing import initializers
 
-__all__ = ("BaseLayer", "Dense", "Input", "InputShape")
+__all__ = ("BaseLayer", "Dense", "Flatten", "Input", "InputShape", "Embedding")
 
 
 class BaseLayer(metaclass=abc.ABCMeta):
@@ -112,7 +112,7 @@ class BaseLayer(metaclass=abc.ABCMeta):
         before execution of ``forward()``. Typically used to automatically
         define and validate I/O shapes.
         """
-        del args, kwargs  # are used in subclasses
+        del args, kwargs  # may be used in subclasses
         self._built = True
 
     def add_variable(
@@ -292,8 +292,8 @@ class Dense(BaseLayer):
 
         self._built = True
 
-    def forward(self, value, *args, **kwargs):
-        output = ops.einsum("bhw, wk -> bhk", value, self.weight, **kwargs)
+    def forward(self, x, *args, **kwargs):
+        output = ops.einsum("bhw, wk -> bhk", x, self.weight, **kwargs)
 
         if self.use_bias:
             output = ops.add(output, self.bias, **kwargs)
@@ -302,6 +302,95 @@ class Dense(BaseLayer):
             return self.activation(output, *args, **kwargs)
 
         return output
+
+
+class Embedding(BaseLayer):
+    """Turns positive integers (indexes) into dense vectors of fixed size.
+
+    :param input_dim: int, size of the vocabulary
+    :param output_dim: int, dimension of the dense embedding
+    :param input_length: int, length of input sequences
+    :param weight_initializer: initializer for the weight matrix
+    """
+
+    def __init__(
+        self,
+        input_dim,
+        output_dim,
+        input_length,
+        weight_initializer=None,
+        session=None,
+        name="Embedding",
+    ):
+        """Constructor method."""
+        super().__init__(session=session, name=name)
+
+        self.weight_initializer = namespace.initializers(
+            weight_initializer or namespace.initializers.random_uniform,
+            compiled=False,
+        )
+
+        self.input_dim = input_dim
+        self.output_dim = output_dim
+        self.input_length = input_length
+
+        # should be initialized with build() method
+        self.iweight = None
+        self.oweight = None
+
+    def build(self, input_shape):
+        if self._built:
+            return
+
+        input_shape = (self.input_length, self.output_dim)
+        self.input_shape = InputShape(input_shape)
+
+        self.iweight = self.add_variable(
+            "input_weight",
+            shape=(self.input_length, self.input_dim),
+            initializer=self.weight_initializer,
+            trainable=True,
+        )
+        self.oweight = self.add_variable(
+            "output_weight",
+            shape=(self.input_dim, self.output_dim),
+            initializer=self.weight_initializer,
+            trainable=True,
+        )
+
+        self._built = True
+
+    def forward(self, x, *args, **kwargs):
+        output = ops.einsum("bhk, hw -> bkw", x, self.iweight, **kwargs)
+        output = ops.einsum("btm, ml -> btl", output, self.oweight, **kwargs)
+
+        return output
+
+
+class Flatten(BaseLayer):
+    """Flattens layer input. Ignoring batch size."""
+
+    def __init__(self, session=None, name="Flatten"):
+        """Constructor method."""
+        super().__init__(session=session, name=name)
+
+    def build(self, input_shape):
+        if self._built:
+            return
+
+        if input_shape is None:
+            raise ValueError("`input_shape` cannot be None.")
+
+        if len(input_shape) > 1:
+            size = np.prod(input_shape[1:])
+            input_shape = (1, size)
+        else:
+            input_shape = (1, input_shape[-1])
+
+        self.input_shape = InputShape(input_shape)
+
+    def forward(self, x, *args, **kwargs):
+        return ops.flatten(x)
 
 
 class Input(BaseLayer):
@@ -314,7 +403,7 @@ class Input(BaseLayer):
     If the Input layer was called with some argument x (in other words, the
     input data was passed directly) - it will return a Variable with that data
 
-    :param input_shape: fixed shape of future data, at least 1d
+    :param input_shape: fixed shape of future data, at least 2d
     :raises ValueError: if input_shape dimension < 1
     """
 
@@ -328,11 +417,17 @@ class Input(BaseLayer):
             msg = f"Input shape must be at least 1d, received: {input_shape}"
             raise ValueError(msg)
 
+        if len(input_shape) < 2:
+            msg = (
+                "`input_shape` must be at least 2d, "
+                f"received: {len(input_shape)}"
+            )
+            raise ValueError(msg)
+
         batch_input_shape = (batch_size, *input_shape)
         self.input_shape = InputShape(batch_input_shape)
 
     def forward(self, x, *args, **kwargs):
-        """Calculate output of the Input layer."""
         return x
 
     # by default for the Input layer, this method should receive
@@ -348,14 +443,13 @@ class Input(BaseLayer):
 class InputShape:
     """Contains information about the shape of the input data.
 
-    If the length of the batch_input_shape is less than 2, then
+    If the length of the batch_input_shape is less than 3, then
     batch will be set to None. Otherwise, the first element of
     the batch_input_shape will be the batch size. The rest of
     the batch_input_shape elements are considered input_shape.
 
-    :param batch_input_shape: array that contains at least 2 elements,
+    :param batch_input_shape: array that contains at least 3 elements
         the first element is batch size and all the rest are input shape.
-    :raises ValueError: array length is less than 2
     """
 
     def __init__(self, batch_input_shape):
@@ -363,9 +457,9 @@ class InputShape:
         if isinstance(batch_input_shape, list):
             batch_input_shape = tuple(batch_input_shape)
 
-        # if batch_input_shape length is greater than or equal to 2,
-        # then batch_idx will be equal to 1 and 0 otherwise
-        batch_idx = int(len(batch_input_shape) >= 2)
+        # if batch_input_shape length is greater than 2,
+        # then batch_idx will be equal to 1, and 0 otherwise
+        batch_idx = int(len(batch_input_shape) > 2)
         batch_size = batch_input_shape[0:batch_idx]
 
         self.batch = batch_size[0] if batch_size else None

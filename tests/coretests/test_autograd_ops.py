@@ -67,3 +67,21 @@ def test_other_ops(session):
     expected = np.einsum(subscr, a, b)
     assert np.array_equal(session.run(ops.einsum(subscr, a_var, b)), expected)
     assert session.run(ops.einsum(subscr, a_var, b)).shape == (3, 1, 1, 3)
+
+    a = np.arange(100)
+    a_var = namespace.nodes.variable(a)
+    assert np.array_equal(
+        session.run(ops.reshape(a, (25, 4))), np.reshape(a, (25, 4))
+    )
+    assert np.array_equal(
+        session.run(ops.reshape(a_var, (25, 4))), np.reshape(a, (25, 4))
+    )
+
+    a = np.arange(100)
+    a_var = namespace.nodes.variable(a)
+    to_shape = (1, 1, a.size) if a.ndim < 2 else (a.shape[0], 1, -1)
+    assert np.array_equal(session.run(ops.flatten(a)), np.reshape(a, to_shape))
+    assert session.run(ops.flatten(a)).ndim == 3
+    assert np.array_equal(
+        session.run(ops.flatten(a_var)), np.reshape(a, to_shape)
+    )

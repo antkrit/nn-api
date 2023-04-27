@@ -10,6 +10,7 @@ from api.core.autograd.node import (
     Divide,
     Einsum,
     Exp,
+    Flatten,
     Log,
     Log2,
     Log10,
@@ -20,6 +21,7 @@ from api.core.autograd.node import (
     Multiply,
     Node,
     Power,
+    Reshape,
     Sin,
     Sqrt,
     Sum,
@@ -50,6 +52,8 @@ __all__ = (
     "assign_mul",
     "assign_div",
     "einsum",
+    "reshape",
+    "flatten",
 )
 
 
@@ -117,6 +121,20 @@ def _parse_subscripts(string, delim="->"):
     string = string.replace(",", "")
     inp, out = string.split(delim)
     return inp.split(), out
+
+
+def reshape(this, to_shape, **kwargs):
+    """Reshape array."""
+    return node_wrapper(Reshape, this, to_shape=to_shape, **kwargs)
+
+
+def flatten(this, **kwargs):
+    """Flatten array.
+
+    Returns 3d array. Ignore batch if this.ndim > 3,
+    else add batch of size 1.
+    """
+    return node_wrapper(Flatten, this, **kwargs)
 
 
 def pow(this, other, **kwargs):

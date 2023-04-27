@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+
+  # FAST API
+  api:
+    build:
+      context: .
+      dockerfile: .docker/local/api/Dockerfile
+    image: api-module-image:latest
+    env_file: .env
+    command: /start
+    volumes:
+      - .:/app
+    networks:
+      - local
+    ports:
+      - "8010:8000"
+    depends_on:
+      - redis
+      - celery
+
+  # CELERY BACKEND
+  redis:
+    image: redis:7-alpine
+    container_name: redis-backend
+    networks:
+      - local
+    ports:
+      - "6379:6379"
+
+  # CELERY BROKER
+  rabbitmq:
+    image: rabbitmq:3-alpine
+    container_name: rabbitmq-broker
+    networks:
+      - local
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # CELERY WORKER
+  celery:
+    image: api-module-image:latest
+    container_name: celery_service-worker
+    env_file: .env
+    networks:
+      - local
+    command: /start-celeryworker
+    volumes:
+      - .:/app
+    depends_on:
+      - redis
+      - rabbitmq
+
+  # CELERY MONITOR
+  flower:
+    image: api-module-image:latest
+    container_name: celery_service-flower
+    env_file: .env
+    command: /start-flower
+    volumes:
+      - .:/app
+    networks:
+      - local
+    ports:
+      - "5555:5555"
+    depends_on:
+      - celery
+
+networks:
+  local:
+    driver: bridge

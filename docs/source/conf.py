@@ -23,6 +23,8 @@ extensions = [
     "sphinx.ext.coverage",
     "sphinx.ext.viewcode",
     "sphinx.ext.mathjax",
+    "sphinx.ext.doctest",
+    "sphinx.ext.todo",
 ]
 
 templates_path = ["_templates"]

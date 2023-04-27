@@ -52,6 +52,8 @@ __all__ = (
     "Cos",
     "Divide",
     "Einsum",
+    "Reshape",
+    "Flatten",
     "Exp",
     "Log",
     "Log2",
@@ -69,6 +71,16 @@ __all__ = (
 )
 
 
+# prevent numpy RuntimeWarning: overflow encountered in ...
+MIN_CLIP_EXP = -709.78
+MAX_CLIP_EXP = 709.78
+
+MIN_CLIP_POW = -1.34e15
+MAX_CLIP_POW = 1.34e15
+
+MIN_CLIP_LOG = 0
+
+
 class NodeMixin:
     """Contains different useful members for nodes."""
 
@@ -78,11 +90,6 @@ class NodeMixin:
     def current_graph():
         """Return current graph."""
         return get_current_graph()
-
-    def prepare_graph(self, graph):
-        """Do some graph post-processing."""
-        graph.nodes.append(self)
-        graph.head_node = self
 
 
 # E1101(no-member) is disabled because this class should only
@@ -108,7 +115,6 @@ class Node(NodeMixin):
         self.graph = self.current_graph()
         self._prefix = name or "node"
         self.name = f"{self.graph.name}/{self._prefix}-{self.count()}"
-        self.prepare_graph(self.graph)
 
         value_not_none = self._value is not None
 
@@ -416,6 +422,84 @@ class Einsum(Operation):
         output = result[0] if len(result) == 1 else result
 
         return output
+
+
+class Reshape(UnaryOperation):
+    """Reshape an element.
+
+    :param value: array to reshape
+    :param to_shape: new shape
+    :param name: node name, defaults to 'sum'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(
+        self, value, to_shape, name="reshape", shape=None, threshold=0
+    ):
+        """Constructor method."""
+        super().__init__(name=name, shape=shape, threshold=threshold)
+        self.inputs = (value,)
+        self.from_shape = None
+        self.to_shape = to_shape
+
+    def forward(self, value):
+        """Return output of the operation by given input.
+
+        :param value: input
+        :return: reshaped array
+        """
+        self.from_shape = value.shape
+        return np.reshape(value, self.to_shape)
+
+    def backward(self, value, dout):
+        """Return gradient of the operation by given input.
+
+        :param value: input
+        :param dout: gradient of the path to this node
+        :return: gradient of the operation
+        """
+        dout = np.reshape(dout, self.from_shape)
+        value = np.reshape(value, self.from_shape)
+        return (np.multiply(dout, value),)
+
+
+class Flatten(Reshape):
+    """Flatten an element.
+
+    :param value: array to reshape
+    :param name: node name, defaults to 'sum'
+    :param threshold: some minute float value to avoid problems like div by 0,
+        defaults to 0
+    """
+
+    def __init__(self, value, name="reshape", shape=None, threshold=0):
+        """Constructor method."""
+        super().__init__(
+            value=value,
+            to_shape=None,
+            name=name,
+            shape=shape,
+            threshold=threshold,
+        )
+
+    def forward(self, value):
+        """Return output of the operation by given input.
+
+        Returns at least 3d array.
+
+        :param value: input
+        :return: reshaped array
+        """
+        value = np.asarray(value)
+        self.from_shape = value.shape
+
+        if value.ndim > 2:
+            self.to_shape = (value.shape[0], 1, -1)
+        else:
+            self.to_shape = (1, 1, value.size)
+
+        return np.reshape(value, self.to_shape)
 
 
 class Sum(UnaryOperation):
@@ -752,6 +836,7 @@ class Power(BinaryOperation):
         :return: gradient of the operation w.r.t both operands
         """
         left, right = np.asarray(left), np.asarray(right)
+
         d_wrt_left = np.multiply(
             dout, np.multiply(right, np.power(left, right - 1))
         )
@@ -920,7 +1005,7 @@ class Exp(UnaryOperation):
         :param value: input
         :return: value exponent
         """
-        return np.exp(value)
+        return np.exp(np.clip(value, MIN_CLIP_EXP, MAX_CLIP_EXP))
 
     def backward(self, value, dout):
         """Return gradient of the operation by given input.
@@ -929,7 +1014,11 @@ class Exp(UnaryOperation):
         :param dout: gradient of the path to this node
         :return: gradient of the operation
         """
-        return (np.multiply(dout, np.exp(value)),)
+        return (
+            np.multiply(
+                dout, np.exp(np.clip(value, MIN_CLIP_EXP, MAX_CLIP_EXP))
+            ),
+        )
 
 
 class Log(UnaryOperation):
