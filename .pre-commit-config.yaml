@@ -3,7 +3,7 @@ repos:
     rev: v3.3.0
     hooks:
     - id: end-of-file-fixer
-      exclude: ^docs/
+      exclude: 'docs/.*|.*.md|.*.rst'
     - id: check-yaml
     - id: check-added-large-files
     - id: trailing-whitespace
@@ -44,6 +44,7 @@ repos:
       entry: black
       language: system
       types: [ python ]
+      exclude: '.*.md|.*.rst'
       args:
         - api/
         - -l 80
