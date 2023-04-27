@@ -5,9 +5,12 @@ Subpackages
 -----------
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    api.core
+   api.model
+   api.utils
+   api.v1
 
 Module contents
 ---------------

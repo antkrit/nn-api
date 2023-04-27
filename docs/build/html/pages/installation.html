@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quick Start &mdash; NN-API  documentation</title>
@@ -10,27 +10,25 @@
   <!--[if lt IE 9]>
     <script src="../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-
+  
         <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
-        <script src="../_static/jquery.js"></script>
-        <script src="../_static/underscore.js"></script>
-        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Api" href="modules.html" />
-    <link rel="prev" title="Welcome to NN-API’s documentation!" href="../index.html" />
+    <link rel="next" title="Create Neural Network model" href="model-creation.html" />
+    <link rel="prev" title="Welcome to NN-API’s documentation!" href="../index.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-
-
+          
+          
           <a href="../index.html" class="icon icon-home">
             NN-API
           </a>
@@ -44,11 +42,22 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul class="simple">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#set-up-project">Set up project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-application">Run application</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#model">Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#configuration">Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-development-server">Run development server</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="model-creation.html">Create Neural Network model</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Api</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html">Readme</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Quick Links:</span></p>
 <ul>
@@ -78,12 +87,103 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-
+             
   <section id="quick-start">
 <h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<p># TODO: Installation Guide</p>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this heading"></a></h2>
+<section id="prerequisites">
+<h3>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this heading"></a></h3>
+<p>Make sure you have installed all the following prerequisites on your development machine:</p>
+<ul class="simple">
+<li><p>Python 3.7+ (<em>with `setuptools`,  `wheel` and `virtualenv` packages</em>)</p></li>
+<li><p>Docker</p></li>
+</ul>
+</section>
+</section>
+<section id="set-up-project">
+<h2>Set up project<a class="headerlink" href="#set-up-project" title="Permalink to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Clone repository</strong></p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/antkrit/nn-api.git
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Move into project root folder:</strong></p></li>
+</ul>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>nn-api
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Create and activate virtual environment:</strong></p></li>
+</ul>
+<p><em>Linux:</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate
+</pre></div>
+</div>
+<p><em>Windows:</em></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv<span class="w"> </span>venv
+venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+</pre></div>
+</div>
+<ul class="simple">
+<li><p><strong>Install dependencies:</strong></p></li>
+</ul>
+<p>Production requirements
+(<em>if you are only interested in launching the application,
+these requirements are enough for you</em>)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p>Development requirements (<em>includes production requirements</em>)</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.<span class="o">[</span>dev<span class="o">]</span>
+</pre></div>
+</div>
+</section>
+<section id="run-application">
+<h2>Run application<a class="headerlink" href="#run-application" title="Permalink to this heading"></a></h2>
+<section id="model">
+<h3>Model<a class="headerlink" href="#model" title="Permalink to this heading"></a></h3>
+<p>The MNIST model training process can be found in the
+<a class="reference external" href="https://github.com/antkrit/nn-api/blob/main/notebooks/MNIST.example.ipynb">MNIST example notebook</a>.
+After training the model (and exporting it to a “.pkl”-like file), the path to it must be specified in the
+<a class="reference external" href="https://github.com/antkrit/nn-api/blob/main/.env">.env</a> file.</p>
+</section>
+<section id="configuration">
+<h3>Configuration<a class="headerlink" href="#configuration" title="Permalink to this heading"></a></h3>
+<p>At least the following environment variables must be set (values may vary):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="nv">MODEL_PATH</span><span class="o">=</span>api/model/trained_model-0.1.0-MNIST-DNN.pkl
+
+<span class="nv">CELERY_BROKER_URI</span><span class="o">=</span>amqp://rabbitmq
+<span class="nv">CELERY_BACKEND_URI</span><span class="o">=</span>redis://redis:6379/0
+</pre></div>
+</div>
+<p>More specific project configuration, such as logging, can be found in the
+<a class="reference external" href="https://github.com/antkrit/nn-api/blob/main/api/v1/config.py">config.py</a> file.
+Requests are logged in json format by default. This behavior can be changed by specifying the appropriate
+logger for the <a class="reference external" href="https://github.com/antkrit/nn-api/blob/dev/api/v1/__init__.py">API logging middleware</a>.
+A list of pre-configured loggers can be found in the
+<a class="reference external" href="https://github.com/antkrit/nn-api/blob/main/api/v1/config.py">logging configuration</a>.</p>
+</section>
+<section id="run-development-server">
+<h3>Run development server<a class="headerlink" href="#run-development-server" title="Permalink to this heading"></a></h3>
+<p>In the project root directory run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>docker<span class="w"> </span>compose<span class="w"> </span>build
+docker<span class="w"> </span>compose<span class="w"> </span>up
+</pre></div>
+</div>
+<p>After a successful build and launch, the following services will be available to you:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://localhost:8010/">http://localhost:8010/</a> - API</p></li>
+<li><p><a class="reference external" href="http://localhost:8010/api/v1/docs">http://localhost:8010/api/v1/docs</a> - API v1 documentation (Swagger UI)</p></li>
+<li><p><a class="reference external" href="http://localhost:5555/">http://localhost:5555/</a> - Celery task monitoring tool (Flower)</p></li>
+</ul>
+</section>
+</section>
 </section>
 
 
@@ -91,7 +191,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../index.html" class="btn btn-neutral float-left" title="Welcome to NN-API’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="modules.html" class="btn btn-neutral float-right" title="Api" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="model-creation.html" class="btn btn-neutral float-right" title="Create Neural Network model" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
@@ -103,7 +203,7 @@
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
+   
 
 </footer>
         </div>
@@ -114,7 +214,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
+  </script> 
 
 </body>
 </html>

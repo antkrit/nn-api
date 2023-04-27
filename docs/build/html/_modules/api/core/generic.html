@@ -9,7 +9,7 @@
   <!--[if lt IE 9]>
     <script src="../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-
+  
         <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
         <script src="../../../_static/jquery.js"></script>
         <script src="../../../_static/underscore.js"></script>
@@ -17,17 +17,17 @@
         <script src="../../../_static/doctools.js"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-
-
+          
+          
           <a href="../../../index.html" class="icon icon-home">
             NN-API
           </a>
@@ -73,7 +73,7 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-
+             
   <h1>Source code for api.core.generic</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Contains `Model` definition.&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">functools</span>
@@ -251,15 +251,14 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">x_val</span><span class="p">,</span> <span class="n">y_val</span> <span class="o">=</span> <span class="n">validation_data</span>
 
-        <span class="n">dataset_train</span> <span class="o">=</span> <span class="n">data_adapter</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="n">dataset_train</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span>
             <span class="n">x_train</span><span class="p">,</span>
             <span class="n">y_train</span><span class="p">,</span>
-            <span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
             <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="n">dataset_validation</span> <span class="o">=</span> <span class="n">data_adapter</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
-            <span class="n">x_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x_val</span><span class="p">),</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span>
+        <span class="n">dataset_validation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span>
+            <span class="n">x_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x_val</span><span class="p">),</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span>
         <span class="p">)</span>
 
         <span class="n">epochs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__progress_bar</span><span class="p">(</span><span class="n">epochs</span><span class="p">)</span> <span class="k">if</span> <span class="n">verbosity</span> <span class="k">else</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">)</span>
@@ -295,10 +294,9 @@
 <span class="sd">            first compiling the model</span>
 <span class="sd">        :return: predicted output</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">dataset_test</span> <span class="o">=</span> <span class="n">data_adapter</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+        <span class="n">dataset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dataset</span><span class="p">(</span>
             <span class="n">x_test</span><span class="p">,</span>
             <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">x_test</span><span class="p">),))</span> <span class="k">if</span> <span class="n">y_test</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">y_test</span><span class="p">,</span>
-            <span class="n">dim</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
             <span class="n">batch_size</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">x_test</span><span class="p">),</span>
             <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
@@ -307,11 +305,21 @@
         <span class="n">epochs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__progress_bar</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">epochs</span><span class="p">:</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">dataset_test</span><span class="p">))</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predict_step</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">dataset</span><span class="p">))</span>
             <span class="k">if</span> <span class="n">y_test</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">epochs</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_metrics</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">dataset_test</span><span class="p">)))</span>
+                <span class="n">epochs</span><span class="o">.</span><span class="n">set_postfix</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_metrics</span><span class="p">(</span><span class="nb">next</span><span class="p">(</span><span class="n">dataset</span><span class="p">)))</span>
 
         <span class="k">return</span> <span class="n">output</span></div>
+
+<div class="viewcode-block" id="Model.dataset"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.generic.Model.dataset">[docs]</a>    <span class="k">def</span> <span class="nf">dataset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Create a dataset for the given data.&quot;&quot;&quot;</span>
+        <span class="n">x_shape</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span>
+        <span class="n">y_shape</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_shape</span><span class="p">)</span>
+        <span class="n">y_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_shape</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">data_adapter</span><span class="o">.</span><span class="n">Dataset</span><span class="p">(</span>
+            <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">x_dim</span><span class="o">=</span><span class="n">x_shape</span><span class="p">,</span> <span class="n">y_dim</span><span class="o">=</span><span class="n">y_shape</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div>
 
 <div class="viewcode-block" id="Model.compile"><a class="viewcode-back" href="../../../pages/api.core.html#api.core.generic.Model.compile">[docs]</a>    <span class="k">def</span> <span class="nf">compile</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">loss</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Compile model using given parameters.</span>
@@ -412,7 +420,7 @@
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
+   
 
 </footer>
         </div>
@@ -423,7 +431,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
+  </script> 
 
 </body>
 </html>

@@ -9,7 +9,7 @@
   <!--[if lt IE 9]>
     <script src="../../../../_static/js/html5shiv.min.js"></script>
   <![endif]-->
-
+  
         <script data-url_root="../../../../" id="documentation_options" src="../../../../_static/documentation_options.js"></script>
         <script src="../../../../_static/jquery.js"></script>
         <script src="../../../../_static/underscore.js"></script>
@@ -17,17 +17,17 @@
         <script src="../../../../_static/doctools.js"></script>
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
-    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="search" title="Search" href="../../../../search.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
 
-
-
+          
+          
           <a href="../../../../index.html" class="icon icon-home">
             NN-API
           </a>
@@ -73,7 +73,7 @@
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-
+             
   <h1>Source code for api.core.autograd.node</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;Contains implementation of graph nodes for Automatic Differentiation(AD).</span>
 
@@ -129,6 +129,8 @@
     <span class="s2">&quot;Cos&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Divide&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Einsum&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Reshape&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;Flatten&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Exp&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Log&quot;</span><span class="p">,</span>
     <span class="s2">&quot;Log2&quot;</span><span class="p">,</span>
@@ -146,6 +148,16 @@
 <span class="p">)</span>
 
 
+<span class="c1"># prevent numpy RuntimeWarning: overflow encountered in ...</span>
+<span class="n">MIN_CLIP_EXP</span> <span class="o">=</span> <span class="o">-</span><span class="mf">709.78</span>
+<span class="n">MAX_CLIP_EXP</span> <span class="o">=</span> <span class="mf">709.78</span>
+
+<span class="n">MIN_CLIP_POW</span> <span class="o">=</span> <span class="o">-</span><span class="mf">1.34e15</span>
+<span class="n">MAX_CLIP_POW</span> <span class="o">=</span> <span class="mf">1.34e15</span>
+
+<span class="n">MIN_CLIP_LOG</span> <span class="o">=</span> <span class="mi">0</span>
+
+
 <span class="k">class</span> <span class="nc">NodeMixin</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;Contains different useful members for nodes.&quot;&quot;&quot;</span>
 
@@ -155,11 +167,6 @@
     <span class="k">def</span> <span class="nf">current_graph</span><span class="p">():</span>
         <span class="sd">&quot;&quot;&quot;Return current graph.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="n">get_current_graph</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">prepare_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">graph</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Do some graph post-processing.&quot;&quot;&quot;</span>
-        <span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
-        <span class="n">graph</span><span class="o">.</span><span class="n">head_node</span> <span class="o">=</span> <span class="bp">self</span>
 
 
 <span class="c1"># E1101(no-member) is disabled because this class should only</span>
@@ -185,7 +192,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">graph</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_graph</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span> <span class="o">=</span> <span class="n">name</span> <span class="ow">or</span> <span class="s2">&quot;node&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_prefix</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prepare_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="p">)</span>
 
         <span class="n">value_not_none</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_value</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span>
 
@@ -493,6 +499,84 @@
         <span class="n">output</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="n">result</span>
 
         <span class="k">return</span> <span class="n">output</span></div></div>
+
+
+<div class="viewcode-block" id="Reshape"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Reshape">[docs]</a><span class="k">class</span> <span class="nc">Reshape</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Reshape an element.</span>
+
+<span class="sd">    :param value: array to reshape</span>
+<span class="sd">    :param to_shape: new shape</span>
+<span class="sd">    :param name: node name, defaults to &#39;sum&#39;</span>
+<span class="sd">    :param threshold: some minute float value to avoid problems like div by 0,</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">to_shape</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;reshape&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span>
+    <span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="p">,)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_shape</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">to_shape</span> <span class="o">=</span> <span class="n">to_shape</span>
+
+<div class="viewcode-block" id="Reshape.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Reshape.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: reshaped array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_shape</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_shape</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Reshape.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Reshape.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :param dout: gradient of the path to this node</span>
+<span class="sd">        :return: gradient of the operation</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dout</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_shape</span><span class="p">)</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">from_shape</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">value</span><span class="p">),)</span></div></div>
+
+
+<div class="viewcode-block" id="Flatten"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Flatten">[docs]</a><span class="k">class</span> <span class="nc">Flatten</span><span class="p">(</span><span class="n">Reshape</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Flatten an element.</span>
+
+<span class="sd">    :param value: array to reshape</span>
+<span class="sd">    :param name: node name, defaults to &#39;sum&#39;</span>
+<span class="sd">    :param threshold: some minute float value to avoid problems like div by 0,</span>
+<span class="sd">        defaults to 0</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s2">&quot;reshape&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Constructor method.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+            <span class="n">to_shape</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span>
+            <span class="n">threshold</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+        <span class="p">)</span>
+
+<div class="viewcode-block" id="Flatten.forward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Flatten.forward">[docs]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return output of the operation by given input.</span>
+
+<span class="sd">        Returns at least 3d array.</span>
+
+<span class="sd">        :param value: input</span>
+<span class="sd">        :return: reshaped array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">from_shape</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">ndim</span> <span class="o">&gt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">value</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">to_shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_shape</span><span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Sum"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Sum">[docs]</a><span class="k">class</span> <span class="nc">Sum</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
@@ -829,6 +913,7 @@
 <span class="sd">        :return: gradient of the operation w.r.t both operands</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">left</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">right</span><span class="p">)</span>
+
         <span class="n">d_wrt_left</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
             <span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">right</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span> <span class="o">-</span> <span class="mi">1</span><span class="p">))</span>
         <span class="p">)</span>
@@ -997,7 +1082,7 @@
 <span class="sd">        :param value: input</span>
 <span class="sd">        :return: value exponent</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">value</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MIN_CLIP_EXP</span><span class="p">,</span> <span class="n">MAX_CLIP_EXP</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="Exp.backward"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Exp.backward">[docs]</a>    <span class="k">def</span> <span class="nf">backward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">dout</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Return gradient of the operation by given input.</span>
@@ -1006,7 +1091,11 @@
 <span class="sd">        :param dout: gradient of the path to this node</span>
 <span class="sd">        :return: gradient of the operation</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">value</span><span class="p">)),)</span></div></div>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span>
+                <span class="n">dout</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">MIN_CLIP_EXP</span><span class="p">,</span> <span class="n">MAX_CLIP_EXP</span><span class="p">))</span>
+            <span class="p">),</span>
+        <span class="p">)</span></div></div>
 
 
 <div class="viewcode-block" id="Log"><a class="viewcode-back" href="../../../../pages/api.core.autograd.html#api.core.autograd.node.Log">[docs]</a><span class="k">class</span> <span class="nc">Log</span><span class="p">(</span><span class="n">UnaryOperation</span><span class="p">):</span>
@@ -1156,7 +1245,7 @@
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     provided by <a href="https://readthedocs.org">Read the Docs</a>.
-
+   
 
 </footer>
         </div>
@@ -1167,7 +1256,7 @@
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
+  </script> 
 
 </body>
 </html>

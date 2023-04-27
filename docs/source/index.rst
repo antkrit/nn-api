@@ -6,8 +6,8 @@ Welcome to NN-API's documentation!
     :caption: Contents:
 
     pages/installation
+    pages/model-creation
     pages/modules
-    pages/README
 
 .. toctree::
     :maxdepth: 2
